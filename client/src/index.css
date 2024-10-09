@@ -2,9 +2,15 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: comfortaa;
 }
 body {
+  background-color: var(--white);
 }
-
 :root {
+  --black: #222;
+  --white: #eee;
+  --gold: #ffbf00;
+  --gold-lighter: #ffd700;
+  --gold-darker: #ffb200;
 }
