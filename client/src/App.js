@@ -8,6 +8,8 @@ import {
 import Login from "./Authentication/pages/Login";
 import Signup from "./Authentication/pages/Signup";
 import "./App.css";
+import { ChakraProvider } from "@chakra-ui/react";
+import Navbar from "./shared/components/Navigation/Navbar";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,7 +25,10 @@ function App() {
   } else {
     routes = (
       <Routes>
-        <Route path="/" element={<h1>home</h1>} />
+        <Route
+          path="/"
+          element={<h1 className="text font-bold underline">home</h1>}
+        />
         <Route path="/login" Component={Login} />
         <Route path="/signup" Component={Signup} />
         <Route path="/*" element={<Navigate to="/" />} />
@@ -32,10 +37,12 @@ function App() {
   }
 
   return (
-    <Router>
-      <h1>in App.js</h1>
-      {routes}
-    </Router>
+    <ChakraProvider>
+      <Router>
+        <Navbar />
+        {routes}
+      </Router>
+    </ChakraProvider>
   );
 }
 

@@ -1,0 +1,6 @@
+.btn {
+  width: 100%;
+  background-color: var(--gold-darker);
+  padding: 5px 7px;
+  color: var(--white);
+}
