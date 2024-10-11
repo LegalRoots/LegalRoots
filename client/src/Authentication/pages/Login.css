@@ -1,0 +1,11 @@
+.checkbox-label {
+  display: flex;
+  align-self: flex-start;
+}
+.checkbox-label input {
+  width: 1rem;
+  margin-right: 10px;
+}
+.login {
+  background-color: var(--white);
+}
