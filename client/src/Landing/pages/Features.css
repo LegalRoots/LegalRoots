@@ -1,0 +1,34 @@
+.features-section {
+  clip-path: polygon(
+    0 0,
+    100% 50px,
+    100% calc(100% - 50px),
+    50% 100%,
+    0 calc(100% - 50px)
+  );
+  margin-top: -40px;
+  padding: 5rem;
+  background-color: var(--white);
+}
+.features-section h2 {
+  display: inline-block;
+  font-size: 2rem;
+  color: var(--black);
+  font-weight: bold;
+  position: relative;
+}
+.features-section h2::after {
+  position: absolute;
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: var(--gold-darker);
+  bottom: 0;
+}
+
+.features-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}

@@ -1,0 +1,19 @@
+.feature-card {
+  border-radius: 8px;
+  margin: 1rem;
+  padding: 1.5rem;
+  flex: 1 1 30%;
+}
+
+.feature-card-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: var(--black);
+  font-weight: bold;
+  position: relative;
+}
+
+.feature-card-description {
+  font-size: 1rem;
+  color: var(--gray);
+}

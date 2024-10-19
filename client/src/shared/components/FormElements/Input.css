@@ -24,6 +24,7 @@ form label {
   display: block;
   text-align: left;
   margin: 1rem 0 0.2rem;
+  color: var(--black);
 }
 
 input,
@@ -31,11 +32,11 @@ select {
   width: 100%;
   padding: 0.65rem 0.5rem;
   font-size: 1rem;
-  color: white;
-  border: 2px solid var(--gold);
-  background-color: var(--black);
-  border-radius: 10px;
+  color: var(--black);
+  border: 2px solid var(--gold-darker);
   outline: none;
+  accent-color: var(--gold);
+  caret-color: var(--gold-darker);
 }
 
 input:focus,
@@ -53,7 +54,7 @@ button {
   margin: 1rem 0;
   padding: 0.35rem 0.5rem;
   background-color: var(--gold);
-  color: var(--blac);
+  color: var(--black);
   border: none;
   border-radius: 3px;
   width: 100%;
@@ -69,4 +70,12 @@ select.input-error {
 
 button:disabled {
   opacity: 0.35;
+}
+.inputField {
+  position: relative;
+}
+.tick-mark {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
 }

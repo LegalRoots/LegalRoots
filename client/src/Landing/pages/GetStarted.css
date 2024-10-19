@@ -1,0 +1,86 @@
+.getstarted-section {
+  clip-path: polygon(
+    0 0,
+    50% 50px,
+    100% 0,
+    100% calc(100% - 50px),
+    calc(50% + tan(90deg / 2) * 50px) calc(100% - 50px),
+    50% 100%,
+    calc(50% - tan(90deg / 2) * 50px) calc(100% - 50px),
+    0 calc(100% - 50px)
+  );
+  margin-top: -40px;
+  padding: 8rem 5rem;
+  background-color: var(--gold-darker);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.getstarted-section h2 {
+  color: var(--white);
+  font-size: 2rem;
+  display: inline-block;
+  position: relative;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.getstarted-section h2::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--white);
+}
+.getstarted-section .steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(10rem, 1fr));
+  padding: 0 10rem;
+  gap: 2rem;
+}
+.getstarted-section .step {
+  height: 20rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem 2rem;
+  justify-content: flex-start;
+  background-color: beige;
+}
+.number {
+  color: var(--gold-darker);
+  font-size: 3rem;
+}
+.step h3 {
+  margin-top: 3rem;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--gold-darker);
+  text-align: left;
+}
+.step p {
+  text-align: left;
+  font-size: 1rem;
+  color: var(--gray);
+}
+.getstarted-section .register-btn {
+  background-color: transparent;
+  font-size: 1.5rem;
+  border: 1px solid var(--white);
+  width: fit-content;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+.getstarted-section .register-btn:hover {
+  background-color: var(--gold);
+}
+.alreadyRegistered {
+  font-size: 1rem;
+}
+.alreadyRegistered .login {
+  color: var(--white);
+  margin-left: 5px;
+}

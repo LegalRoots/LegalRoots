@@ -1,7 +1,48 @@
 .signup-page {
   display: flex;
+  flex-direction: column;
   height: 100vh;
+  background-color: var(--white);
+}
+.stepper {
+  margin: 0 auto;
+  margin: 2rem auto;
+  width: 70vw;
+}
+.middle {
+  width: 100%;
+  flex: 1;
+  display: flex;
   justify-content: center;
   align-items: center;
   background-color: var(--white);
+}
+
+.signup-page label {
+  font-size: 0.9rem;
+}
+.signup-page input {
+  font-size: 0.9rem;
+  height: 100%;
+}
+.framer {
+  width: 100%;
+}
+.personal-data {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10rem;
+  justify-content: center;
+  align-items: center;
+}
+.col {
+  width: 30rem;
+}
+.signup-page h1 {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+.col-span {
+  grid-column: span 2;
 }

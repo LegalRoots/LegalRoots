@@ -1,11 +1,60 @@
-.checkbox-label {
+.checkbox-label label {
   display: flex;
-  align-self: flex-start;
 }
-.checkbox-label input {
-  width: 1rem;
-  margin-right: 10px;
+
+.checkbox-label span {
+  margin-left: 0.8rem;
 }
-.login {
+.login-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: calc(100vh - 4rem);
   background-color: var(--white);
+  width: 100vw;
+
+  align-items: center;
+}
+.bg-img {
+  width: 100%;
+  height: calc(100vh - 4rem);
+}
+.login-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.login-info h1 {
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.forgot {
+  display: inline-block;
+  font-size: 0.9rem;
+  color: var(--black);
+  text-decoration: underline;
+}
+.forgot:hover {
+  color: var(--gold-darker);
+  cursor: pointer;
+}
+.new-here {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+.register-link {
+  color: var(--black);
+  font-weight: bold;
+}
+.remember {
+  margin-top: 0;
+}
+.error-text {
+  color: var(--error);
+  font-size: 0.9rem;
+  margin-top: 10px;
 }
