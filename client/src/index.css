@@ -19,4 +19,6 @@ body {
   --gold-lighter: #ffd700;
   --gold-darker: #ffb200;
   --error: #fc8181;
+  --gray: #666;
+  --light-gray: #aaa;
 }

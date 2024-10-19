@@ -1,0 +1,77 @@
+.footer-section {
+  clip-path: polygon(
+    0 0,
+    calc(50% - tan((180deg - 90deg) / 4) * 10px - tan(90deg / 2) * 50px) 0,
+    50% calc(50px + (1 / sin(90deg / 2) - 1) * 10px),
+    calc(50% + tan((180deg - 90deg) / 4) * 10px + tan(90deg / 2) * 50px) 0,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+  overflow: visible;
+  margin-top: calc(10px - 50px);
+  padding: 5rem;
+  background-color: var(--black);
+}
+.footer-section h2 {
+  color: var(--gold);
+  font-size: 2rem;
+  font-weight: bold;
+}
+.contact-container {
+  display: flex;
+  flex-direction: column;
+}
+.contact-form {
+}
+.contact-form label {
+  color: var(--gold);
+}
+.right-col {
+  color: var(--gold);
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-items: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+.contact-icon {
+  position: relative;
+  z-index: 999;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+}
+.contact-icon::before {
+  z-index: -1;
+  display: block;
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: white;
+  right: 0;
+  top: 0;
+}
+.contact-icon::after {
+  z-index: -2;
+  display: block;
+  position: absolute;
+  content: "";
+  width: 120%;
+  height: 120%;
+  border-radius: 50%;
+  background-color: var(--gold-darker);
+  bottom: 50%;
+  transform: translateY(50%);
+  left: -5px;
+}
+.another-contact {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.another-contact p {
+  margin-left: 1rem;
+}

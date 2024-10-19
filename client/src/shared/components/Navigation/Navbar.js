@@ -1,8 +1,16 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/auth";
 import "./Navbar.css";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn, user, logout } = useContext(AuthContext);
+  console.log(user);
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
@@ -25,12 +33,33 @@ const Navbar = () => {
         </ul>
       </div>
       <div className="navbar-right">
-        <Link className="nav-item" to="/login">
-          Login
-        </Link>
-        <Link className="nav-item" to="/signup">
-          Signup
-        </Link>
+        {isLoggedIn ? (
+          <>
+            <div className="user-icon">
+              <img
+                src={`/images/${user.photo}`}
+                alt="User Avatar"
+                className="avatar"
+                onClick={() => {
+                  navigate(`/dashboard/`);
+                }}
+              />
+              <span className="username">{user.username}</span>
+            </div>
+            <button className="nav-item logout-button" onClick={handleLogout}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link className="nav-item" to="/login">
+              Login
+            </Link>
+            <Link className="nav-item" to="/signup">
+              Signup
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );

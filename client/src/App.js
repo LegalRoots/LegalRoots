@@ -1,4 +1,3 @@
-import { userState, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,39 +9,40 @@ import Signup from "./Authentication/pages/Signup";
 import "./App.css";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "./shared/components/Navigation/Navbar";
-
+import LandingPage from "./Landing/pages/LandingPage";
+import { AuthProvider } from "./shared/context/auth";
+import Dashboard from "./dashboard/pages/Dashboard";
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const isLoggedIn = false;
   let routes;
   if (isLoggedIn) {
     routes = (
       <Routes>
-        <Route path="/" element={<h1>home</h1>} />
+        <Route path="/" element={<h1>Account</h1>} />
         <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     );
   } else {
     routes = (
       <Routes>
-        <Route
-          path="/"
-          element={<h1 className="text font-bold underline">home</h1>}
-        />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" Component={Login} />
         <Route path="/signup" Component={Signup} />
+        <Route path="/dashboard" Component={Dashboard} />
         <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     );
   }
 
   return (
-    <ChakraProvider>
-      <Router>
-        <Navbar />
-        {routes}
-      </Router>
-    </ChakraProvider>
+    <AuthProvider>
+      <ChakraProvider>
+        <Router>
+          <Navbar />
+          {routes}
+        </Router>
+      </ChakraProvider>
+    </AuthProvider>
   );
 }
 
