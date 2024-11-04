@@ -1,0 +1,13 @@
+.employees-conatiner {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: calc(100% - 200px);
+  background-color: var(--white);
+  height: 98vh;
+  max-height: 98vh;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
