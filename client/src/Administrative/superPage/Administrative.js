@@ -4,12 +4,14 @@ import Jobs from "../pages/Jobs/Jobs";
 import Sidebar from "../components/sidebar/Sidebar";
 
 import "./Administrative.css";
+import Judge from "../pages/Judges/Judges";
 
 const Administrative = () => {
   let routes = (
     <Routes>
       <Route path="/emp/*" Component={Employees} />
       <Route path="/job" Component={Jobs} />
+      <Route path="/judges/*" Component={Judge} />
     </Routes>
   );
   return (

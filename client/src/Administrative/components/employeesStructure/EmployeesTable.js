@@ -1,43 +1,41 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import EmployeeCard from "./EmployeeCard";
 import EmployeeFilter from "../employeeFilter/EmployeeFilter";
 import "./EmployeesTable.css";
+import Table from "../../../shared/components/Table/Table";
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-const TableRow = ({ employee, changeCurrentEmployee }) => {
-  return (
-    <tr>
-      {true && <td>{employee.data.employee_id}</td>}
-      <td>{employee.data.full_name}</td>
-      <td>{employee.data.job}</td>
-      <td>{employee.data.phone}</td>
-      <td>
-        <div>
-          <button
-            id={employee.data.employee_id}
-            onClick={changeCurrentEmployee}
-          >
-            details
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
-};
-
 const EmployeesTable = () => {
-  const [employees, setEmployees] = useState([]);
-  const [currentEmployee, setCurrentEmployee] = useState(null);
+  const [tableData, setTableData] = useState([]);
+  const [employees, setEmployees] = useState();
+  const [showCard, setShowCard] = useState(false);
+
+  const [currentEmployee, setCurrentEmployee] = useState(0);
   const tableRef = useRef(null);
   const cardRef = useRef(null);
 
   const fetchEmployees = async () => {
     const response = await fetch(`${REACT_APP_API_BASE_URL}/admin/employees`);
     const response_data = await response.json();
-
+    let tmpArray = [];
     if (response.ok === true) {
       setEmployees(response_data);
+
+      for (let index = 0; index < response_data.length; index++) {
+        const element = response_data[index];
+        const { employee_id, full_name, job, phone } = element.data;
+        const arrElement = {
+          rowData: { employee_id, full_name, job, phone },
+          actionData: {
+            id: employee_id,
+            actionHandler: changeCurrentEmployee,
+            text: "details",
+          },
+        };
+        tmpArray.push(arrElement);
+      }
+      setTableData(tmpArray);
     }
   };
 
@@ -45,16 +43,14 @@ const EmployeesTable = () => {
     fetchEmployees();
   }, []);
 
-  const changeCurrentEmployee = (event) => {
-    const requestedEmployee = employees.find((employee) => {
-      return employee.data.employee_id === event.target.id;
-    });
-    setCurrentEmployee(requestedEmployee);
+  const changeCurrentEmployee = useCallback((event) => {
+    setCurrentEmployee(parseInt(event.target.id));
+    setShowCard(true);
     //manage the styling
     if (tableRef.current) {
       tableRef.current.style = "width: 70%";
     }
-  };
+  }, []);
 
   return (
     <div className="employeesTable">
@@ -68,149 +64,19 @@ const EmployeesTable = () => {
         <div className="employees-table-wrapper" ref={tableRef}>
           <EmployeeFilter />
           <div className="employees-table">
-            <table>
-              <thead>
-                <tr>
-                  {true && <th>Employee ID</th>}
-                  <th>name</th>
-                  <th>job</th>
-                  <th>phone</th>
-                  <th>details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-                {employees.map((employee) => (
-                  <TableRow
-                    key={parseInt(employee.data.employee_id)}
-                    employee={employee}
-                    changeCurrentEmployee={changeCurrentEmployee}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <Table
+              data={tableData}
+              headers={["Employee ID", "name", "job", "phone"]}
+              headerAction="details"
+            />
           </div>
         </div>
-        {currentEmployee && (
-          <EmployeeCard employee={currentEmployee} ref={cardRef} />
+        {showCard && employees && (
+          <EmployeeCard
+            id={currentEmployee}
+            employees={employees}
+            ref={cardRef}
+          />
         )}
       </div>
     </div>

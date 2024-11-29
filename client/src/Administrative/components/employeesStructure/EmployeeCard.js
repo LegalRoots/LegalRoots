@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import "./EmployeeCard.css";
 
 const Section = (props) => {
@@ -14,7 +14,7 @@ const Section = (props) => {
   );
 };
 
-const EmployeeCard = forwardRef((props, ref) => {
+const EmployeeCard = forwardRef(({ employees, id }, ref) => {
   const map = new Map([
     ["ssid", "SSID"],
     ["employee_id", "Employee ID"],
@@ -26,30 +26,36 @@ const EmployeeCard = forwardRef((props, ref) => {
     ["phone", "Phone number"],
   ]);
   let sections = [];
-  for (let key in props.employee.data) {
-    if (map.has(key)) {
-      sections.push(
-        <Section
-          key={key}
-          title={map.get(key)}
-          value={props.employee.data[key]}
-        />
-      );
+  const [employee, setEmployee] = useState(null);
+
+  useEffect(() => {
+    const tmp = employees.find((emp) => {
+      return parseInt(emp.data.employee_id) === id;
+    });
+    setEmployee(tmp);
+  }, [employees, id]);
+
+  if (employee) {
+    for (let key in employee.data) {
+      if (map.has(key)) {
+        sections.push(
+          <Section key={key} title={map.get(key)} value={employee.data[key]} />
+        );
+      }
     }
   }
 
   return (
-    <div className="employees-card" ref={ref}>
-      <div className="employees-card__image">
-        {props.employee && (
-          <img
-            src={`data:image/jpeg;base64,${props.employee.image}`}
-            alt="sss"
-          />
-        )}
-      </div>
-      <div className="employees-card__data">{sections}</div>
-    </div>
+    <>
+      {employee && (
+        <div className="employees-card" ref={ref}>
+          <div className="employees-card__image">
+            <img src={`data:image/jpeg;base64,${employee.image}`} alt="sss" />
+          </div>
+          <div className="employees-card__data">{sections}</div>
+        </div>
+      )}
+    </>
   );
 });
 
