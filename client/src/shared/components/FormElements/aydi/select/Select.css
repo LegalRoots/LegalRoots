@@ -1,0 +1,30 @@
+.custom-select {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0.3rem;
+}
+.custom-select select {
+  width: 100%;
+  background-color: white;
+  margin: 0;
+  padding: 0.8rem 1rem;
+  color: black;
+  font-size: 1rem;
+
+  border: 1px #bbb solid;
+  border-radius: 5px;
+}
+
+.custom-select label {
+  margin: 0;
+  padding: 0;
+  padding-left: 0.2rem;
+  font-size: 0.8rem;
+}
+
+.custom-select:focus {
+  border: 2px var(--gold) solid;
+}

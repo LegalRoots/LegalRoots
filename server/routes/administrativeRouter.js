@@ -2,9 +2,11 @@ const express = require("express");
 
 const router = express.Router();
 const employeesController = require("../controllers/administrativeControllers/employeesController");
+const judgesController = require("../controllers/administrativeControllers/judgesController");
+
 const multer = require("multer");
 
-const storage = multer.memoryStorage(); // Store the file in memory
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 router.post(
@@ -13,5 +15,13 @@ router.post(
   employeesController.addEmployee
 );
 router.get("/employees", employeesController.getEmployees);
+
+router.post(
+  "/judges",
+  upload.fields([{ name: "photo" }, { name: "idPhoto" }, { name: "ppPhoto" }]),
+  judgesController.addJudge
+);
+router.get("/judges", judgesController.getJudges);
+router.get("/judges/:id", judgesController.getJudgeById);
 
 module.exports = router;

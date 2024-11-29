@@ -41,7 +41,7 @@ const NewEmployeee = () => {
     const formData = new FormData(document.getElementById("forms"));
     // formData.append("photo", photo);
     // formData.append("idPhoto", idPhoto);
-    console.log(photo);
+
     try {
       const response = await fetch(
         `${REACT_APP_API_BASE_URL}/admin/employees`,
@@ -169,19 +169,18 @@ const NewEmployeee = () => {
             name="photo"
             onChange={fileChangeHandler}
             accept=".png , .jpg"
+            required
           />
         </div>
         <div className="new-employee__file">
-          <label htmlFor="idPhoto" required>
-            Photo
-          </label>
+          <label htmlFor="idPhoto">Photo</label>
           <input
             type="file"
             id="idPhoto"
             name="idPhoto"
             required
             onChange={fileChangeHandler}
-            accept=".png .jpg"
+            accept=".png , .jpg"
           />
         </div>
         <div className="new-employee__button">

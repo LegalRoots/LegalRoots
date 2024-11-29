@@ -39,3 +39,19 @@
   font-size: 1rem;
   border: 2px var(--gold) solid;
 }
+
+.aydi-input textarea {
+  margin: 0;
+  font-size: 0.8rem;
+  border: none;
+  border: 1px #bbb solid;
+  border-radius: 5px;
+  outline: none;
+  padding: 0.7rem 0.7rem;
+  resize: none;
+  width: 100%;
+}
+
+.aydi-input textarea:focus {
+  border: 2px var(--gold) solid;
+}

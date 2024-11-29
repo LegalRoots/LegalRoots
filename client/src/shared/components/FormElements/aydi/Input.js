@@ -45,18 +45,36 @@ const Input = (props) => {
   const touchHandler = () => {
     dispatch({ type: "TOUCH" });
   };
-  return (
-    <div className={`${props.className} aydi-input`}>
-      <label htmlFor={props.id}>{props.label}</label>
-      <input
+
+  let cinput = (
+    <input
+      onBlur={touchHandler}
+      onChange={changeHandler}
+      id={props.id}
+      placeholder={props.placeholder}
+      type={props.type}
+      value={inputState.value}
+      name={props.name}
+    />
+  );
+  if (props.type === "textarea") {
+    cinput = (
+      <textarea
         onBlur={touchHandler}
         onChange={changeHandler}
         id={props.id}
         placeholder={props.placeholder}
-        type={props.type}
         value={inputState.value}
         name={props.name}
-      />
+        rows={6}
+        wrap="soft"
+      ></textarea>
+    );
+  }
+  return (
+    <div className={`${props.className} aydi-input`}>
+      <label htmlFor={props.id}>{props.label}</label>
+      {cinput}
       {!inputState.isValid && inputState.isTouched && <p>{props.errorMsg}</p>}
     </div>
   );

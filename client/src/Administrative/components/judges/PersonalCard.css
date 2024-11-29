@@ -1,0 +1,146 @@
+.personal-card {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border-radius: 10px;
+}
+
+.personal-card-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 270px;
+  height: 200px;
+}
+
+.personal-card-loading h3 {
+  width: 100%;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.personal-card * {
+  margin: 0;
+  padding: 0;
+}
+
+.personal-card-upper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  padding: 2rem 3rem;
+  border-radius: 10px 10px 0px 0px;
+}
+
+.personal-card-upper__image {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.personal-card-upper__image img {
+  width: 160px;
+  border-radius: 50%;
+}
+
+.personal-card-upper__data {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 1rem 2rem;
+  gap: 2rem;
+}
+
+.personal-card-upper__data h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.personal-card-upper__data p {
+  font-size: 0.9rem;
+  font-weight: 400;
+  margin-top: 0.5rem;
+}
+
+.personal-card-lower {
+  background-color: #ddd;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 0px 0px 10px 10px;
+}
+
+@media only screen and (max-width: 1000px) {
+  .personal-card-upper {
+    width: 100%;
+    padding: 2rem 1rem;
+  }
+  .personal-card-upper__data {
+    padding: 1rem 1rem;
+  }
+  .personal-card-upper__image img {
+    width: calc(110px + 3vw);
+    border-radius: 50%;
+  }
+
+  .personal-card-upper__data h3 {
+    font-size: calc(0.5rem + 1vw);
+  }
+
+  .personal-card-upper__data p {
+    font-size: calc(0.3rem + 1vw);
+  }
+  .personal-card-upper__data a {
+    font-size: calc(0.4rem + 1vw);
+  }
+}
+
+@media only screen and (max-width: 450px) {
+  .personal-card-upper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding: 2rem 1rem;
+  }
+  .personal-card-upper__data {
+    padding: 1rem 1rem;
+    align-items: center;
+  }
+  .personal-card-upper__image img {
+    width: calc(120px + 3vw);
+    border-radius: 50%;
+  }
+
+  .personal-card-upper__data h3 {
+    font-size: calc(0.7rem + 1vw);
+    text-align: center;
+  }
+
+  .personal-card-upper__data p {
+    font-size: calc(0.5rem + 1vw);
+    text-align: center;
+  }
+  .personal-card-upper__data a {
+    font-size: calc(0.6rem + 1vw);
+    text-align: center;
+  }
+
+  .personal-card-lower {
+    font-size: 0.8rem;
+  }
+}

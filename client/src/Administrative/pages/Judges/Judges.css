@@ -1,4 +1,4 @@
-.employees-conatiner {
+.judges-main {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -7,13 +7,13 @@
   background-color: var(--white);
   height: 98vh;
   max-height: 98vh;
-  overflow: hidden;
   padding: 0;
   margin: 0;
+  overflow-y: scroll;
 }
 
 @media only screen and (max-width: 1200px) {
-  .employees-conatiner {
+  .judges-main {
     width: 100%;
     height: 100vh;
     max-height: unset;
