@@ -2,11 +2,11 @@ const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-
+const { read } = require("fs");
 const userSchema = new mongoose.Schema({
   first_name: {
     type: String,
-    required: [true, "First name is required1"],
+    required: [true, "First name is required!"],
   },
   last_name: {
     type: String,
@@ -67,6 +67,31 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
+  following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  followers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  notifications: [
+    {
+      message: String,
+      createdAt: {
+        type: Date,
+        default: Date.now(),
+      },
+      read: {
+        type: Boolean,
+        default: false,
+      },
+    },
+  ],
 });
 
 userSchema.pre("save", async function (next) {

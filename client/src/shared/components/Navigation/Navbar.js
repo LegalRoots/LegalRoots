@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/auth";
+import Notifications from "./notification/Notifications";
 import "./Navbar.css";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { isLoggedIn, user, logout } = useContext(AuthContext);
-  console.log(user);
   const handleLogout = () => {
     logout();
   };
@@ -30,11 +30,13 @@ const Navbar = () => {
               Contact
             </Link>
           </li>
+          <li> </li>
         </ul>
       </div>
       <div className="navbar-right">
         {isLoggedIn ? (
           <>
+            <Notifications userId={user._id} />
             <div className="user-icon">
               <img
                 src={`/images/${user.photo}`}

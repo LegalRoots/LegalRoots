@@ -15,7 +15,7 @@ const Login = () => {
   const onSubmit = async (values, actions) => {
     try {
       const { email, password, checkbox } = values;
-      console.log(JSON.stringify({ email, password }));
+
       const response = await fetch(
         "http://localhost:3000/JusticeRoots/users/login",
         {
@@ -23,7 +23,6 @@ const Login = () => {
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify({ email, password }),
         }
       );
@@ -36,6 +35,7 @@ const Login = () => {
         }
         return;
       }
+
       toast({
         title: "Logged in.",
         description: "Logged in Successfully",
@@ -45,10 +45,8 @@ const Login = () => {
       });
 
       const user = await response.json();
-      if (checkbox) {
-        localStorage.setItem("user", JSON.stringify(user.data.user));
-      }
-      login(user);
+
+      login(user, checkbox);
       setErrorMessage("");
       navigate("/dashboard");
       actions.resetForm();
@@ -57,6 +55,7 @@ const Login = () => {
       setErrorMessage("An unexpected error occurred. Please try again.");
     }
   };
+
   const { values, handleChange, isSubmitting, handleSubmit } = useFormik({
     initialValues: {
       email: "",

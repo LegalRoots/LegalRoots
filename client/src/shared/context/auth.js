@@ -1,4 +1,7 @@
 import { createContext, useState, useEffect } from "react";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:3000");
 
 export const AuthContext = createContext({
   isLoggedIn: false,
@@ -8,32 +11,39 @@ export const AuthContext = createContext({
 });
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser =
+      sessionStorage.getItem("user") || localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsLoggedIn(true);
+  const isLoggedIn = !!user;
+  const login = (userData, checkbox) => {
+    const userInfo = userData.data.user;
+    setUser(userInfo);
+    if (checkbox) {
+      localStorage.setItem("user", JSON.stringify(userInfo));
     }
-  }, []);
-
-  const login = (userData) => {
-    setUser(userData.data.user);
-    setIsLoggedIn(true);
-    sessionStorage.setItem("user", JSON.stringify(userData.data.user));
+    sessionStorage.setItem("user", JSON.stringify(userInfo));
+    socket.connect();
+    socket.emit("register", userInfo._id);
   };
 
   const logout = () => {
     setUser(null);
-    setIsLoggedIn(false);
-    sessionStorage.removeItem("user");
     localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
+    socket.disconnect();
   };
 
+  useEffect(() => {
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

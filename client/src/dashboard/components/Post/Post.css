@@ -1,0 +1,209 @@
+.post-card {
+  background-color: var(--white);
+  border: 1px solid var(--white-darker);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 50vw;
+}
+.author-info {
+  display: flex;
+  align-items: center;
+
+  justify-content: flex-start;
+}
+.author-info p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.author-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.post-timestamp {
+  font-size: 0.8rem;
+  color: var(--text-color-light);
+  margin: 0;
+}
+.add-friend-button {
+  position: absolute;
+  top: 0px;
+  right: 1rem;
+  width: fit-content;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.post-interactions {
+  display: flex;
+}
+
+.post-likes {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.post-likes span:first-child,
+.comments {
+  margin-right: 0.5rem;
+}
+.post-likes .comments {
+  margin-left: 3rem;
+  cursor: pointer;
+}
+.comment {
+  background-color: white;
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 2rem 0;
+}
+.comment-msg {
+  margin: 0;
+}
+.comment-head {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  margin-bottom: 9px;
+}
+.comment-head img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.comment-timestamp {
+  font-size: 0.8rem;
+  color: var(--text-color-light);
+  margin: 0;
+}
+.comment-likes {
+  display: flex;
+  align-items: center;
+
+  margin: 0;
+}
+.comment-likes span:first-child {
+  margin-right: 5px;
+}
+.post-image {
+  width: 100%;
+  height: 15rem;
+  object-fit: cover;
+  margin-top: 1rem;
+}
+.liked {
+  fill: var(--gold);
+  color: var(--gold);
+}
+.post-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+.post-content.expanded {
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
+.show-more {
+  color: var(--gold-darker);
+  cursor: pointer;
+  text-align: right;
+  margin: 0;
+}
+.post-card .comment-form {
+  all: unset;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 89%;
+  padding: 0.3rem 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  border-bottom: 1px solid var(--gold-darker);
+}
+.comment-form input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--gold-lighter);
+  border-radius: 5px;
+  margin-right: 1rem;
+}
+.comment-form button {
+  background-color: var(--gold-lighter);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  width: fit-content;
+}
+.comment-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+.role-user {
+  color: var(--white);
+  font-size: 0.8rem;
+  margin: 0;
+  margin-left: 1rem;
+  background-color: var(--gold-lighter);
+  border-radius: 5px;
+  padding: 0 0.5rem;
+}
+.role-admin {
+  color: var(--white);
+  font-size: 0.8rem;
+  margin: 0;
+  margin-left: 1rem;
+  background-color: #f5004f;
+  border-radius: 5px;
+  padding: 0 0.5rem;
+}
+.role-lawyer {
+  color: var(--white);
+  font-size: 0.8rem;
+  margin: 0;
+  margin-left: 1rem;
+  background-color: #fc4100;
+  border-radius: 5px;
+  padding: 0 0.5rem;
+}
+.material-symbols-outlined {
+  cursor: pointer;
+}
+.Following {
+  background-color: var(--white);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.Follow {
+  background-color: var(--gold);
+  border: 1px solid var(--white);
+  color: var(--white);
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 1rem;
+}

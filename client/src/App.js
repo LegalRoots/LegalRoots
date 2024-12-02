@@ -7,18 +7,20 @@ import {
 import Login from "./Authentication/pages/Login";
 import Signup from "./Authentication/pages/Signup";
 import "./App.css";
+import { useContext } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "./shared/components/Navigation/Navbar";
 import LandingPage from "./Landing/pages/LandingPage";
-import { AuthProvider } from "./shared/context/auth";
-import Dashboard from "./dashboard/pages/Dashboard";
+import { AuthContext } from "./shared/context/auth";
+import Dashboard from "./dashboard/pages/UserDashboard";
 function App() {
-  const isLoggedIn = false;
+  const { isLoggedIn } = useContext(AuthContext);
   let routes;
   if (isLoggedIn) {
     routes = (
       <Routes>
         <Route path="/" element={<h1>Account</h1>} />
+        <Route path="/dashboard" Component={Dashboard} />
         <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     );
@@ -28,21 +30,18 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" Component={Login} />
         <Route path="/signup" Component={Signup} />
-        <Route path="/dashboard" Component={Dashboard} />
         <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     );
   }
 
   return (
-    <AuthProvider>
-      <ChakraProvider>
-        <Router>
-          <Navbar />
-          {routes}
-        </Router>
-      </ChakraProvider>
-    </AuthProvider>
+    <ChakraProvider>
+      <Router>
+        <Navbar />
+        <div className="content">{routes}</div>
+      </Router>
+    </ChakraProvider>
   );
 }
 

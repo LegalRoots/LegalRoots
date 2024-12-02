@@ -315,7 +315,6 @@ const Signup = () => {
       if (!response.ok) {
         throw new Error("Signup failed");
       }
-      console.log("TEST");
       const user = await response.json();
       login(user);
       navigate("/dashboard");
@@ -395,6 +394,7 @@ const Signup = () => {
         !errors.SSID &&
         !errors.birthday &&
         !errors.gender &&
+        !errors.userType &&
         !errors.assessment &&
         !errors.cv &&
         !errors.specialization &&
