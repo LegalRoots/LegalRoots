@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,12 +12,24 @@ import { useContext } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "./shared/components/Navigation/Navbar";
 import LandingPage from "./Landing/pages/LandingPage";
-import { AuthContext } from "./shared/context/auth";
-import Dashboard from "./dashboard/pages/UserDashboard";
+import { AuthProvider } from "./shared/context/auth";
+import Dashboard from "./dashboard/pages/Dashboard";
+import Employees from "./Administrative/pages/Employees/Employees";
+import Administrative from "./Administrative/superPage/Administrative";
+
 function App() {
-  const { isLoggedIn } = useContext(AuthContext);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [userType, setUserType] = useState("administrative");
   let routes;
-  if (isLoggedIn) {
+
+  if (isLoggedIn && userType === "administrative") {
+    routes = (
+      <Routes>
+        <Route path="/" Component={LandingPage} />
+        <Route path="/admin/*" element={<Administrative />} />
+      </Routes>
+    );
+  } else if (isLoggedIn) {
     routes = (
       <Routes>
         <Route path="/" element={<h1>Account</h1>} />
@@ -27,7 +40,8 @@ function App() {
   } else {
     routes = (
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" Component={LandingPage} />
+        <Route path="/admin/*" element={<Administrative />} />
         <Route path="/login" Component={Login} />
         <Route path="/signup" Component={Signup} />
         <Route path="/*" element={<Navigate to="/" />} />

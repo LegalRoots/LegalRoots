@@ -1,0 +1,340 @@
+.judges-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 1rem;
+
+  padding-left: 1rem;
+  padding-right: 0.5rem;
+}
+
+.judges-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+  width: 100%;
+  gap: 1rem;
+}
+
+.judges-details > div:nth-child(1) {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: calc(100% - 286px);
+  gap: 1rem;
+}
+
+.judges-details-managers {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 1rem;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+.judges-details-selected {
+  width: 100%;
+}
+
+.judges-details-numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+}
+
+.judges-count {
+  width: 270px;
+  height: 230px;
+  background-color: var(--gold);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  padding: 1rem;
+  transition: 400ms ease;
+  position: relative;
+}
+
+.judges-count:hover {
+  background: black
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(255, 215, 0, 1) 0%,
+      rgba(255, 215, 0, 0.5) 20%,
+      rgba(0, 0, 0, 0) 50%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  color: var(--gold);
+  transition: 550ms ease;
+}
+.judges-count span:nth-child(1) {
+  font-size: 6rem;
+  height: fit-content;
+}
+
+.judges-count span:nth-child(2) {
+  font-size: 0.7rem;
+  position: relative;
+  top: 20px;
+}
+
+.judges-count a {
+  position: absolute;
+
+  width: 100%;
+  text-align: center;
+  bottom: 15px;
+}
+
+.judges-details-numbers .judges-actions {
+  width: 270px;
+  height: calc(100% - 253px);
+  max-height: calc(100% - 253px);
+  min-height: calc(100% - 253px);
+
+  border-radius: 5px;
+  background-color: #ddd;
+  padding: 3rem 0rem;
+  padding-left: 4rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  /* box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5); */
+}
+
+.judges-actions > a {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  transition: 0.3s ease-out;
+  font-weight: 800;
+  font-size: 1rem;
+  /* animation: name duration timing-function delay iteration-count direction
+    fill-mode; */
+  animation: shine 1s ease-in forwards;
+}
+
+.judges-actions > a:nth-child(1) {
+  animation: shine 0.5s ease-in forwards;
+}
+.judges-actions > a:nth-child(2) {
+  animation: shine 0.5s ease-in 0.2s forwards;
+}
+.judges-actions > a:nth-child(3) {
+  animation: shine 0.5s ease-in 0.4s forwards;
+}
+.judges-actions > a:nth-child(4) {
+  animation: shine 0.5s ease-in 0.6s forwards;
+}
+
+@keyframes shine {
+  0%,
+  30%,
+  50% {
+    color: var(--gold-darker);
+    font-size: 1.1rem;
+  }
+
+  80%,
+  90% {
+    color: var(--black);
+    font-size: 1rem;
+  }
+}
+
+.judges-actions > a:hover {
+  color: var(--gold-darker);
+  font-size: 1.1rem;
+}
+
+.judges-actions i {
+  font-size: 1.2rem;
+}
+
+.judges-filter {
+  background-color: white;
+  width: 100%;
+  height: 100px;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.judges-details-tables {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 2rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.judges-details-tables > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 2rem;
+  flex: 1;
+  border-radius: 5px;
+  padding: 2rem;
+  min-width: 400px;
+  overflow-x: scroll;
+
+  background-color: white;
+  border: 5px solid var(--black);
+}
+
+.judges-details-tables > div > div {
+  width: 100%;
+}
+
+.judges-details-tables > div > div h2 {
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.judges-details-tables ul {
+  text-decoration: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-width: 350px;
+}
+
+.judges-details-tables li {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 1rem;
+  border: 2px #eee solid;
+  border-width: 0px 0px 2px 0px;
+}
+
+.judges-details-tables li:hover {
+  color: var(--gold-darker);
+}
+
+.judges-details-tables li div:nth-child(2) {
+  flex: 2;
+}
+.judges-details-tables li div:nth-child(3) {
+  flex: 2;
+}
+
+.judges-details-tables li div:nth-child(4) {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+}
+
+.judges-details-tables p {
+  padding: 0rem;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.judges-details-tables-courts {
+}
+
+.judges-table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  overflow-x: scroll;
+}
+
+@media only screen and (max-width: 850px) {
+  .judges-details {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .judges-details > div:nth-child(1) {
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .judges-details-numbers {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .judges-details-numbers .judges-actions {
+    background-color: white;
+    border-radius: 0px;
+    height: unset;
+    flex: 1;
+  }
+
+  .judges-count {
+    display: none;
+  }
+
+  .judges-details-tables h2 {
+    font-size: calc(0.7rem + 2vw) !important;
+  }
+
+  .judges-details-tables p {
+    font-size: calc(0.4rem + 1vw);
+  }
+
+  .judges-details-tables a {
+    font-size: calc(0.5rem + 1vw);
+  }
+
+  .judges-details-tables {
+    gap: 1rem;
+  }
+}
+
+@media only screen and (max-width: 450px) {
+  .judges-details {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .judges-details > div:nth-child(1) {
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .judges-details-tables {
+    flex-direction: column;
+  }
+
+  .judges-details-tables > div {
+    min-width: unset;
+    width: 100%;
+  }
+}

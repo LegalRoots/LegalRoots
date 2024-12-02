@@ -1,0 +1,48 @@
+.custom-button {
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  border: none;
+  margin: 0;
+  width: unset;
+  height: unset;
+}
+
+.custom-button:hover {
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.custom-button-black {
+  background-color: black;
+  color: white;
+}
+
+.custom-button-white {
+  background-color: white;
+  color: black;
+}
+
+.custom-button-gold {
+  background-color: var(--gold);
+  color: white;
+}
+
+.custom-button-gold:hover {
+  background-color: var(--gold-darker);
+}
+
+.custom-button-1 {
+  min-width: 80px;
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.custom-button-2 {
+  min-width: 120px;
+  padding: 7px 10px;
+}
+
+.custom-button-3 {
+  min-width: 160px;
+  padding: 9px 10px;
+  font-size: 17px;
+}

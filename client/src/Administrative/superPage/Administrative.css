@@ -1,0 +1,14 @@
+.Administrative-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background-color: var(--white);
+  padding: 1vh 0vh 1vh 1vh;
+}
+
+@media only screen and (max-width: 1200px) {
+  .Administrative-container {
+    padding: 0;
+  }
+}

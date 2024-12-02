@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const userRouter = require("./routes/userRouter");
+
 const globalErrorHandler = require("./controllers/errorHandler");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
@@ -10,6 +10,8 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const postsRouter = require("./routes/postsRouter");
 const notificationsRouter = require("./routes/notificationsRouter");
+const userRouter = require("./routes/userRouter");
+const adminRouter = require("./routes/administrativeRouter");
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json({ limit: "10kb" }));
@@ -21,8 +23,11 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use("/JusticeRoots/users", userRouter);
+
 app.use("/JusticeRoots/notifications", notificationsRouter);
 app.use("/JusticeRoots/posts", postsRouter);
+
+app.use("/admin", adminRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

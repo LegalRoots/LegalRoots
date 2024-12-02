@@ -1,0 +1,12 @@
+.employees-filter {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background-color: white;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.employees-filter h1 {
+  font-size: 2rem;
+}
