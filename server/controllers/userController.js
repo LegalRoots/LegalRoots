@@ -27,6 +27,7 @@ exports.toggleFollow = catchAsync(async (req, res, next) => {
   } else {
     sendNotification(
       targetUserId,
+      "User",
       `${user.first_name} is now following you.`,
       io
     );
@@ -43,4 +44,19 @@ exports.toggleFollow = catchAsync(async (req, res, next) => {
   );
 
   return res.status(200).json({ isFollowing: !isFollowing, user: updatedUser });
+});
+exports.updateProfile = catchAsync(async (req, res, next) => {
+  const io = req.app.get("io");
+  console.log(req.body);
+  const user = await User.findByIdAndUpdate(req.body.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!user) {
+    return next(new AppError("User not found.", 404));
+  }
+
+  io.emit("updateProfile", user);
+  res.status(200).json({ message: "Profile updated successfully.", user });
 });

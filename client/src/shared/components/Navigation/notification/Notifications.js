@@ -1,58 +1,65 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { io } from "socket.io-client";
 import "./Notifications.css";
+import { AuthContext } from "../../../context/auth";
 
 const Notifications = ({ userId }) => {
+  const { type } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    const socket = io("http://localhost:3000", {
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 2000,
-    });
+    if (type) {
+      const socket = io("http://localhost:5000", {
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 2000,
+      });
 
-    socket.on("connect", () => {
-      console.log("Connected to the server!");
-      socket.emit("register", userId);
-    });
+      socket.on("connect", () => {
+        console.log("Connected to the server!");
+        socket.emit("register", userId);
+      });
 
-    socket.on("newNotification", (notification) => {
-      console.log("New notification received", notification);
-      setNotifications((prev) => [notification, ...prev]); // Add new notification at the beginning
-      setUnreadCount((prev) => prev + 1);
-    });
+      socket.on("newNotification", (notification) => {
+        console.log("New notification", notification);
+        setNotifications((prev) => [notification, ...prev]);
+        setUnreadCount((prev) => prev + 1);
+      });
 
-    const fetchNotifications = async () => {
-      const response = await fetch(`/JusticeRoots/notifications/${userId}`);
-      const data = await response.json();
-      const reversedNotifications = data.data.notifications.reverse();
-      setNotifications(reversedNotifications); // Set reversed notifications
-      setUnreadCount(reversedNotifications.filter((n) => !n.read).length);
-    };
+      const fetchNotifications = async () => {
+        const response = await fetch(
+          `/JusticeRoots/notifications/${userId}/${type}`
+        );
+        const data = await response.json();
+        const reversedNotifications = data?.data?.notifications?.reverse();
+        setNotifications(reversedNotifications);
+        setUnreadCount(reversedNotifications?.filter((n) => !n.read).length);
+        setLoading(false);
+      };
 
-    fetchNotifications();
+      fetchNotifications();
 
-    return () => {
-      socket.off("newNotification");
-      socket.disconnect();
-    };
-  }, [userId]);
+      return () => {
+        socket.off("newNotification");
+        socket.disconnect();
+      };
+    }
+  }, [userId, type]);
 
   const markAsRead = async (notificationId) => {
+    setNotifications((prev) =>
+      prev.map((notif) => {
+        return notif._id === notificationId ? { ...notif, read: true } : notif;
+      })
+    );
     try {
       await fetch(
-        `/JusticeRoots/notifications/${userId}/read/${notificationId}`,
+        `/JusticeRoots/notifications/${userId}/${type}/read/${notificationId}`,
         {
           method: "PUT",
         }
-      );
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif._id === notificationId ? { ...notif, read: true } : notif
-        )
       );
       setUnreadCount((prev) => prev - 1);
     } catch (error) {
@@ -64,6 +71,10 @@ const Notifications = ({ userId }) => {
     setShowDropdown((prev) => !prev);
   };
 
+  if (loading) {
+    return <div>Loading notifications...</div>;
+  }
+
   return (
     <div>
       <div className="notifications-icon" onClick={toggleDropdown}>
@@ -74,15 +85,21 @@ const Notifications = ({ userId }) => {
       </div>
       {showDropdown && (
         <div className="notifications-dropdown">
-          {notifications.map((notification) => (
-            <div
-              key={notification._id}
-              className={`notification-item ${notification.read ? "read" : ""}`}
-              onClick={() => !notification.read && markAsRead(notification._id)}
-            >
-              {notification.message}
-            </div>
-          ))}
+          {notifications.map((notification, index) => {
+            return (
+              <div
+                key={index}
+                className={`notification-item ${
+                  notification.read ? "read" : ""
+                }`}
+                onClick={() =>
+                  !notification.read && markAsRead(notification._id)
+                }
+              >
+                {notification.message}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

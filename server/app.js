@@ -9,9 +9,12 @@ const AppError = require("./utils/appError");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const postsRouter = require("./routes/postsRouter");
+const lawyersRouter = require("./routes/lawyersRouter");
+const casesRouter = require("./routes/casesRouter");
 const notificationsRouter = require("./routes/notificationsRouter");
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/administrativeRouter");
+const index = require("./models/index");
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json({ limit: "10kb" }));
@@ -24,9 +27,10 @@ if (process.env.NODE_ENV === "development") {
 
 app.use("/JusticeRoots/users", userRouter);
 
+app.use("/JusticeRoots/lawyers", lawyersRouter);
 app.use("/JusticeRoots/notifications", notificationsRouter);
 app.use("/JusticeRoots/posts", postsRouter);
-
+app.use("/JusticeRoots/cases", casesRouter);
 app.use("/admin", adminRouter);
 
 app.all("*", (req, res, next) => {

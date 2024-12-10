@@ -2,9 +2,9 @@ import React, { useState, useContext, useRef, useEffect } from "react";
 import "./Post.css";
 import { AuthContext } from "../../../shared/context/auth";
 import io from "socket.io-client";
-const socket = io("http://localhost:3000");
+const socket = io("http://localhost:5000");
 const Post = ({ post, setPosts }) => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, type } = useContext(AuthContext);
   const [showComments, setShowComments] = useState(false);
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -32,13 +32,16 @@ const Post = ({ post, setPosts }) => {
 
   const handleLikePost = async (postId) => {
     try {
-      const response = await fetch(`/JusticeRoots/posts/${postId}/like`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ author: user._id }),
-      });
+      const response = await fetch(
+        `http://localhost:5000/JusticeRoots/posts/${postId}/like`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ author: user._id, authorModel: type }),
+        }
+      );
       if (response.ok) {
         const updatedPost = await response.json();
         setPosts((prevPosts) =>
@@ -59,13 +62,20 @@ const Post = ({ post, setPosts }) => {
     const formData = new FormData(e.target);
     const content = formData.get("content");
     try {
-      const response = await fetch(`/JusticeRoots/posts/${post._id}/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content, author: user._id }),
-      });
+      const response = await fetch(
+        `http://localhost:5000/JusticeRoots/posts/${post._id}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content,
+            author: user._id,
+            authorModel: type,
+          }),
+        }
+      );
       if (response.ok) {
         const updatedPost = await response.json();
 
@@ -84,13 +94,13 @@ const Post = ({ post, setPosts }) => {
   const handleLikeComment = async (postId, commentId) => {
     try {
       const response = await fetch(
-        `/JusticeRoots/posts/${postId}/comments/${commentId}/like`,
+        `http://localhost:5000/JusticeRoots/posts/${postId}/comments/${commentId}/like`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ author: user._id }),
+          body: JSON.stringify({ author: user._id, authorModel: type }),
         }
       );
       if (response.ok) {
@@ -111,17 +121,17 @@ const Post = ({ post, setPosts }) => {
   const toggleContent = () => {
     setIsExpanded(!isExpanded);
   };
-  const isFollowing = user.following.includes(post.author._id);
+  const isFollowing = user?.following?.includes(post.author._id);
   const handleFollowUser = async () => {
     try {
       const response = await fetch(
-        `/JusticeRoots/users/${post.author._id}/follow`,
+        `http://localhost:5000/JusticeRoots/users/${post.author._id}/follow`,
         {
           method: isFollowing ? "DELETE" : "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userId: user._id }),
+          body: JSON.stringify({ userId: user._id, userModel: type }),
         }
       );
 
@@ -150,14 +160,19 @@ const Post = ({ post, setPosts }) => {
     }
   };
 
-  const isLiked = post.likes.some((like) => like._id === user._id);
+  const isLiked = post.likes.some((like) => {
+    return like === user._id;
+  });
 
   return (
     <div className="post-card">
       <div className="post-header">
         <div className="author-info">
           <img
-            src={"/images/" + post.author.photo}
+            src={
+              `http://localhost:5000/${post.author.photo}` ||
+              "/images/default.png"
+            }
             alt={`${post.author.first_name}'s avatar`}
             className="author-avatar"
           />
@@ -197,7 +212,11 @@ const Post = ({ post, setPosts }) => {
       )}
 
       {post.image && (
-        <img src={"/" + post.image} alt="post" className="post-image" />
+        <img
+          src={`http://localhost:5000/${post.image}`}
+          alt="post"
+          className="post-image"
+        />
       )}
 
       <div className="post-interactions">
@@ -222,7 +241,11 @@ const Post = ({ post, setPosts }) => {
       </div>
       {showComments && (
         <form onSubmit={handlePostComment} className="comment-form">
-          <img className="comment-img" src={"/images/" + user.photo} alt="" />
+          <img
+            className="comment-img"
+            src={`http://localhost:5000/${user.photo}` || "/images/default.png"}
+            alt=""
+          />
           <input
             type="text"
             name="content"
@@ -240,7 +263,10 @@ const Post = ({ post, setPosts }) => {
             <div key={index} className="comment">
               <div className="comment-head">
                 <img
-                  src={"/images/" + comment.author.photo}
+                  src={
+                    `http://localhost:5000/${comment.author.photo}` ||
+                    "/images/default.png"
+                  }
                   alt="avatar"
                   className="comment-avatar"
                 />
@@ -259,7 +285,7 @@ const Post = ({ post, setPosts }) => {
                     handleLikeComment(post._id, comment._id);
                   }}
                   className={`material-symbols-outlined ${
-                    comment.likes.some((like) => like._id === user._id)
+                    comment.likes.some((like) => like === user._id)
                       ? "liked"
                       : ""
                   }`}

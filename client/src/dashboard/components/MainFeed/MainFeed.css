@@ -3,7 +3,7 @@
   flex-direction: column;
   width: 60vw;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
 }
 .main-feed form {
   max-width: 60%;

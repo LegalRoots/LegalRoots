@@ -4,6 +4,9 @@
   height: 100vh;
   background-color: var(--white);
 }
+.signup-page form {
+  width: 40%;
+}
 .stepper {
   margin: 0 auto;
   margin: 2rem auto;

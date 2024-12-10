@@ -3,8 +3,13 @@ const mongoose = require("mongoose");
 const postSchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
     required: true,
+    refPath: "authorModel",
+  },
+  authorModel: {
+    type: String,
+    required: true,
+    enum: ["User", "Lawyer", "Admin", "Judge"],
   },
   content: {
     type: String,
@@ -17,15 +22,24 @@ const postSchema = new mongoose.Schema({
   likes: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      refPath: "likesModel",
     },
   ],
+  likesModel: {
+    type: String,
+    enum: ["User", "Lawyer", "Admin", "Judge"],
+  },
   comments: [
     {
       author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
         required: true,
+        refPath: "comments.authorModel",
+      },
+      authorModel: {
+        type: String,
+        required: true,
+        enum: ["User", "Lawyer", "Admin", "Judge"],
       },
       content: {
         type: String,
@@ -38,9 +52,13 @@ const postSchema = new mongoose.Schema({
       likes: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
+          refPath: "comments.likesModel",
         },
       ],
+      likesModel: {
+        type: String,
+        enum: ["User", "Lawyer", "Admin", "Judge"],
+      },
     },
   ],
   image: {

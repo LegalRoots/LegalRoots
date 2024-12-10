@@ -3,7 +3,7 @@ import Post from "../Post/Post";
 import "./MainFeed.css";
 import { AuthContext } from "../../../shared/context/auth";
 const MainFeed = () => {
-  const { user } = useContext(AuthContext);
+  const { user, type } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newPostContent, setNewPostContent] = useState("");
@@ -23,8 +23,9 @@ const MainFeed = () => {
     if (newPostImage) {
       formData.append("image", newPostImage);
     }
+    formData.append("userModel", type);
     formData.append("user", user._id);
-    const response = await fetch("/JusticeRoots/posts", {
+    const response = await fetch("http://localhost:5000/JusticeRoots/posts", {
       method: "POST",
       body: formData,
     });
@@ -42,7 +43,7 @@ const MainFeed = () => {
     const fetchPosts = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/JusticeRoots/posts"
+          "http://localhost:5000/JusticeRoots/posts"
         );
         const data = await response.json();
         setPosts(data);

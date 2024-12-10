@@ -2,8 +2,10 @@ const crypto = require("crypto");
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("./../models/userModel");
+const Lawyer = require("./../models/lawyerModel");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
+const Employee = require("../models/employee");
 const sendEmail = require("./../utils/SendEmail");
 
 const signToken = (id) => {
@@ -12,7 +14,7 @@ const signToken = (id) => {
   });
 };
 
-const createSendToken = (user, statusCode, req, res) => {
+const createSendToken = (user, statusCode, req, res, role) => {
   const token = signToken(user._id);
 
   res.cookie("jwt", token, {
@@ -24,6 +26,7 @@ const createSendToken = (user, statusCode, req, res) => {
     token,
     data: {
       user,
+      userType: role,
     },
   });
 };
@@ -43,38 +46,85 @@ exports.checkSSID = catchAsync(async (req, res, next) => {
   res.status(200).json({ exists: false });
 });
 exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    SSID: req.body.SSID,
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    birthday: req.body.birthday,
-    gender: req.body.gender,
-    role: req.body.role,
-    phone: req.body.phone,
-    street: req.body.street,
-    city: req.body.city,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-    phone: req.body.phone,
-    gender: req.body.gender,
-    city: req.body.city,
-    street: req.body.street,
-    role: req.body.userType,
-  });
-  createSendToken(newUser, 201, req, res);
+  if (req.body.userType === "Lawyer") {
+    const newLawyer = await Lawyer.create({
+      SSID: req.body.SSID,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      birthday: req.body.birthday,
+      gender: req.body.gender,
+      phone: req.body.phone,
+      street: req.body.street,
+      city: req.body.city,
+      email: req.body.email,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+      cv: req.files.cv[0].filename,
+      practicing_certificate: req.files.practicing_certificate[0].filename,
+      specialization: req.body.specialization,
+      consultation_price: req.body.consultation_price,
+    });
+    createSendToken(newLawyer, 201, req, res, "Lawyer");
+  } else if (req.body.userType === "User") {
+    console.log("im here");
+    const newUser = await User.create({
+      SSID: req.body.SSID,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      birthday: req.body.birthday,
+      gender: req.body.gender,
+      street: req.body.street,
+      city: req.body.city,
+      email: req.body.email,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm,
+      phone: req.body.phone,
+    });
+    console.log(newUser);
+    createSendToken(newUser, 201, req, res, "User");
+  }
 });
 exports.login = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return next(new AppError("Please provide email and password!", 400));
-  }
-  const user = await User.findOne({ email }).select("+password");
+  const { type } = req.body;
+  console.log(type);
 
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError("Incorrect email or password", 401));
+  if (type === "User") {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return next(new AppError("Please provide email and password!", 400));
+    }
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user || !(await user.correctPassword(password, user.password))) {
+      return next(new AppError("Incorrect email or password", 401));
+    }
+    createSendToken(user, 200, req, res);
+  } else if (type === "Lawyer") {
+    const { ssid, password } = req.body;
+    if (!ssid || !password) {
+      return next(new AppError("Please provide SSID and password!", 400));
+    }
+
+    const lawyer = await Lawyer.findOne({ lawyer_id: ssid }).select(
+      "+password"
+    );
+    if (!lawyer || !(await lawyer.correctPassword(password, lawyer.password))) {
+      return next(new AppError("Incorrect email or password", 401));
+    }
+    createSendToken(lawyer, 200, req, res, "Lawyer");
+  } else if (type === "admin") {
+    const { ssid, password } = req.body;
+    if (!ssid || !password) {
+      return next(new AppError("Please provide email and password!", 400));
+    }
+    const admin = await Employee.findOne({ employee_id: ssid }).select(
+      "+password"
+    );
+    if (!admin || !(await admin.correctPassword(password, admin.password))) {
+      return next(new AppError("Incorrect email or password", 401));
+    }
+    createSendToken(admin, 200, req, res, "admin");
   }
-  createSendToken(user, 200, req, res);
 });
 
 exports.logout = (req, res) => {

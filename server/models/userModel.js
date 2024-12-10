@@ -36,17 +36,11 @@ const userSchema = new mongoose.Schema({
   gender: {
     type: String,
   },
-  role: {
-    type: String,
-    enum: ["user", "lawyer", "judge", "admin"],
-    default: "user",
-  },
   city: String,
   street: String,
   password: {
     type: String,
     required: [true, "Please provide a password"],
-    minlength: 8,
     select: false,
   },
   passwordConfirm: {

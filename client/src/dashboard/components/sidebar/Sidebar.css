@@ -1,11 +1,15 @@
 .sidebar {
   width: 15rem;
-  background-color: var(--white);
+  background-color: var(--black);
   padding: 1rem;
   margin-right: 3rem;
   height: 100vh;
   overflow-y: auto;
   z-index: 100;
+  position: sticky;
+  top: 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
 }
 
 .sidebar ul {
@@ -18,7 +22,7 @@
   cursor: pointer;
   border-radius: 5px;
   margin-bottom: 1rem;
-  color: var(--gray);
+  color: white;
   font-weight: bold;
   display: flex;
   justify-content: flex-start;
@@ -30,7 +34,7 @@
   color: var(--gold);
 }
 .active {
-  background-color: white;
+  background-color: var(--gold-darker);
 }
 .sidebar h2 {
   font-size: 1.2rem;

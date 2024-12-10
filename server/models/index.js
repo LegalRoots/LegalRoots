@@ -1,19 +1,36 @@
-const config = require("../config/config.js");
-const catchAsync = require("../utils/catchAsync");
-const { Sequelize } = require("sequelize");
+// const mongoose = require("mongoose");
+// const Employee = require("./employee");
 
-const sequelize = new Sequelize(config.DB, config.USER, config.PASSWORD, {
-  host: config.HOST,
-  dialect: config.dialect,
-});
-catchAsync(async (req, res, next) => {
-  sequelize.authenticate();
-});
+// const createEmployee = async () => {
+//   try {
+//     const newEmployee = await Employee.create({
+//       first_name: "John",
+//       last_name: "Doe",
+//       ssid: "123456789",
+//       email: "admin@test.com",
+//       job: "Software Engineer",
+//       birthdate: "1990-01-15",
+//       phone: "1234567890",
+//       employee_photo: "default.png",
+//       isValid: true,
+//       password: "123",
+//       passwordConfirm: "123",
+//       gender: "Male",
+//       notifications: [
+//         {
+//           message: "Welcome to the company!",
+//           createdAt: new Date(),
+//           read: false,
+//         },
+//       ],
+//     });
 
-const db = {};
-db.sequelize = sequelize;
-db.sequelize.sync({ force: true, alter: true }).then(() => {
-  //if we change this flag to true it will reset the database
-  console.log("Synced");
-});
-module.exports = db;
+//     console.log("Employee created:", newEmployee);
+//   } catch (err) {
+//     console.error(err);
+//   } finally {
+//     mongoose.connection.close();
+//   }
+// };
+
+// createEmployee();

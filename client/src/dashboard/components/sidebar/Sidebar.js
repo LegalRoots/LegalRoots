@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import "./Sidebar.css";
-
-const Sidebar = ({ setActiveComponent }) => {
+const { useLocation, useNavigate } = require("react-router-dom");
+const Sidebar = () => {
   const [activeItem, setActiveItem] = useState("main-feed");
-
-  const handleItemClick = (componentName) => {
-    setActiveComponent(componentName); // Update the parent component
-    setActiveItem(componentName); // Update the active item state
+  const location = useLocation();
+  const navigate = useNavigate();
+  const handleItemClick = (item) => {
+    setActiveItem(item);
+    navigate(`/user/${item}`);
   };
 
   return (
     <div className="sidebar">
       <h2>
         {" "}
-        <span className="material-symbols-outlined">dashboard</span> Dashboard
+        <span className="material-symbols-outlined" style={{ color: "white" }}>
+          dashboard
+        </span>{" "}
+        <span style={{ color: "white" }}>Dashboard</span>
       </h2>
       <ul>
         <li
@@ -21,7 +25,7 @@ const Sidebar = ({ setActiveComponent }) => {
           onClick={() => handleItemClick("main-feed")}
         >
           <span className="material-symbols-outlined">forum</span>
-          <span>Main Feed</span>
+          <span style={{ color: "white" }}>Main Feed</span>
         </li>
         <li
           className={activeItem === "my-cases" ? "active" : ""}

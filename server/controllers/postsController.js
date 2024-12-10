@@ -4,7 +4,7 @@ const factory = require("./factoryController");
 const multer = require("multer");
 exports.getAllPosts = catchAsync(async (req, res, next) => {
   const posts = await Post.find()
-    .populate("author", "first_name last_name photo role")
+    .populate("author", "first_name last_name photo")
     .populate("likes", "first_name last_name likes photo")
     .populate("comments.author", "first_name last_name likes photo")
     .populate("comments.likes", "first_name last_name likes photo");
@@ -76,6 +76,7 @@ exports.addPost = catchAsync(async (req, res, next) => {
   const newPost = new Post({
     author: userId,
     content,
+    authorModel: req.body.userModel,
   });
 
   if (req.file) {
@@ -95,13 +96,14 @@ exports.addPost = catchAsync(async (req, res, next) => {
 exports.addComment = catchAsync(async (req, res, next) => {
   const { postID } = req.params;
   const { author, content } = req.body;
+  console.log(req.body);
 
   const post = await Post.findById(postID);
   if (!post) {
     return res.status(404).json({ message: "Post not found" });
   }
 
-  post.comments.push({ author, content });
+  post.comments.push({ author, authorModel: req.body.authorModel, content });
   await post.save();
   await post.populate([
     { path: "author", select: "first_name last_name photo role" },
