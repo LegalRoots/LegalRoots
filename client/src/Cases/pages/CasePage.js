@@ -1,4 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
+import AddCommentIcon from "@mui/icons-material/AddComment";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import StarIcon from "@mui/icons-material/Star";
 import {
   Card,
   CardContent,
@@ -17,6 +20,7 @@ import {
   TextField,
   Stack,
   IconButton,
+  Rating,
 } from "@mui/material";
 import { useToast } from "@chakra-ui/react";
 import Grid from "@mui/material/Grid2";
@@ -40,7 +44,9 @@ const Case = () => {
   const [editedCase, setEditedCase] = useState({});
   const [addNoteModalOpen, setAddNoteModalOpen] = useState(false);
   const [newNote, setNewNote] = useState("");
-
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [newFeedback, setNewFeedback] = useState("");
+  const [rating, setRating] = useState(0);
   useEffect(() => {
     const fetchCase = async () => {
       try {
@@ -54,6 +60,67 @@ const Case = () => {
     };
     fetchCase();
   }, [id]);
+
+  const handleAddFeedBack = () => {
+    setFeedbackModalOpen(true);
+  };
+
+  const handleCloseFeedbackModal = () => {
+    setFeedbackModalOpen(false);
+    setNewFeedback("");
+  };
+
+  const submitFeedback = async () => {
+    if (!newFeedback.trim()) {
+      toast({
+        title: "Feedback cannot be empty!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!rating) {
+      toast({
+        title: "Please provide a rating!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/JusticeRoots/lawyers/${caseData.lawyer._id}/reviews`,
+        { feedback: newFeedback, rating, user: user._id }
+      );
+
+      setCaseData((prev) => ({
+        ...prev,
+        feedbacks: [...(prev.feedbacks || []), response.data],
+      }));
+
+      setFeedbackModalOpen(false);
+      setNewFeedback("");
+      setRating(0);
+      toast({
+        title: "Feedback added successfully!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Failed to add feedback:", error);
+      toast({
+        title: "Failed to add feedback!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
   const handleDocumentUpload = async () => {
     if (!newDocument) {
@@ -284,7 +351,7 @@ const Case = () => {
                       <ListItemText
                         primary={note.note}
                         secondary={`Added by: ${
-                          note.addedBy
+                          note.addedBy.first_name + " " + note.addedBy.last_name
                         } | Created: ${new Date(
                           note.createdAt
                         ).toLocaleString()}`}
@@ -315,18 +382,25 @@ const Case = () => {
             <Button
               size="small"
               variant="contained"
-              color="warning"
               startIcon={<NoteAddIcon />}
               onClick={handleOpenAddNoteModal}
             >
               Add Note
+            </Button>
+            <Button
+              size="small"
+              variant="contained"
+              href={`/scheduler/${id}`}
+              fullWidth
+              startIcon={<AccessTimeIcon />}
+            >
+              View Scheduler
             </Button>
           </Box>
           <Box display="flex" gap={1} flexWrap="wrap">
             <Button
               size="small"
               variant="contained"
-              color="secondary"
               component="label"
               fullWidth
               startIcon={<AddIcon />}
@@ -346,6 +420,14 @@ const Case = () => {
               disabled={!newDocument}
             >
               Upload Document
+            </Button>
+            <Button
+              size="small"
+              variant="contained"
+              onClick={handleAddFeedBack}
+              startIcon={<AddCommentIcon />}
+            >
+              Give a Feed Back
             </Button>
           </Box>
         </CardActions>
@@ -480,13 +562,83 @@ const Case = () => {
               rows={4}
               variant="outlined"
             />
+            <Button variant="contained" onClick={handleAddNote} fullWidth>
+              Add Note
+            </Button>
+          </Stack>
+        </Box>
+      </Modal>
+
+      {/* Feedback Modal */}
+      <Modal
+        open={feedbackModalOpen}
+        onClose={handleCloseFeedbackModal}
+        aria-labelledby="feedback-modal"
+        aria-describedby="feedback-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            borderRadius: 3,
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Stack spacing={3}>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography id="feedback-modal" variant="h6">
+                Add Feedback
+              </Typography>
+              <IconButton
+                sx={{ width: 40, height: 40 }}
+                onClick={handleCloseFeedbackModal}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
+
+            {/* Star Rating */}
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <Typography variant="body1">Rate your experience:</Typography>
+              <Rating
+                name="feedback-rating"
+                value={rating}
+                onChange={(event, newValue) => {
+                  setRating(newValue);
+                }}
+                size="large"
+              />
+            </Box>
+
+            {/* Feedback Input */}
+            <TextField
+              label="Your Feedback"
+              name="feedback"
+              value={newFeedback}
+              onChange={(e) => setNewFeedback(e.target.value)}
+              fullWidth
+              multiline
+              rows={4}
+              variant="outlined"
+            />
+
+            {/* Submit Button */}
             <Button
               variant="contained"
               color="primary"
-              onClick={handleAddNote}
+              onClick={submitFeedback}
               fullWidth
             >
-              Add Note
+              Submit Feedback
             </Button>
           </Stack>
         </Box>

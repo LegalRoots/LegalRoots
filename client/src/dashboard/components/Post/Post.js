@@ -122,10 +122,11 @@ const Post = ({ post, setPosts }) => {
     setIsExpanded(!isExpanded);
   };
   const isFollowing = user?.following?.includes(post.author._id);
+
   const handleFollowUser = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/JusticeRoots/users/${post.author._id}/follow`,
+        `http://localhost:5000/JusticeRoots/users/${post?.author?._id}/follow`,
         {
           method: isFollowing ? "DELETE" : "POST",
           headers: {

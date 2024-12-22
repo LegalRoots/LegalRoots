@@ -6,7 +6,6 @@ const Dashboard = () => {
   return (
     <div
       style={{
-        padding: "1rem",
         display: "flex",
       }}
     >

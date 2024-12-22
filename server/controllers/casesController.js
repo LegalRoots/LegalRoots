@@ -27,12 +27,24 @@ exports.addCase = async (req, res, next) => {
 };
 exports.markDone = async (req, res, next) => {
   const { caseId } = req.body;
-  const updatedCase = await Case.findByIdAndUpdate(
-    caseId,
-    { status: "Resolved" },
-    { new: true }
-  );
-  res.json(updatedCase);
+  try {
+    const updatedCase = await Case.findByIdAndUpdate(
+      caseId,
+      { status: "Resolved" },
+      { new: true }
+    )
+      .populate("lawyer", "first_name last_name")
+      .populate("user", "first_name last_name email");
+
+    if (!updatedCase) {
+      return res.status(404).json({ message: "Case not found" });
+    }
+
+    res.json(updatedCase);
+  } catch (error) {
+    console.error("Error marking case as resolved:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 exports.getCase = async (req, res, next) => {
@@ -41,6 +53,8 @@ exports.getCase = async (req, res, next) => {
     const caseData = await Case.findById(id)
       .populate("user", "name email")
       .populate("lawyer", "first_name last_name specialization")
+      .populate("tasks.assignedTo", "first_name last_name email")
+      .populate("notes.addedBy", "first_name last_name email")
       .exec();
 
     res.json(caseData);
@@ -124,6 +138,18 @@ exports.deleteCase = async (req, res, next) => {
 exports.getUserCases = async (req, res, next) => {
   const { id } = req.params;
   try {
+    const cases = await Case.find({ user: id, lawyer: null })
+      .populate("lawyer", "first_name last_name")
+      .exec();
+    res.json(cases);
+  } catch (error) {
+    console.error("Error fetching user cases:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+exports.getAllUserCases = async (req, res, next) => {
+  const { id } = req.params;
+  try {
     const cases = await Case.find({ user: id })
       .populate("lawyer", "first_name last_name")
       .exec();
@@ -133,6 +159,7 @@ exports.getUserCases = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 exports.getLawyerCases = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -172,6 +199,7 @@ exports.assignLawyer = async (req, res) => {
       });
     }
     lawyer.assignments.push({ clientId, caseId });
+
     sendNotification(
       clientId,
       "User",
@@ -253,6 +281,9 @@ exports.updateAssignment = async (req, res) => {
   await Case.findByIdAndUpdate(updatedAssignment.assignments.id(id).caseId, {
     lawyer: status === "Accepted" ? updatedAssignment._id : null,
   });
+  const lawyer = await Lawyer.findById(updatedAssignment._id);
+  lawyer.ongoingCases += 1;
+  lawyer.save();
 
   sendNotification(
     updatedAssignment.assignments.id(id).clientId,
@@ -264,4 +295,96 @@ exports.updateAssignment = async (req, res) => {
   );
 
   res.json(updatedAssignment);
+};
+exports.updateTask = async (req, res) => {
+  try {
+    const { caseId } = req.params;
+    const { id, text, startDate, endDate, assignTo, status, allDay } = req.body;
+    const updatedCase = await Case.findOneAndUpdate(
+      { _id: caseId, "tasks._id": id },
+      {
+        $set: {
+          "tasks.$.text": text,
+          "tasks.$.startDate": startDate,
+          "tasks.$.endDate": endDate,
+          "tasks.$.assignedTo": assignTo,
+          "tasks.$.status": status,
+          "tasks.$.allDay": allDay,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedCase);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.deleteTask = async (req, res) => {
+  const { caseId, taskId } = req.params;
+
+  try {
+    const updatedCase = await Case.findByIdAndUpdate(
+      caseId,
+      { $pull: { tasks: { _id: taskId } } },
+      { new: true }
+    );
+
+    res.status(200).json(updatedCase);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete task" });
+  }
+};
+
+exports.addTask = async (req, res) => {
+  const { caseId } = req.params;
+  const {
+    text,
+    assignedTo,
+    startDate,
+    endDate,
+    allDay = false,
+    description,
+  } = req.body;
+  console.log(req.body);
+
+  try {
+    const newTask = {
+      text,
+      assignedTo,
+      startDate,
+      endDate,
+      allDay,
+      status: "Pending",
+      description,
+    };
+
+    const updatedCase = await Case.findByIdAndUpdate(
+      caseId,
+      { $push: { tasks: newTask } },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCase) {
+      return res.status(404).json({ message: "Case not found" });
+    }
+
+    sendNotification(
+      updatedCase.user,
+      "User",
+      `New task added to case: ${updatedCase.case_title}`,
+      req.app.get("io")
+    );
+    sendNotification(
+      updatedCase.lawyer,
+      "Lawyer",
+      `New task added to case: ${updatedCase.case_title}`,
+      req.app.get("io")
+    );
+    res.status(201).json(updatedCase);
+  } catch (error) {
+    console.error("Error adding task:", error);
+    res.status(500).json({ message: "Failed to add task", error });
+  }
 };

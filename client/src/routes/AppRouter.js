@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import UserRouter from "./UserRouter";
 import AdminRouter from "./AdminRouter";
-
+import SchedulerPage from "../Scheduler/pages/SchedulerPage";
 import React from "react";
 import Administrative from "../Administrative/superPage/Administrative";
 import Dashboard from "../dashboard/components/Dashboard";
@@ -67,6 +67,16 @@ const router = createBrowserRouter(
               <Navigate to={"/"} />
             ) : (
               <Login />
+            )
+          }
+        />
+        <Route
+          path={"/scheduler/:id"}
+          element={
+            sessionStorage.getItem("user") || localStorage.getItem("user") ? (
+              <SchedulerPage />
+            ) : (
+              <Navigate to={"/login"} />
             )
           }
         />

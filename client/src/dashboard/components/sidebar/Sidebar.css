@@ -9,7 +9,7 @@
   position: sticky;
   top: 0;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
+  /* border-radius: 20px; */
 }
 
 .sidebar ul {

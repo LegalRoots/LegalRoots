@@ -33,7 +33,9 @@ const Notifications = ({ userId }) => {
           `/JusticeRoots/notifications/${userId}/${type}`
         );
         const data = await response.json();
+        console.log("Notifications", data);
         const reversedNotifications = data?.data?.notifications?.reverse();
+
         setNotifications(reversedNotifications);
         setUnreadCount(reversedNotifications?.filter((n) => !n.read).length);
         setLoading(false);

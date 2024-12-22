@@ -31,6 +31,21 @@ const lawyerSchema = new mongoose.Schema({
   specialization: {
     type: String,
     required: [true, "Specialization is required!"],
+    enum: {
+      values: [
+        "Corporate Law",
+        "Criminal Law",
+        "Family Law",
+        "Intellectual Property Law",
+        "Tax Law",
+        "Environmental Law",
+        "Immigration Law",
+        "Real Estate Law",
+        "Employment Law",
+        "Personal Injury Law",
+      ],
+      message: "{VALUE} is not a valid specialization",
+    },
   },
   practicing_certificate: {
     type: String,
@@ -66,19 +81,21 @@ const lawyerSchema = new mongoose.Schema({
     required: [true, "Please confirm your password"],
     validate: {
       validator: function (el) {
-        return el === this.password;
+        return this.isNew || this.isModified("password")
+          ? el === this.password
+          : true;
       },
       message: "Passwords are not the same!",
     },
   },
-  address: {
-    city: {
-      type: String,
-    },
-    street: {
-      type: String,
-    },
+
+  city: {
+    type: String,
   },
+  street: {
+    type: String,
+  },
+
   photo: {
     type: String,
     default: "default.png",
@@ -106,6 +123,61 @@ const lawyerSchema = new mongoose.Schema({
       },
     },
   ],
+  totalCases: {
+    type: Number,
+    default: 0,
+  },
+  closedCases: {
+    type: Number,
+    default: 0,
+  },
+  wonCases: {
+    type: Number,
+    default: 0,
+  },
+  lostCases: {
+    type: Number,
+    default: 0,
+  },
+  ongoingCases: {
+    type: Number,
+    default: 0,
+  },
+  clientReviews: [
+    {
+      clientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      rating: {
+        type: Number,
+        min: 1,
+        max: 5,
+        required: true,
+      },
+      feedback: String,
+      reviewedAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  yearsOfExperience: {
+    type: Number,
+    required: [true, "Years of experience is required!"],
+  },
+  achievements: [String],
+  additionalCertifications: [String],
+  paymentMethods: [String],
+  billingRate: {
+    type: Number,
+    required: false,
+  },
+  lastActive: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const assignmentSchema = new mongoose.Schema({
@@ -139,37 +211,6 @@ lawyerSchema.add({
 
 lawyerSchema.plugin(AutoIncrement, { inc_field: "lawyer_id" });
 
-lawyerSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined;
-  next();
-});
-
-lawyerSchema.pre("save", function (next) {
-  if (!this.isModified("password") || this.isNew) return next();
-  this.passwordChangedAt = Date.now() - 1000;
-  next();
-});
-
-lawyerSchema.methods.correctPassword = async function (
-  candidatePassword,
-  userPassword
-) {
-  return await bcrypt.compare(candidatePassword, userPassword);
-};
-
-lawyerSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
-  if (this.passwordChangedAt) {
-    const changedTimestamp = parseInt(
-      this.passwordChangedAt.getTime() / 1000,
-      10
-    );
-    return JWTTimestamp < changedTimestamp;
-  }
-  return false;
-};
-
 lawyerSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
   this.passwordResetToken = crypto
@@ -179,7 +220,29 @@ lawyerSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
-
+lawyerSchema.pre("save", function (next) {
+  if (this.isModified()) {
+    this.lastActive = Date.now();
+  }
+  next();
+});
+lawyerSchema.methods.calculateAverageRating = function () {
+  if (this.clientReviews.length > 0) {
+    const totalRating = this.clientReviews.reduce(
+      (acc, review) => acc + review.rating,
+      0
+    );
+    this.assessment = totalRating / this.clientReviews.length;
+  } else {
+    this.assessment = 0;
+  }
+};
+lawyerSchema.pre("save", function (next) {
+  if (this.isModified("clientReviews")) {
+    this.calculateAverageRating();
+  }
+  next();
+});
 const Lawyer = mongoose.model("Lawyer", lawyerSchema);
 
 module.exports = Lawyer;

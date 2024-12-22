@@ -11,6 +11,8 @@ import { AuthContext } from "../../shared/context/auth";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
+import { Autocomplete, TextField } from "@mui/material";
+
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 const PersonalInfo = ({
@@ -29,6 +31,8 @@ const PersonalInfo = ({
       setFieldValue("specialization", "");
       setFieldValue("practicing_certificate", "");
       setFieldValue("consultation_price", "");
+      setFieldValue("description", "");
+      setFieldValue("years_of_experience", "");
     }
 
     handleChange(event);
@@ -136,18 +140,42 @@ const PersonalInfo = ({
             touched={touched}
             error={errors.cv && touched.cv}
           />
-          <Input
+          <Autocomplete
+            options={[
+              "Corporate Law",
+              "Criminal Law",
+              "Family Law",
+              "Intellectual Property Law",
+              "Tax Law",
+              "Environmental Law",
+              "Immigration Law",
+              "Real Estate Law",
+              "Employment Law",
+              "Personal Injury Law",
+            ]}
             value={values.specialization}
-            onChange={handleChange}
-            id="specialization"
-            type="text"
-            labelText="Specialization"
-            placeholder="Enter your specialization"
+            onChange={(event, newValue) => {
+              console.log(errors);
+              setFieldValue("specialization", newValue);
+            }}
             onBlur={handleBlur}
-            errors={errors}
-            touched={touched}
-            error={errors.specialization && touched.specialization}
+            renderInput={(params) => (
+              <TextField
+                sx={{ marginTop: 1, padding: 0 }}
+                {...params}
+                id="specialization"
+                label="Specialization"
+                placeholder="Select your specialization"
+                error={Boolean(errors.specialization && touched.specialization)}
+                helperText={
+                  errors.specialization && touched.specialization
+                    ? errors.specialization
+                    : ""
+                }
+              />
+            )}
           />
+
           <Input
             onChange={(event) => {
               const file = event.currentTarget.files[0];
@@ -175,6 +203,30 @@ const PersonalInfo = ({
             errors={errors}
             touched={touched}
             error={errors.consultation_price && touched.consultation_price}
+          />
+
+          <Input
+            value={values.description}
+            onChange={handleChange}
+            id="description"
+            type="text"
+            labelText="Description"
+            placeholder="Enter your description"
+            onBlur={handleBlur}
+            errors={errors}
+            touched={touched}
+            error={errors.description && touched.description}
+          />
+          <Input
+            value={values.years_of_experience}
+            onChange={handleChange}
+            id="years_of_experience"
+            type="number"
+            labelText="Years of Experience"
+            onBlur={handleBlur}
+            errors={errors}
+            touched={touched}
+            error={errors.years_of_experience && touched.years_of_experience}
           />
         </div>
       )}
@@ -291,6 +343,8 @@ const Signup = () => {
       formData.append("city", values.city);
       formData.append("street", values.street);
       formData.append("userType", values.userType);
+      formData.append("description", values.description);
+      formData.append("years_of_experience", values.years_of_experience);
       console.log("formData", formData);
       if (values.cv) {
         formData.append("cv", values.cv);
@@ -359,6 +413,8 @@ const Signup = () => {
       specialization: "",
       practicing_certificate: "",
       consultation_price: "",
+      description: "",
+      years_of_experience: "",
     },
     validationSchema: SignUpSchema,
     validateOnChange: true,

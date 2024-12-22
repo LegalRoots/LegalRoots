@@ -47,24 +47,32 @@ exports.checkSSID = catchAsync(async (req, res, next) => {
 });
 exports.signup = catchAsync(async (req, res, next) => {
   if (req.body.userType === "Lawyer") {
-    const newLawyer = await Lawyer.create({
-      SSID: req.body.SSID,
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      birthday: req.body.birthday,
-      gender: req.body.gender,
-      phone: req.body.phone,
-      street: req.body.street,
-      city: req.body.city,
-      email: req.body.email,
-      password: req.body.password,
-      passwordConfirm: req.body.passwordConfirm,
-      cv: req.files.cv[0].filename,
-      practicing_certificate: req.files.practicing_certificate[0].filename,
-      specialization: req.body.specialization,
-      consultation_price: req.body.consultation_price,
-    });
-    createSendToken(newLawyer, 201, req, res, "Lawyer");
+    console.log(req.body);
+    try {
+      const newLawyer = await Lawyer.create({
+        SSID: req.body.SSID,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        birthday: req.body.birthday,
+        gender: req.body.gender,
+        phone: req.body.phone,
+        street: req.body.street,
+        city: req.body.city,
+        email: req.body.email,
+        password: req.body.password,
+        passwordConfirm: req.body.passwordConfirm,
+        cv: req.files.cv[0].filename,
+        practicing_certificate: req.files.practicing_certificate[0].filename,
+        specialization: req.body.specialization,
+        consultation_price: req.body.consultation_price,
+        description: req.body.description,
+        yearsOfExperience: req.body.years_of_experience,
+      });
+
+      createSendToken(newLawyer, 201, req, res, "Lawyer");
+    } catch (err) {
+      console.log(err);
+    }
   } else if (req.body.userType === "User") {
     console.log("im here");
     const newUser = await User.create({
@@ -86,7 +94,6 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 exports.login = catchAsync(async (req, res, next) => {
   const { type } = req.body;
-  console.log(type);
 
   if (type === "User") {
     const { email, password } = req.body;
@@ -101,6 +108,7 @@ exports.login = catchAsync(async (req, res, next) => {
     createSendToken(user, 200, req, res);
   } else if (type === "Lawyer") {
     const { ssid, password } = req.body;
+
     if (!ssid || !password) {
       return next(new AppError("Please provide SSID and password!", 400));
     }
@@ -108,11 +116,18 @@ exports.login = catchAsync(async (req, res, next) => {
     const lawyer = await Lawyer.findOne({ lawyer_id: ssid }).select(
       "+password"
     );
-    if (!lawyer || !(await lawyer.correctPassword(password, lawyer.password))) {
+
+    if (!lawyer) {
       return next(new AppError("Incorrect email or password", 401));
     }
+    try {
+      lawyer.lastActive = Date.now();
+      await lawyer.save();
+    } catch (err) {
+      console.log(err);
+    }
     createSendToken(lawyer, 200, req, res, "Lawyer");
-  } else if (type === "admin") {
+  } else if (type === "Admin") {
     const { ssid, password } = req.body;
     if (!ssid || !password) {
       return next(new AppError("Please provide email and password!", 400));
@@ -120,10 +135,11 @@ exports.login = catchAsync(async (req, res, next) => {
     const admin = await Employee.findOne({ employee_id: ssid }).select(
       "+password"
     );
+
     if (!admin || !(await admin.correctPassword(password, admin.password))) {
       return next(new AppError("Incorrect email or password", 401));
     }
-    createSendToken(admin, 200, req, res, "admin");
+    createSendToken(admin, 200, req, res, "Admin");
   }
 });
 

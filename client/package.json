@@ -8,6 +8,7 @@
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.9",
     "@mui/material": "^6.1.9",
+    "@mui/styles": "^6.2.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -15,6 +16,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "devextreme": "^24.2.3",
+    "devextreme-react": "^24.2.3",
     "formdata-polyfill": "^4.0.10",
     "formik": "^2.4.6",
     "framer-motion": "^11.11.8",
@@ -31,7 +34,6 @@
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0"
   },
-  "proxy": "http://localhost:5000",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

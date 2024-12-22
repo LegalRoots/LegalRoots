@@ -40,9 +40,10 @@ const CaseCard = () => {
     const fetchCases = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/JusticeRoots/cases/user/${user._id}`
+          `http://localhost:5000/JusticeRoots/cases/user/${user._id}/all`
         );
         setCases(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching cases:", error);
       }

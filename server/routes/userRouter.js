@@ -3,7 +3,23 @@ const userController = require("./../controllers/userController");
 const authController = require("./../controllers/authController");
 const router = express.Router();
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const path = require("path");
+
+// Configure multer storage to keep file extension
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // Set the upload directory
+  },
+  filename: function (req, file, cb) {
+    // Extract the file extension
+    const extname = path.extname(file.originalname);
+    // Create a unique filename with the extension
+    cb(null, Date.now() + extname);
+  },
+});
+
+// Set up multer with the custom storage configuration
+const upload = multer({ storage: storage });
 
 // Example middleware for a route
 router.post(
@@ -14,7 +30,7 @@ router.post(
   ]),
   authController.signup
 );
-// router.post("/signup", authController.signup);
+
 router.post("/login", authController.login);
 router.put("/updateProfile", userController.updateProfile);
 router.post("/check-email", authController.checkEmail);
