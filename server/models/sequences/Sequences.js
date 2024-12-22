@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const SequenceScehma = new mongoose.Schema({
-  _id: String, //name of sequence
-  sequenceValue: Number, // Current sequence value
+  id: { type: String, required: true, unique: true },
+  seq: { type: Number, default: 0 },
 });
 
 const Sequence = mongoose.model("Sequence", SequenceScehma);

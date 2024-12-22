@@ -1,18 +1,9 @@
 import * as Yup from "yup";
 
-const passwordValidation = Yup.string()
-  .required("Password is required")
-  .min(8, "Password must be at least 8 characters long")
-  .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-  .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-  .matches(/[0-9]/, "Password must contain at least one number")
-  .matches(
-    /[^a-zA-Z0-9]/,
-    "Password must contain at least one special character"
-  );
+const passwordValidation = Yup.string().required("Password is required");
 const checkEmailExists = async (email) => {
   const response = await fetch(
-    `http://localhost:3000/JusticeRoots/users/check-email`,
+    `http://localhost:5000/JusticeRoots/users/check-email`,
     {
       method: "POST",
       headers: {
@@ -26,7 +17,7 @@ const checkEmailExists = async (email) => {
 };
 const checkSSIDExists = async (ssid) => {
   const response = await fetch(
-    `http://localhost:3000/JusticeRoots/users/check-SSID`,
+    `http://localhost:5000/JusticeRoots/users/check-SSID`,
     {
       method: "POST",
       headers: {
@@ -71,7 +62,7 @@ export const SignUpSchema = Yup.object().shape({
   street: Yup.string().required("Street is required"),
   userType: Yup.string().required("User Type is required"),
   cv: Yup.string().when("userType", {
-    is: "lawyer",
+    is: "Lawyer",
     then: (schema) =>
       Yup.mixed()
         .required()
@@ -79,8 +70,8 @@ export const SignUpSchema = Yup.object().shape({
           return value && value.type === "application/pdf";
         }),
   }),
-  practicingCertificate: Yup.string().when("userType", {
-    is: "lawyer",
+  practicing_certificate: Yup.string().when("userType", {
+    is: "Lawyer",
     then: (schema) =>
       Yup.mixed()
         .required()
@@ -90,16 +81,12 @@ export const SignUpSchema = Yup.object().shape({
   }),
 
   specialization: Yup.string().when("userType", {
-    is: "lawyer",
+    is: "Lawyer",
     then: (Yup) => Yup.required(),
   }),
 
-  consultationPrice: Yup.string().when("userType", {
-    is: "lawyer",
-    then: (Yup) => Yup.required(),
-  }),
-  assessment: Yup.string().when("userType", {
-    is: "lawyer",
+  consultation_price: Yup.string().when("userType", {
+    is: "Lawyer",
     then: (Yup) => Yup.required(),
   }),
 });

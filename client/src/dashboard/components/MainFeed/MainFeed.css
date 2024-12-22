@@ -1,0 +1,87 @@
+.main-feed {
+  display: flex;
+  flex-direction: column;
+  width: 60vw;
+  justify-content: center;
+  align-items: center;
+}
+.main-feed form {
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 3rem;
+}
+.main-feed .newPost::after {
+  content: "";
+  width: 100%;
+  height: 1px;
+  background-color: var(--gold-lighter);
+  margin-top: 1rem;
+  bottom: 0px;
+  position: absolute;
+}
+
+.main-feed .new-post-textarea {
+  width: 100%;
+  height: auto;
+  border: none;
+  border-radius: 5px;
+  text-wrap: wrap;
+  font-size: 1rem;
+  resize: none;
+}
+.main-feed .new-post-textarea:focus {
+  outline: none;
+}
+.new-post-user-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+.newPost {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  position: relative;
+  width: 100%;
+}
+.new_footer label {
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: var(--gold-lighter);
+  border-radius: 10px;
+  padding: 8px 5px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: fit-content;
+}
+.new_footer label::after {
+  content: "Add Image";
+  font-size: 0.8rem;
+
+  margin-left: 0.5rem;
+}
+.new_footer {
+  display: flex;
+  width: 100%;
+}
+.new_footer button {
+  margin-left: auto;
+  background-color: var(--gold-lighter);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: fit-content;
+}

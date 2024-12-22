@@ -8,58 +8,48 @@ import {
 import Login from "./Authentication/pages/Login";
 import Signup from "./Authentication/pages/Signup";
 import "./App.css";
+import { useContext } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "./shared/components/Navigation/Navbar";
 import LandingPage from "./Landing/pages/LandingPage";
 import { AuthProvider } from "./shared/context/auth";
-import Dashboard from "./dashboard/pages/Dashboard";
+import Dashboard from "./dashboard/pages/UserDashboard";
 import Employees from "./Administrative/pages/Employees/Employees";
 import Administrative from "./Administrative/superPage/Administrative";
-import OnlineCourt from "./OnlineCourts/pages/OnlineCourt/OnlineCourt";
+import { AuthContext } from "./shared/context/auth";
+import router from "./routes/AppRouter";
+import { HistoryContext, history } from "./shared/context/historyContext";
+import { RouterProvider } from "react-router-dom";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [userType, setUserType] = useState("administrative");
-  let routes;
-
-  if (isLoggedIn && userType === "administrative") {
-    routes = (
-      <Routes>
-        <Route path="/" Component={LandingPage} />
-        <Route path="/admin/*" element={<Administrative />} />
-        <Route path="/online/court" Component={OnlineCourt} />
-        <Route path="/login" Component={Login} />
-        <Route path="/signup" Component={Signup} />
-      </Routes>
-    );
-  } else if (isLoggedIn) {
-    routes = (
-      <Routes>
-        <Route path="/" element={<h1>Account</h1>} />
-        <Route path="/*" element={<Navigate to="/" />} />
-      </Routes>
-    );
-  } else {
-    routes = (
-      <Routes>
-        <Route path="/" Component={LandingPage} />
-        <Route path="/admin/*" element={<Administrative />} />
-        <Route path="/login" Component={Login} />
-        <Route path="/signup" Component={Signup} />
-        <Route path="/dashboard" Component={Dashboard} />
-        <Route path="/*" element={<Navigate to="/" />} />
-      </Routes>
-    );
-  }
+  const theme = createTheme({
+    palette: {
+      mode: "light",
+      primary: { main: "#ffbf00" },
+      secondary: { main: "#f4a261" },
+      background: { default: "#ffffff", paper: "#f5f5f5" },
+      text: { primary: "#000000", secondary: "#555555" },
+      action: { active: "#ffb200", hover: "#eeeeee", selected: "#e3f2fd" },
+    },
+    typography: {
+      fontFamily: "'Roboto', 'Arial', sans-serif",
+      h1: { fontWeight: 600, fontSize: "3rem" },
+      h2: { fontWeight: 500, fontSize: "2.5rem" },
+      h3: { fontWeight: 400, fontSize: "2rem" },
+      body1: { fontWeight: 400, fontSize: "1rem" },
+    },
+  });
 
   return (
-    <AuthProvider>
-      <ChakraProvider>
-        <Router>
-          <Navbar />
-          {routes}
-        </Router>
-      </ChakraProvider>
-    </AuthProvider>
+    <ChakraProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <HistoryContext.Provider value={history}>
+          <RouterProvider router={router} />
+        </HistoryContext.Provider>
+      </ThemeProvider>
+    </ChakraProvider>
   );
 }
 

@@ -8,19 +8,13 @@ import Select from "../../shared/components/FormElements/Select";
 import Button from "../../shared/components/Button/Button";
 import { useToast } from "@chakra-ui/react";
 import { AuthContext } from "../../shared/context/auth";
-import {
-  Step,
-  StepDescription,
-  StepIcon,
-  StepIndicator,
-  StepNumber,
-  StepSeparator,
-  StepStatus,
-  StepTitle,
-  Stepper,
-  Box,
-} from "@chakra-ui/react";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import { Autocomplete, TextField } from "@mui/material";
 
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 const PersonalInfo = ({
   values,
   errors,
@@ -32,18 +26,20 @@ const PersonalInfo = ({
   const handleUserTypeChange = (event) => {
     const { value } = event.target;
 
-    if (value !== "lawyer") {
+    if (value !== "Lawyer") {
       setFieldValue("cv", "");
       setFieldValue("specialization", "");
-      setFieldValue("practicingCertificate", "");
-      setFieldValue("consultationPrice", "");
+      setFieldValue("practicing_certificate", "");
+      setFieldValue("consultation_price", "");
+      setFieldValue("description", "");
+      setFieldValue("years_of_experience", "");
     }
 
     handleChange(event);
   };
   return (
     <div className="personal-data">
-      <div className={values.userType === "lawyer" ? "col" : "col-span"}>
+      <div className={values.userType === "Lawyer" ? "col" : "col-span"}>
         <Input
           value={values.SSID}
           onChange={handleChange}
@@ -115,8 +111,8 @@ const PersonalInfo = ({
           name="userType"
           label="User Type"
           options={[
-            { value: "lawyer", label: "Lawyer" },
-            { value: "user", label: "Normal User" },
+            { value: "Lawyer", label: "Lawyer" },
+            { value: "User", label: "Normal User" },
           ]}
           value={values.userType}
           onChange={(event) => {
@@ -128,12 +124,11 @@ const PersonalInfo = ({
         />
       </div>
 
-      {values.userType === "lawyer" && (
+      {values.userType === "Lawyer" && (
         <div className="col">
           <Input
             onChange={(event) => {
               const file = event.currentTarget.files[0];
-
               setFieldValue("cv", file);
             }}
             id="cv"
@@ -145,24 +140,48 @@ const PersonalInfo = ({
             touched={touched}
             error={errors.cv && touched.cv}
           />
-          <Input
+          <Autocomplete
+            options={[
+              "Corporate Law",
+              "Criminal Law",
+              "Family Law",
+              "Intellectual Property Law",
+              "Tax Law",
+              "Environmental Law",
+              "Immigration Law",
+              "Real Estate Law",
+              "Employment Law",
+              "Personal Injury Law",
+            ]}
             value={values.specialization}
-            onChange={handleChange}
-            id="specialization"
-            type="text"
-            labelText="Specialization"
-            placeholder="Enter your specialization"
+            onChange={(event, newValue) => {
+              console.log(errors);
+              setFieldValue("specialization", newValue);
+            }}
             onBlur={handleBlur}
-            errors={errors}
-            touched={touched}
-            error={errors.specialization && touched.specialization}
+            renderInput={(params) => (
+              <TextField
+                sx={{ marginTop: 1, padding: 0 }}
+                {...params}
+                id="specialization"
+                label="Specialization"
+                placeholder="Select your specialization"
+                error={Boolean(errors.specialization && touched.specialization)}
+                helperText={
+                  errors.specialization && touched.specialization
+                    ? errors.specialization
+                    : ""
+                }
+              />
+            )}
           />
+
           <Input
             onChange={(event) => {
               const file = event.currentTarget.files[0];
-              setFieldValue("practicingCertificate", file);
+              setFieldValue("practicing_certificate", file);
             }}
-            id="practicingCertificate"
+            id="practicing_certificate"
             type="file"
             labelText="Practicing Certificate (PDF)"
             accept="application/pdf"
@@ -170,32 +189,44 @@ const PersonalInfo = ({
             errors={errors}
             touched={touched}
             error={
-              errors.practicingCertificate && touched.practicingCertificate
+              errors.practicing_certificate && touched.practicing_certificate
             }
           />
           <Input
-            value={values.consultationPrice}
+            value={values.consultation_price}
             onChange={handleChange}
-            id="consultationPrice"
+            id="consultation_price"
             type="number"
             labelText="Consultation Price"
             placeholder="Enter your consultation price"
             onBlur={handleBlur}
             errors={errors}
             touched={touched}
-            error={errors.consultationPrice && touched.consultationPrice}
+            error={errors.consultation_price && touched.consultation_price}
           />
+
           <Input
-            value={values.assessment}
+            value={values.description}
             onChange={handleChange}
-            id="assessment"
+            id="description"
             type="text"
-            labelText="Assessment"
-            placeholder="Enter your assessment"
+            labelText="Description"
+            placeholder="Enter your description"
             onBlur={handleBlur}
             errors={errors}
             touched={touched}
-            error={errors.assessment && touched.assessment}
+            error={errors.description && touched.description}
+          />
+          <Input
+            value={values.years_of_experience}
+            onChange={handleChange}
+            id="years_of_experience"
+            type="number"
+            labelText="Years of Experience"
+            onBlur={handleBlur}
+            errors={errors}
+            touched={touched}
+            error={errors.years_of_experience && touched.years_of_experience}
           />
         </div>
       )}
@@ -297,28 +328,52 @@ const Signup = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const steps = ["Personal Info", "Contact Info", "Account Info"];
-  const { login } = useContext(AuthContext);
-
   const onSubmit = async (values, actions) => {
     try {
+      const formData = new FormData();
+      formData.append("SSID", values.SSID);
+      formData.append("first_name", values.first_name);
+      formData.append("last_name", values.last_name);
+      formData.append("email", values.email);
+      formData.append("birthday", values.birthday);
+      formData.append("password", values.password);
+      formData.append("passwordConfirm", values.passwordConfirm);
+      formData.append("phone", values.phone);
+      formData.append("gender", values.gender);
+      formData.append("city", values.city);
+      formData.append("street", values.street);
+      formData.append("userType", values.userType);
+      formData.append("description", values.description);
+      formData.append("years_of_experience", values.years_of_experience);
+      console.log("formData", formData);
+      if (values.cv) {
+        formData.append("cv", values.cv);
+      }
+      if (values.practicing_certificate) {
+        formData.append(
+          "practicing_certificate",
+          values.practicing_certificate
+        );
+      }
+      if (values.specialization) {
+        formData.append("specialization", values.specialization);
+      }
+      if (values.consultation_price) {
+        formData.append("consultation_price", values.consultation_price);
+      }
+
       const response = await fetch(
-        "http://localhost:3000/JusticeRoots/users/signup",
+        "http://localhost:5000/JusticeRoots/users/signup",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
+          body: formData, // Use FormData object
         }
       );
 
       if (!response.ok) {
         throw new Error("Signup failed");
       }
-      console.log("TEST");
-      const user = await response.json();
-      login(user);
-      navigate("/dashboard");
+      navigate("/login");
       toast({
         title: "Account created.",
         description: "You have been registered successfully",
@@ -356,9 +411,10 @@ const Signup = () => {
       userType: "",
       cv: "",
       specialization: "",
-      practicingCertificate: "",
-      consultationPrice: "",
-      assessment: "",
+      practicing_certificate: "",
+      consultation_price: "",
+      description: "",
+      years_of_experience: "",
     },
     validationSchema: SignUpSchema,
     validateOnChange: true,
@@ -395,11 +451,11 @@ const Signup = () => {
         !errors.SSID &&
         !errors.birthday &&
         !errors.gender &&
-        !errors.assessment &&
+        !errors.userType &&
         !errors.cv &&
         !errors.specialization &&
-        !errors.practicingCertificate &&
-        !errors.consultationPrice &&
+        !errors.practicing_certificate &&
+        !errors.consultation_price &&
         touched.first_name &&
         touched.last_name &&
         touched.SSID &&
@@ -428,44 +484,58 @@ const Signup = () => {
     );
   };
 
+  const handleReset = () => {
+    setActiveStep(0);
+  };
+
   return (
     <div className="signup-page">
-      <Stepper className="stepper" colorScheme="yellow" index={activeStep}>
-        {steps.map((step, index) => (
-          <Step key={index}>
-            <StepIndicator>
-              <StepStatus
-                complete={<StepIcon />}
-                incomplete={<StepNumber />}
-                active={<StepNumber />}
-              />
-            </StepIndicator>
-
-            <Box flexShrink="0">
-              <StepTitle>{step}</StepTitle>
-              <StepDescription>{step} Details</StepDescription>
+      <Box sx={{ width: "100%", padding: 4 }}>
+        <Stepper activeStep={activeStep}>
+          {steps.map((step, index) => {
+            const stepProps = {};
+            const labelProps = {};
+            return (
+              <Step key={step} {...stepProps}>
+                <StepLabel {...labelProps}>{step}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
+        {activeStep === steps.length ? (
+          <React.Fragment>
+            <Typography sx={{ mt: 2, mb: 1 }}>
+              All steps completed - you&apos;re finished
+            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+              <Box sx={{ flex: "1 1 auto" }} />
+              <Button onClick={handleReset}>Reset</Button>
             </Box>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <Typography sx={{ mt: 2, mb: 1, textAlign: "center" }}>
+              Step {activeStep + 1}
+            </Typography>
+          </React.Fragment>
+        )}
+      </Box>
 
-            <StepSeparator />
-          </Step>
-        ))}
-      </Stepper>
-      {activeStep === 0 && <h1>Step 1: Personal Information</h1>}
-      {activeStep === 1 && <h1>Step 2: Contact Information</h1>}
-      {activeStep === 2 && <h1>Step 3: Account Information</h1>}
       <div className="middle">
-        <form onSubmit={handleSubmit} autoComplete="off">
+        <form
+          onSubmit={handleSubmit}
+          autoComplete="off"
+          encType="multipart/form-data"
+        >
           {activeStep === 0 && (
-            <>
-              <PersonalInfo
-                values={values}
-                errors={errors}
-                touched={touched}
-                handleChange={handleChange}
-                handleBlur={handleBlur}
-                setFieldValue={setFieldValue}
-              />
-            </>
+            <PersonalInfo
+              values={values}
+              errors={errors}
+              touched={touched}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              setFieldValue={setFieldValue}
+            />
           )}
           {activeStep === 1 && (
             <AddressInfo

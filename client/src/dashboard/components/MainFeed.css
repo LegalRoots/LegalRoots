@@ -1,0 +1,16 @@
+.main-feed {
+  margin-bottom: 20px;
+}
+
+.post-card {
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.post-card strong {
+  display: block;
+  margin-bottom: 5px;
+}

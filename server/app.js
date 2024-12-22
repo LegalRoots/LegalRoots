@@ -8,9 +8,14 @@ const app = express();
 const AppError = require("./utils/appError");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const postsRouter = require("./routes/postsRouter");
+const lawyersRouter = require("./routes/lawyersRouter");
+const casesRouter = require("./routes/casesRouter");
+const notificationsRouter = require("./routes/notificationsRouter");
 const userRouter = require("./routes/userRouter");
+
 const adminRouter = require("./routes/administrative/administrativeRouter");
-const casesRouter = require("./routes/administrative/casesRouter");
+const casesRouterAydi = require("./routes/administrative/casesRouter");
 const courtsRouter = require("./routes/administrative/courtsRouter");
 const witnessRouter = require("./routes/administrative/witnessRouter");
 const evidenceRouter = require("./routes/administrative/evidenceRouter");
@@ -25,14 +30,19 @@ app.use(bodyParser.json());
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(cookieParser());
-
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
 app.use("/JusticeRoots/users", userRouter);
+
+app.use("/JusticeRoots/lawyers", lawyersRouter);
+app.use("/JusticeRoots/notifications", notificationsRouter);
+app.use("/JusticeRoots/posts", postsRouter);
+app.use("/JusticeRoots/cases", casesRouter);
 app.use("/admin", adminRouter);
-app.use("/admin", casesRouter);
+app.use("/admin", casesRouterAydi);
 app.use("/admin", courtsRouter);
 app.use("/admin", witnessRouter);
 app.use("/admin", evidenceRouter);

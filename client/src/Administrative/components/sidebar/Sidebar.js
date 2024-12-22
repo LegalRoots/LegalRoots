@@ -1,7 +1,10 @@
 import "./Sidebar.css";
 import logo from "../../../shared/assets/logo.png";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../../shared/context/auth";
+import { useContext } from "react";
 const Sidebar = () => {
+  const { logout } = useContext(AuthContext);
   return (
     <div className="sidebar-container">
       <div className="sidebar-logo">
@@ -36,7 +39,7 @@ const Sidebar = () => {
       </div>
       <div className="sidebar-links__logout">
         <Link to="/">
-          <p>Logout</p>
+          <p onClick={logout}>Logout</p>
         </Link>
       </div>
     </div>
