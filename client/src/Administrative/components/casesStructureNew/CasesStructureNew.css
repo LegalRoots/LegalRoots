@@ -1,0 +1,132 @@
+.casesStructureNew-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+
+  padding: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.casesStructureNew-container > form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  gap: 1rem;
+}
+
+.casesStructureNew-container > form div:nth-child(3) {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  gap: 1rem;
+}
+.casesStructureNew-container-fields {
+  flex: 1;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 10px;
+  overflow: hidden;
+  animation: casesStructureNew-container-fields-grow 300ms linear forwards;
+}
+
+@keyframes casesStructureNew-container-fields-grow {
+  from {
+    height: 20%;
+    padding: 0rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  to {
+    height: 100%;
+    padding: 1rem;
+  }
+}
+
+.casesStructureNew-container-fields > header {
+  width: 100%;
+}
+
+.casesStructureNew-container-fields > header h2 {
+  width: fit-content;
+  position: relative;
+  font-size: 1.3rem;
+}
+
+.casesStructureNew-container-fields > header h2:after {
+  content: "";
+  width: 120%;
+  height: 3px;
+  position: absolute;
+  background-color: var(--black);
+  bottom: -5px;
+  left: 0px;
+  border-radius: 10px;
+}
+
+.casesStructureNew-container-fields > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0.5rem;
+
+  margin-top: 1rem;
+}
+
+.casesStructureNew-field {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  padding: 0.3rem;
+}
+
+.casesStructureNew-field > div:nth-child(1) {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.casesStructureNew-field > div:nth-child(1) span {
+  color: red;
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+.casesStructureNew-field > div {
+  flex: 1;
+}
+
+.casesStructureNew-field > .casesStructureNew-field-normal {
+  flex: 0;
+  cursor: pointer;
+  color: red;
+}
+
+.casesStructureNew-field > .casesStructureNew-field-common {
+  flex: 0;
+  cursor: pointer;
+  color: #aaa;
+}
+
+.casesStructureNew-field p {
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+}

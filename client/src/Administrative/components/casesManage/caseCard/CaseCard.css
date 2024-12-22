@@ -1,0 +1,32 @@
+.admin-assigned-case-card {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 600px;
+  box-shadow: 1px 1px 5px #aaa;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  animation: caseview-elements 500ms ease-in forwards;
+}
+
+.admin-assigned-case-card > div {
+  padding: 0rem;
+}
+
+.admin-assigned-case-card-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+@media only screen and (max-width: 670px) {
+  .admin-assigned-case-card {
+    width: 420px;
+  }
+}

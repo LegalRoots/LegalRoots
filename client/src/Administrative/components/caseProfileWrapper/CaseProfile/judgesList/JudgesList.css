@@ -1,0 +1,51 @@
+.admin-judgeslist-container {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  gap: 1rem;
+  width: 100%;
+}
+
+.admin-judgeslist-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-judgeslist-cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+}
+
+.admin-judgeslist-cards .judge-card {
+  background-color: #fff;
+  color: black;
+  width: 230px;
+  height: 250px;
+  gap: 1.5rem;
+}
+
+.admin-judgeslist-container button {
+  transition: 0.5s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: rgba(0, 0, 0, 0.8);
+  background-color: var(--black);
+  color: white;
+}
+
+.admin-judgeslist-container button:nth-child(1):hover {
+  box-shadow: none;
+  background-color: rgba(255, 0, 0, 0.7);
+}
+
+.admin-judgeslist-container button:nth-child(2):hover {
+  box-shadow: none;
+  background-color: rgba(0, 200, 0, 0.7);
+}

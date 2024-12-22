@@ -11,7 +11,13 @@ const Card = (props) => {
         <p>{props.job}</p>
       </div>
       <div className="judge-card__actions">
-        <p id={props.id}>details</p>
+        {props.action !== "details" ? (
+          <p id={props.id} onClick={props.actionHandler}>
+            {props.action}
+          </p>
+        ) : (
+          <p id={props.id}>details</p>
+        )}
       </div>
     </div>
   );

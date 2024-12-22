@@ -1,0 +1,103 @@
+.caseTypePage-background {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 100vh;
+
+  z-index: 30;
+}
+
+.caseTypePage-container {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  background-color: #fff;
+
+  height: 100vh;
+  width: 50vw;
+  z-index: 50;
+  padding: 2rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1rem;
+  border-radius: 20px 0px 0px 20px;
+
+  animation: caseTypePage-container-slide 600ms ease-out forwards;
+}
+
+@keyframes caseTypePage-container-slide {
+  from {
+    width: 0vw;
+    padding: 0rem;
+  }
+  to {
+    width: 50vw;
+    padding: 2rem;
+  }
+}
+
+.caseTypePage-container * {
+  animation: caseTypePage-container-fade 400ms ease-out forwards;
+}
+
+@keyframes caseTypePage-container-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.caseTypePage-container__close {
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.caseTypePage-container > header {
+  width: 100%;
+}
+
+.caseTypePage-container > header h2 {
+  width: fit-content;
+  position: relative;
+  font-size: 1.3rem;
+}
+
+.caseTypePage-container > header h2:after {
+  content: "";
+  width: 120%;
+  height: 3px;
+  position: absolute;
+  background-color: var(--black);
+  bottom: -5px;
+  left: 0px;
+  border-radius: 10px;
+}
+
+.caseTypePage-fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.caseTypePage-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.caseTypePage-buttons button {
+  font-size: 14px;
+}

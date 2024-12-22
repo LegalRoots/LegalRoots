@@ -99,7 +99,7 @@ const JudgesData = () => {
             element.third_name +
             " " +
             element.last_name,
-          court_name: element.court_name,
+          court_name: element.court_name.name,
           email: element.email,
           city: element.address.city,
         },

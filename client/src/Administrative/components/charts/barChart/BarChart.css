@@ -1,0 +1,13 @@
+.barchart-container {
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.barchart-container #myChart {
+  width: 100% !important;
+  height: auto !important;
+}
