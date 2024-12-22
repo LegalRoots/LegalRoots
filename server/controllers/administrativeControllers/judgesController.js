@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const Judge = require("../../models/Judge");
+const Judge = require("../../models/administrative/Judge");
+const CourtBranch = require("../../models/administrative/courtBranch");
 const getNextIdValue = require("../SequencesController/SequencesController");
 
 const url = process.env.MONGODB_URI;
@@ -26,13 +27,24 @@ const addJudge = async (req, res, next) => {
     req.body.phone &&
     req.body.email &&
     req.body.password &&
-    req.body.court_type &&
     req.body.court_name &&
     req.body.qualifications &&
     req.body.experience
   ) {
+    const courtBranch = await CourtBranch.findById(req.body.court_name);
+
+    if (!courtBranch) {
+      res.status(400).json({ data: "court not found" });
+    }
+
     let judge_id = await getNextIdValue("employeeId");
     judge_id = judge_id.toString();
+
+    const pp_photo = req.files["pp_photo"] ? req.files["pp_photo"][0] : [];
+    const id_photo = req.files["id_photo"] ? req.files["id_photo"][0] : [];
+    const judge_photo = req.files["judge_photo"]
+      ? req.files["judge_photo"][0]
+      : [];
 
     const judge = new Judge({
       judge_id: judge_id,
@@ -47,33 +59,50 @@ const addJudge = async (req, res, next) => {
       phone: req.body.phone,
       email: req.body.email,
       password: req.body.password,
-      court_type: req.body.court_type,
       court_name: req.body.court_name,
       qualifications: req.body.qualifications,
       experience: req.body.experience,
       judge_photo: req.files["photo"][0]?.buffer,
-      id_photo: req.files["idPhoto"][0]?.buffer,
-      pp_photo: req.files["ppPhoto"][0]?.buffer,
+      id_photo: id_photo,
+      pp_photo: pp_photo,
       isValid: true,
     });
     const result = await judge.save();
     res.json(result);
   } else {
-    res.json({ data: "mising, some fields" });
+    res.status(400).json({ data: "mising, some fields" });
   }
 };
 
 const getJudges = async (req, res, next) => {
-  const result = await Judge.find()
-    .select("-judge_photo -id_photo -pp_photo")
-    .limit(100)
-    .exec();
+  try {
+    const result = await Judge.find()
+      .select("-judge_photo -id_photo -pp_photo")
+      .limit(100)
+      .populate("court_name")
+      .exec();
 
-  res.json(result);
+    if (result.lenth === 0) {
+      res.status(404).json({ message: "no judges found" });
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: "internal server error" }, error);
+  }
 };
 
 const getJudgeById = async (req, res, next) => {
-  const result = await Judge.findOne({ judge_id: req.params.id }).exec();
+  if (!req.params.id) {
+    return res.status(400).json({ message: "id not found" });
+  }
+
+  const result = await Judge.findOne({ judge_id: req.params.id })
+    .populate("court_name")
+    .exec();
+
+  if (!result) {
+    return res.status(404).json({ message: "judge not found" });
+  }
 
   const judge_photo = result.judge_photo?.toString("base64");
   const id_photo = result.id_photo?.toString("base64");
@@ -96,6 +125,23 @@ const getJudgeById = async (req, res, next) => {
   res.json(judge);
 };
 
+const getJudgesByCourtId = async (req, res, next) => {
+  if (!req.params.id) {
+    return res.status(400).json({ message: "id not found" });
+  }
+
+  const result = await Judge.find({ court_name: req.params.id })
+    .select("-judge_photo -id_photo -pp_photo")
+    .populate("court_name")
+    .exec();
+
+  if (result.length === 0) {
+    return res.status(404).json({ message: "judges not found" });
+  }
+  res.status(200).json({ judges: result });
+};
+
 exports.addJudge = addJudge;
 exports.getJudges = getJudges;
 exports.getJudgeById = getJudgeById;
+exports.getJudgesByCourtId = getJudgesByCourtId;

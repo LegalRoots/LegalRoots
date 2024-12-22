@@ -14,12 +14,15 @@ const Navbar = () => {
   const { pathname } = useLocation();
   useEffect(() => {
     const firstSection = pathname.split("/")[1];
-    if (firstSection === "admin") {
+    if (
+      firstSection === "admin" ||
+      (firstSection === "online" && pathname.split("/")[2] === "court")
+    ) {
       setShowNav(false);
     } else {
       setShowNav(true);
     }
-  }, []);
+  }, [pathname]);
 
   return (
     <>

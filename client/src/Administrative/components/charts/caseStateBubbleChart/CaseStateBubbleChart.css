@@ -1,0 +1,28 @@
+.casesItems-container-bubblechart-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  background-color: white;
+  min-height: 100%;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.casesItems-container-bubblechart-wrapper > div:nth-child(2) {
+  align-self: flex-start;
+  width: 30%;
+  min-width: 230px;
+}
+
+.casesItems-container-bubblechart-wrapper > div:nth-child(2) select {
+  padding: 0.4rem 1rem;
+  font-size: 12px;
+}
+
+.casesItems-container-bubblechart-wrapper > div:nth-child(2) label {
+  font-size: 12px;
+}

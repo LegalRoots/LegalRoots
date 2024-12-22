@@ -21,6 +21,7 @@ const TableRow = ({ rowData, actionData }) => {
 };
 
 /* data=  {rowData: {} , actionData:{id: number , text: string, actionHandler: function}} */
+//data is an array
 const Table = ({ headers, data, headerAction }) => {
   return (
     <table className="custom-table">

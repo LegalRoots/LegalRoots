@@ -22,12 +22,12 @@
 }
 
 .custom-button-gold {
-  background-color: var(--gold);
+  background-color: var(--gold-darker);
   color: white;
 }
 
 .custom-button-gold:hover {
-  background-color: var(--gold-darker);
+  background-color: var(--gold);
 }
 
 .custom-button-1 {

@@ -15,7 +15,7 @@ import { AuthProvider } from "./shared/context/auth";
 import Dashboard from "./dashboard/pages/Dashboard";
 import Employees from "./Administrative/pages/Employees/Employees";
 import Administrative from "./Administrative/superPage/Administrative";
-
+import OnlineCourt from "./OnlineCourts/pages/OnlineCourt/OnlineCourt";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [userType, setUserType] = useState("administrative");
@@ -26,6 +26,9 @@ function App() {
       <Routes>
         <Route path="/" Component={LandingPage} />
         <Route path="/admin/*" element={<Administrative />} />
+        <Route path="/online/court" Component={OnlineCourt} />
+        <Route path="/login" Component={Login} />
+        <Route path="/signup" Component={Signup} />
       </Routes>
     );
   } else if (isLoggedIn) {

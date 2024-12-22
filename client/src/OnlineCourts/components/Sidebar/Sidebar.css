@@ -1,0 +1,84 @@
+.onlinecourt-sidebar {
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0px 0px;
+
+  width: 90px;
+  height: 100vh;
+  max-height: 100vh;
+  color: #888;
+}
+
+.onlinecourt-sidebar > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  color: #b4bac4;
+}
+
+.onlinecourt-sidebar-upper-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.2rem;
+
+  padding-bottom: 20px;
+  border-radius: 30px;
+  width: 60%;
+  background-color: var(--white);
+}
+
+.onlinecourt-sidebar-upper-container > div {
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.onlinecourt-sidebar-upper-container > div:nth-child(1) {
+  background-color: var(--gold-darker);
+  color: white;
+  border-radius: 50%;
+  width: calc(0.6 * 90px);
+  height: calc(0.6 * 90px);
+  font-size: 1.3rem;
+  cursor: default;
+}
+
+.onlinecourt-sidebar-lower {
+  font-size: 1rem;
+  gap: 2rem;
+  position: relative;
+}
+
+.onlinecourt-sidebar-lower > div {
+  cursor: pointer;
+}
+
+.onlinecourt-sidebar-lower > div i {
+  position: relative;
+  z-index: 1;
+  transition: 200ms ease;
+}
+
+.onlinecourt-sidebar-lower__active {
+  background-color: var(--gold-darker);
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  top: 112px;
+  /* each step is 56px */
+  left: calc(45px - 22px);
+  border-radius: 50%;
+  z-index: 0;
+  transition: 600ms ease;
+}

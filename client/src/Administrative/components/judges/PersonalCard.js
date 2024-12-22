@@ -17,7 +17,7 @@ const PersonalCard = ({ currentJudge }) => {
           currentJudge.data.third_name +
           " " +
           currentJudge.data.last_name,
-        court: currentJudge.data.court_name,
+        court: currentJudge.data.court_name.name,
         photo: currentJudge.judge_photo,
       };
       setJudge(data);

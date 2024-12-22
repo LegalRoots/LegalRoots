@@ -34,6 +34,16 @@ const Input = (props) => {
     onInput(id, value, isValid);
   }, [id, value, isValid, onInput]);
 
+  useEffect(() => {
+    if (props.setValue || props.setValue === "") {
+      dispatch({
+        type: "CHANGE",
+        val: props.setValue,
+        validators: props.validators,
+      });
+    }
+  }, [props.setValue]);
+
   const changeHandler = (event) => {
     dispatch({
       type: "CHANGE",
@@ -44,12 +54,22 @@ const Input = (props) => {
 
   const touchHandler = () => {
     dispatch({ type: "TOUCH" });
+    if (props.onBlur) {
+      props.onBlur();
+    }
+  };
+
+  const focusHandler = () => {
+    if (props.onFocus) {
+      props.onFocus();
+    }
   };
 
   let cinput = (
     <input
       onBlur={touchHandler}
       onChange={changeHandler}
+      onFocus={focusHandler}
       id={props.id}
       placeholder={props.placeholder}
       type={props.type}

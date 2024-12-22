@@ -1,0 +1,71 @@
+.meetingView-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+
+  background-color: var(--white);
+  padding: 1rem;
+  border-radius: 10px;
+  height: 95vh;
+  margin-top: 3vh;
+}
+
+.meetingView-body {
+  flex: 1;
+  background-color: blue;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+.meetingView-body > div {
+  background-color: orange;
+  width: 100%;
+}
+
+.meetingView-body-videos {
+  flex: 3;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.meetingView-body-controls {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background-color: green;
+}
+
+.meetingView-body-controls button {
+  background-color: white;
+  color: #888;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.meetingView-body-controls #uploadfile {
+  background-color: rgb(143, 11, 136);
+  color: #fff;
+  border-radius: 20px;
+  width: 120px;
+  height: 50px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-align: center;
+}

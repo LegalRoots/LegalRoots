@@ -1,0 +1,16 @@
+.onlinecourt-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background-color: #fff;
+
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.onlinecourt-container > div:nth-child(2) {
+  flex: 1;
+}

@@ -10,6 +10,11 @@ const employeeSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   password: { type: String, required: true },
+  court_branch: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "CourtBranch",
+    required: false,
+  },
   employee_photo: Buffer,
   id_photo: Buffer,
   isValid: { type: Boolean, required: true },

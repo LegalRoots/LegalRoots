@@ -1,0 +1,9 @@
+.cases-container-controls {
+  padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2rem;
+  padding-top: 0.5rem !important;
+}

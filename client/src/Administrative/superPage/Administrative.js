@@ -5,6 +5,9 @@ import Sidebar from "../components/sidebar/Sidebar";
 
 import "./Administrative.css";
 import Judge from "../pages/Judges/Judges";
+import JoinOnlineCourt from "../pages/JoinOnlineCourt/JoinOnlineCourt";
+import Courts from "../pages/Courts/Courts";
+import Cases from "../pages/Cases/Cases";
 
 const Administrative = () => {
   let routes = (
@@ -12,6 +15,9 @@ const Administrative = () => {
       <Route path="/emp/*" Component={Employees} />
       <Route path="/job" Component={Jobs} />
       <Route path="/judges/*" Component={Judge} />
+      <Route path="/onlinecourt" Component={Courts} />
+      <Route path="/onlinecourt/join" Component={JoinOnlineCourt} />
+      <Route path="/cases/*" Component={Cases} />
     </Routes>
   );
   return (
