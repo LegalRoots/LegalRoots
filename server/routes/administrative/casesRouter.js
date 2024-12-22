@@ -1,5 +1,6 @@
 const express = require("express");
 const casesController = require("../../controllers/administrativeControllers/casesController");
+const casesBController = require("../../controllers/administrativeControllers/casesBController");
 const router = express.Router();
 
 //create cases
@@ -27,3 +28,36 @@ router.delete("/caseType/:id", casesController.deleteCaseType);
 
 router.put("/caseType/:id", casesController.updateCaseFields);
 module.exports = router;
+
+//operations for lawyers and users ----------------------------------------------
+router.get("/case/user/:plaintiff?", casesBController.getCasesByPlaintiffSSID);
+router.get("/case/user/:defendant?", casesBController.getCasesByDefendantSSID);
+
+router.get(
+  "/case/lawyer/plain/:ssid?",
+  casesBController.getCasesByPlaintiffLawyerSSID
+);
+router.get(
+  "/case/lawyer/def/:ssid?",
+  casesBController.getCasesByDefendantLawyerSSID
+);
+
+//add and delete from plaintiff lawyers
+router.post(
+  "/case/lawyer/plain/add",
+  casesBController.addLawyerToPlaintiffLawyers
+);
+router.post(
+  "/case/lawyer/plain/remove",
+  casesBController.removeLawyerFromPlaintiffLawyers
+);
+
+//add and delete from defendant lawyers
+router.post(
+  "/case/lawyer/def/add",
+  casesBController.addLawyerToDenedantLawyers
+);
+router.post(
+  "/case/lawyer/def/remove",
+  casesBController.removeLawyerFromDefendantLawyers
+);
