@@ -30,10 +30,10 @@ const Notifications = ({ userId }) => {
 
       const fetchNotifications = async () => {
         const response = await fetch(
-          `/JusticeRoots/notifications/${userId}/${type}`
+          `http://localhost:5000/JusticeRoots/notifications/${userId}/${type}`
         );
         const data = await response.json();
-        console.log("Notifications", data);
+
         const reversedNotifications = data?.data?.notifications?.reverse();
 
         setNotifications(reversedNotifications);

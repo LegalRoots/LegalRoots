@@ -17,8 +17,9 @@ const Navbar = () => {
   const { pathname } = useLocation();
   useEffect(() => {
     const firstSection = pathname.split("/")[1];
+
     if (
-      firstSection === "admin" ||
+      firstSection.toLowerCase() === "admin" ||
       (firstSection === "online" && pathname.split("/")[2] === "court")
     ) {
       setShowNav(false);

@@ -11,6 +11,7 @@ const getModel = (userType) => {
 };
 
 exports.getNotifications = catchAsync(async (req, res, next) => {
+  console.log("HLELOO");
   const { id, userType } = req.params;
   const Model = getModel(userType);
 

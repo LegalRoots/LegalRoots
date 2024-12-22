@@ -56,9 +56,9 @@ const router = createBrowserRouter(
         </Route>
 
         {/* Admin Routes */}
-        {/* <Route element={<AdminRouter />}> */}
-        <Route path={"/admin/*"} element={<Administrative />} />
-        {/* </Route> */}
+        <Route element={<AdminRouter />}>
+          <Route path={"/admin/*"} element={<Administrative />} />
+        </Route>
 
         {/* Public Routes */}
         <Route

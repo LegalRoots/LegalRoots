@@ -15,7 +15,7 @@ const notificationsRouter = require("./routes/notificationsRouter");
 const userRouter = require("./routes/userRouter");
 
 const adminRouter = require("./routes/administrative/administrativeRouter");
-const casesRouter = require("./routes/administrative/casesRouter");
+const casesRouterAydi = require("./routes/administrative/casesRouter");
 const courtsRouter = require("./routes/administrative/courtsRouter");
 const witnessRouter = require("./routes/administrative/witnessRouter");
 const evidenceRouter = require("./routes/administrative/evidenceRouter");
@@ -42,7 +42,7 @@ app.use("/JusticeRoots/notifications", notificationsRouter);
 app.use("/JusticeRoots/posts", postsRouter);
 app.use("/JusticeRoots/cases", casesRouter);
 app.use("/admin", adminRouter);
-app.use("/admin", casesRouter);
+app.use("/admin", casesRouterAydi);
 app.use("/admin", courtsRouter);
 app.use("/admin", witnessRouter);
 app.use("/admin", evidenceRouter);

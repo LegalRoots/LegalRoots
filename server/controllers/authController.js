@@ -5,7 +5,7 @@ const User = require("./../models/userModel");
 const Lawyer = require("./../models/lawyerModel");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
-const Employee = require("../models/employee");
+const Employee = require("../models/administrative/employee");
 const sendEmail = require("./../utils/SendEmail");
 
 const signToken = (id) => {
@@ -129,14 +129,15 @@ exports.login = catchAsync(async (req, res, next) => {
     createSendToken(lawyer, 200, req, res, "Lawyer");
   } else if (type === "Admin") {
     const { ssid, password } = req.body;
+
     if (!ssid || !password) {
       return next(new AppError("Please provide email and password!", 400));
     }
-    const admin = await Employee.findOne({ employee_id: ssid }).select(
-      "+password"
-    );
+    const admin = await Employee.findOne({ ssid: ssid })
+      .select("+password")
+      .populate("court_branch");
 
-    if (!admin || !(await admin.correctPassword(password, admin.password))) {
+    if (!admin) {
       return next(new AppError("Incorrect email or password", 401));
     }
     createSendToken(admin, 200, req, res, "Admin");

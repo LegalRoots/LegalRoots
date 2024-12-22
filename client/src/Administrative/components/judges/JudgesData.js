@@ -87,6 +87,7 @@ const JudgesData = () => {
     let elements = [];
     for (let i = 0; i < judges.length; i++) {
       const element = judges[i];
+      console.log(element);
       elements.push({
         rowData: {
           judge_id: element.judge_id,
