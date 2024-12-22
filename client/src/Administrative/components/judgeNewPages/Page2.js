@@ -21,16 +21,6 @@ const Page2 = ({
     <div className="p2">
       <div className="new-judge__input">
         <Select
-          label="Court type"
-          placeholder="court type"
-          id="court_type"
-          options={court_types}
-          value={formState.inputs["court_type"].value}
-          onChange={SelectHandler}
-        />
-      </div>
-      <div className="new-judge__input">
-        <Select
           label="Court name"
           placeholder="court name"
           id="court_name"

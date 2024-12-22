@@ -27,19 +27,7 @@ const Page1 = ({
         errorMsg="invalid ssid"
         validators={VALIDATOR_EQUALLENGTH(9)}
       />
-      <Input
-        initialValue={formState.inputs["judge_id"].value}
-        initialValid={formState.inputs["judge_id"].isValid}
-        label="Judge ID"
-        id="judge_id"
-        name="judge_id"
-        onInput={inputHandler}
-        type="text"
-        placeholder="insert a unique id"
-        className="new-judge__input"
-        errorMsg="invalid employee id"
-        validators={VALIDATOR_EQUALLENGTH(3)}
-      />
+
       <Input
         initialValue={formState.inputs["first_name"].value}
         initialValid={formState.inputs["first_name"].isValid}

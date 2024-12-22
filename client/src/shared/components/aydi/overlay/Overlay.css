@@ -1,0 +1,40 @@
+.aydi-custom-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  background-color: rgba(70, 70, 70, 0.2);
+
+  z-index: 100;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  overflow-y: scroll;
+}
+
+.aydi-custom-overlay > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+.aydi-custom-overlay > * {
+  animation: aydi-custom-overlay-elements 300ms ease-in;
+}
+
+@keyframes aydi-custom-overlay-elements {
+  from {
+    opacity: 0;
+    transform: translate(0px, 40px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+}

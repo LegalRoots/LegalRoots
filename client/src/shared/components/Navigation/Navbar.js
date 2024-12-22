@@ -15,14 +15,17 @@ const Navbar = () => {
     navigate("/");
   };
   const { pathname } = useLocation();
-  // useEffect(() => {
-  //   const firstSection = pathname.split("/")[1];
-  //   if (firstSection === "admin") {
-  //     setShowNav(false);
-  //   } else {
-  //     setShowNav(true);
-  //   }
-  // }, []);
+  useEffect(() => {
+    const firstSection = pathname.split("/")[1];
+    if (
+      firstSection === "admin" ||
+      (firstSection === "online" && pathname.split("/")[2] === "court")
+    ) {
+      setShowNav(false);
+    } else {
+      setShowNav(true);
+    }
+  }, [pathname]);
 
   return (
     <>

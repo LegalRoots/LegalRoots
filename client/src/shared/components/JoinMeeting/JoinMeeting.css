@@ -1,0 +1,94 @@
+.online-court-joinMeeting {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.online-court-joinMeeting-video {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+}
+
+.online-court-joinMeeting-video__controls {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.online-court-joinMeeting-video__controls > div {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0.7rem;
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.online-court-joinMeeting-video__controls > div button {
+  background-color: #eee;
+  padding: 0.5rem 1rem;
+}
+
+.online-court-joinMeeting-video__controls > div p {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  font-size: 0.89rem;
+}
+
+.closed-cam {
+  width: 400px;
+  height: 300px;
+  min-height: 300px;
+  background-color: var(--white);
+  border: 1px #aaa solid;
+  border-radius: 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: #aaa;
+}
+
+.closed-cam p {
+  margin-top: 1rem;
+  font-size: 0.8rem;
+}
+
+.online-court-joinMeeting video {
+  transform: scaleX(-1);
+  border-radius: 10px;
+}
+
+.online-court-joinMeeting header {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.online-court-joinMeeting header > div {
+  width: 100%;
+}
+
+.online-court-joinMeeting header h1 {
+  font-size: 1.8rem;
+}
+
+.online-court-joinMeeting header button {
+  padding: 0.5rem;
+  width: 100%;
+}

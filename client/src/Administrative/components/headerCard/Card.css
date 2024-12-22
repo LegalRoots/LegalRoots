@@ -1,0 +1,56 @@
+.admin-header-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1rem;
+
+  width: 100%;
+}
+
+.admin-header-card > header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  background: linear-gradient(90deg, var(--black) 20%, var(--white) 40%);
+  box-shadow: 0.5px 0.5px 2px rgba(50, 50, 50, 0.3);
+  padding: 1rem;
+  width: 100%;
+  overflow: hidden;
+  animation: card-header-right-extension 0.5s linear forwards;
+}
+
+.admin-header-card > header h1 {
+  color: white;
+  font-size: 1.5rem;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.admin-header-card-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  width: 100%;
+}
+
+@keyframes card-header-right-extension {
+  from {
+    width: 0%;
+    opacity: 0;
+    padding: 0rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+  to {
+    opacity: 1;
+    width: 100%;
+    padding: 1rem;
+  }
+}

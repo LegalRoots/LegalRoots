@@ -8,7 +8,7 @@ const UserRouter = () => {
     return <Navigate to={"/login"} />;
   }
   const userType = JSON.parse(sessionStorage.getItem("userType"));
-  return userType === "admin" ? <Outlet /> : <Navigate to={"/login"} />;
+  return userType === "Admin" ? <Outlet /> : <Navigate to={"/login"} />;
 };
 
 export default UserRouter;

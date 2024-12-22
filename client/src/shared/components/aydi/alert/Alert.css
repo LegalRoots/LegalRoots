@@ -1,0 +1,59 @@
+.aydi-custom-alert-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100vh;
+}
+
+.aydi-custom-alert {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.5rem;
+
+  background-color: #fff;
+  width: 450px;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  box-shadow: 1px 1px 5px #777;
+}
+
+.aydi-custom-alert header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+}
+
+.aydi-custom-alert header h2 {
+  font-size: 1.4rem;
+}
+
+.aydi-custom-alert-body {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+}
+
+.aydi-custom-alert-body p {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+  width: 100%;
+  text-align: justify;
+
+  padding: 0;
+  margin: 0;
+}
+
+.aydi-custom-alert-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 1rem;
+}

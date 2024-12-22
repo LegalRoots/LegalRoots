@@ -1,6 +1,6 @@
 import useForm from "../../../shared/hooks/useForm";
-
-import { useRef, useState } from "react";
+import { useFetch } from "../../../shared/hooks/useFetch";
+import { useEffect, useRef, useState } from "react";
 import logo from "../../../shared/assets/palgov-gold.png";
 import Page1 from "../judgeNewPages/Page1";
 import Page2 from "../judgeNewPages/Page2";
@@ -35,9 +35,33 @@ const NewJudge = () => {
   const [photo, setPhoto] = useState();
   const [idPhoto, setIdPhoto] = useState();
   const [ppPhoto, setPpPhoto] = useState();
+  const [courtsList, setCourtsList] = useState();
+  const [courtData, isCourtDataLoading] = useFetch(
+    "GET",
+    `${REACT_APP_API_BASE_URL}/admin/court-branch`
+  );
+
+  useEffect(() => {
+    if (!isCourtDataLoading && courtData) {
+      let tmpArray = courtData.map((court) => court.name);
+      setCourtsList(tmpArray);
+    }
+  }, [courtData, isCourtDataLoading]);
 
   const navigate = useNavigate();
 
+  const exitAnimation = () => {
+    formRef.current.style = "flex:0;width: 0px;padding: 0";
+    sideRef.current.style = "flex: 1;border-radius:20px";
+
+    normalRef.current.style = "display: none";
+    successRef.current.style = "display: block; opacity:0";
+    pageRef.current.style = "animation: fadeOut 1.5s ease-out 1s forwards";
+
+    setTimeout(() => {
+      navigate("/admin/judges");
+    }, 1800);
+  };
   const currentPageHandler = (event) => {
     const id = event.target.id;
     if (id === "page1Btn") {
@@ -48,21 +72,9 @@ const NewJudge = () => {
       setCurrentPage(3);
     } else if (id === "page3Btn_backwards") {
       setCurrentPage(2);
-      //here
-      formRef.current.style = "flex:0;width: 0px;padding: 0";
-      sideRef.current.style = "flex: 1;border-radius:20px";
-
-      normalRef.current.style = "display: none";
-      successRef.current.style = "display: block; opacity:0";
-      pageRef.current.style = "animation:fadeOut 0.1s ease-out 1s forwards";
-
-      setTimeout(() => {
-        navigate("/admin/judges");
-      }, 1100);
     }
   };
   const formData = {
-    judge_id: { value: "", isValid: false },
     ssid: { value: "", isValid: false },
     first_name: { value: "", isValid: false },
     second_name: { value: "", isValid: false },
@@ -74,7 +86,6 @@ const NewJudge = () => {
     email: { value: "", isValid: false },
     password: { value: "", isValid: false },
     phone: { value: "", isValid: false },
-    court_type: { value: "", isValid: false },
     court_name: { value: "", isValid: false },
     qualifications: { value: "", isValid: false },
     experience: { value: "", isValid: false },
@@ -109,10 +120,17 @@ const NewJudge = () => {
     event.preventDefault();
     const formData2 = new FormData(document.getElementById("newJudgeForm"));
 
+    //map the correct court id
+    const chosenCourt = courtData.find(
+      (court) => court.name === formState.inputs.court_name.value
+    );
+
     //add fields
     Object.entries(formState.inputs).forEach(([key, ob]) => {
       formData2.set(key, ob.value);
     });
+
+    formData2.set("court_name", chosenCourt._id);
 
     try {
       const response = await fetch(`${REACT_APP_API_BASE_URL}/admin/judges`, {
@@ -123,6 +141,7 @@ const NewJudge = () => {
       const response_data = await response.json();
       if (response.ok === true) {
         console.log(response_data);
+        exitAnimation();
       }
     } catch (error) {
       console.error(error);
@@ -146,7 +165,7 @@ const NewJudge = () => {
             formState={formState}
             currentPageHandler={currentPageHandler}
             court_types={court_types}
-            court_names={court_names}
+            court_names={courtsList}
             SelectHandler={SelectHandler}
           />
         )}

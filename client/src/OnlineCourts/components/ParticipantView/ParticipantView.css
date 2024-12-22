@@ -1,0 +1,47 @@
+.participantView-container {
+  position: relative;
+  border-radius: 10px;
+  background-color: red;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
+}
+
+.participantView__react-player {
+  width: 350px;
+  max-width: 350px;
+  height: calc(350px / 1.7777);
+  max-height: calc(350px / 1.7777);
+}
+
+.participantView-container video {
+  border-radius: 10px;
+  transform: scaleX(-1);
+  margin: 0;
+  width: 350px;
+  max-width: 350px;
+  height: calc(350px / 1.7777);
+  max-height: calc(350px / 1.7777);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.participantView-name {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  padding: 0.6rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  z-index: 5;
+}
+
+.participantView-name p {
+  margin: 0;
+  padding: 0;
+  font-size: 0.7rem;
+  color: white;
+}

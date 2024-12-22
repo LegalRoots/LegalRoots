@@ -24,6 +24,7 @@ import ProfileSettings from "../dashboard/components/ProfileSettings";
 import PendingCases from "../lawyer/components/PendingCases";
 import LawyerCases from "../lawyer/components/LawyerCases";
 import LawyerCaseDetail from "../lawyer/components/LawyerCaseDetails";
+import OnlineCourt from "../OnlineCourts/pages/OnlineCourt/OnlineCourt";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
@@ -55,9 +56,9 @@ const router = createBrowserRouter(
         </Route>
 
         {/* Admin Routes */}
-        <Route element={<AdminRouter />}>
-          <Route path={"/admin/*"} element={<Administrative />} />
-        </Route>
+        {/* <Route element={<AdminRouter />}> */}
+        <Route path={"/admin/*"} element={<Administrative />} />
+        {/* </Route> */}
 
         {/* Public Routes */}
         <Route
@@ -70,6 +71,7 @@ const router = createBrowserRouter(
             )
           }
         />
+        <Route path="/online/court" Component={OnlineCourt} />
         <Route
           path={"/scheduler/:id"}
           element={

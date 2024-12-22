@@ -1,0 +1,110 @@
+.admin-custom-form {
+  width: 95%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background-color: white;
+  margin: 0rem 1rem;
+  border-radius: 20px;
+  height: 92%;
+
+  position: relative;
+  padding-top: 0rem !important;
+}
+
+.admin-custom-form-side {
+  height: 100%;
+  position: sticky;
+  top: 0px;
+  right: 0px;
+  margin: 0;
+  background-color: var(--black);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  flex: 1;
+  border-radius: 0px 20px 20px 0px;
+  transition: 0.5s ease;
+}
+
+.admin-custom-form-side__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  position: absolute;
+  top: 20px;
+  width: 80%;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.admin-custom-form-side__success h3 {
+  color: white;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.admin-custom-form-side__success {
+  position: relative;
+  color: white;
+  font-size: 6rem;
+  text-align: center;
+  display: none;
+}
+
+.admin-custom-form-side__header img {
+  width: 50px;
+}
+
+.admin-custom-form-side__header > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.admin-custom-form-side__header > div p {
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+}
+.admin-custom-form-side h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.admin-custom-form form {
+  padding: 2rem 2rem;
+  flex: 1;
+
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.5rem;
+
+  height: calc(100%);
+  max-height: calc(100%);
+  overflow-y: scroll;
+  transition: 0.5s ease;
+}
+
+.admin-custom-form__input {
+  width: 80%;
+}
+
+.admin-custom-form__button {
+  width: 80%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  gap: 2rem;
+}

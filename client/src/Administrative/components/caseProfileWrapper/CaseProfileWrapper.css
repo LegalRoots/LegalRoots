@@ -1,0 +1,8 @@
+.admin-case-profile-wrapper-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding-top: 0rem !important;
+}
