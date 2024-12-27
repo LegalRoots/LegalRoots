@@ -1,5 +1,5 @@
 import Button from "../../../shared/components/Button2/Button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Input from "../../../shared/components/FormElements/aydi/Input";
 import useForm from "../../../shared/hooks/useForm";
 import {
@@ -8,22 +8,29 @@ import {
   VALIDATOR_FULLNAME,
   VALIDATOR_EMAIL,
 } from "../../../shared/util/validators";
+import Select from "../../../shared/components/FormElements/aydi/select/Select";
+import { useFetch } from "../../../shared/hooks/useFetch";
+import { useNavigate } from "react-router-dom";
 
 import "./NewEmployee.css";
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const NewEmployeee = () => {
+  const navigate = useNavigate();
   const [photo, setPhoto] = useState();
   const [idPhoto, setIdPhoto] = useState();
   const formData = {
-    employee_id: { value: "", isValid: false },
     ssid: { value: "", isValid: false },
-    full_name: { value: "", isValid: false },
+    first_name: { value: "", isValid: false },
+    second_name: { value: "", isValid: false },
+    third_name: { value: "", isValid: false },
+    last_name: { value: "", isValid: false },
     job: { value: "", isValid: false },
     birthdate: { value: "", isValid: false },
     email: { value: "", isValid: false },
     password: { value: "", isValid: false },
     phone: { value: "", isValid: false },
+    court_branch: { value: "", isValid: false },
   };
 
   const fileChangeHandler = (event) => {
@@ -35,12 +42,30 @@ const NewEmployeee = () => {
   };
 
   const [formState, inputHandler, setFormData] = useForm(formData, false);
+  const [courtsList, setCourtsList] = useState([]);
+
+  const [courtData, isCourtDataLoading] = useFetch(
+    "GET",
+    `${REACT_APP_API_BASE_URL}/admin/court-branch`
+  );
+  useEffect(() => {
+    if (!isCourtDataLoading && courtData) {
+      let tmpArray = courtData.map((court) => court.name);
+      setCourtsList(tmpArray);
+    }
+  }, [courtData, isCourtDataLoading]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(document.getElementById("forms"));
-    // formData.append("photo", photo);
-    // formData.append("idPhoto", idPhoto);
+    let court = courtData.find(
+      (c) => c.name === formState.inputs.court_branch.value
+    );
+    if (court) {
+      formData.set("court_branch", court._id);
+    } else {
+      formData.set("court_branch", "");
+    }
 
     try {
       const response = await fetch(
@@ -53,11 +78,17 @@ const NewEmployeee = () => {
 
       const response_data = await response.json();
       if (response.ok === true) {
-        console.log(response_data);
+        navigate("/admin/emp");
       }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const SelectHandler = (event) => {
+    const val = event.target.value;
+
+    inputHandler("court_branch", val, true);
   };
 
   return (
@@ -75,27 +106,60 @@ const NewEmployeee = () => {
           errorMsg="invalid ssid"
           validators={VALIDATOR_EQUALLENGTH(9)}
         />
+        <div style={{ width: "80%" }}>
+          <Select
+            label="Court Branch"
+            placeholder="Court Branch"
+            id="court_branch"
+            options={["", ...courtsList]}
+            value={formState.inputs.court_branch.value}
+            onChange={SelectHandler}
+          />
+        </div>
+
         <Input
-          label="Employee ID"
-          id="employee_id"
-          name="employee_id"
+          label="First Name"
+          id="first_name"
+          name="first_name"
           onInput={inputHandler}
           type="text"
-          placeholder="insert a unique id"
-          className="new-employee__input"
-          errorMsg="invalid employee id"
-          validators={VALIDATOR_EQUALLENGTH(3)}
-        />
-        <Input
-          label="Full Name"
-          id="full_name"
-          name="full_name"
-          onInput={inputHandler}
-          type="text"
-          placeholder="the employee's full name"
+          placeholder="the employee's first name"
           className="new-employee__input"
           errorMsg="invalid name"
-          validators={VALIDATOR_FULLNAME()}
+          validators={VALIDATOR_MINLENGTH(1)}
+        />
+        <Input
+          label="Second Name"
+          id="second_name"
+          name="second_name"
+          onInput={inputHandler}
+          type="text"
+          placeholder="the employee's second name"
+          className="new-employee__input"
+          errorMsg="invalid name"
+          validators={VALIDATOR_MINLENGTH(1)}
+        />
+        <Input
+          label="Third Name"
+          id="third_name"
+          name="third_name"
+          onInput={inputHandler}
+          type="text"
+          placeholder="the employee's third name"
+          className="new-employee__input"
+          errorMsg="invalid name"
+          validators={VALIDATOR_MINLENGTH(1)}
+        />
+        <Input
+          label="Last Name"
+          id="last_name"
+          name="last_name"
+          onInput={inputHandler}
+          type="text"
+          placeholder="the employee's last name"
+          className="new-employee__input"
+          errorMsg="invalid name"
+          validators={VALIDATOR_MINLENGTH(1)}
         />
         <Input
           label="Job"

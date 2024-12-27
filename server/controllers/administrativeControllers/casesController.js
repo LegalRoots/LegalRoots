@@ -82,6 +82,7 @@ const addCase = async (req, res, next) => {
       data: validData,
     });
     await newCase.save();
+
     const newClientCase = new ClientCase({
       Case: newCase._id,
       user: plaintiff,
@@ -129,6 +130,7 @@ const getCasesByCaseTypeId = async (req, res) => {
 
     // Return the found cases
     res.status(200).json({ cases });
+    LAST_FETCH_BY_CASETYPEID = new Date();
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -136,9 +138,14 @@ const getCasesByCaseTypeId = async (req, res) => {
 };
 
 const getAllCases = async (req, res) => {
+  const courtId = req.query.court;
+
   try {
-    // Fetch all cases from the database
-    const cases = await Case.find().populate([
+    let filter = {};
+    if (courtId && courtId.length === 24) {
+      filter.court_branch = courtId;
+    }
+    let cases = await Case.find(filter).populate([
       { path: "court_branch", select: "name" },
       {
         path: "caseType",

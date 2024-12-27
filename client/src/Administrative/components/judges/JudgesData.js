@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import Table from "../../../shared/components/Table/Table";
 import PersonalCard from "./PersonalCard";
 import Card from "../judgesManagerCard/Card";
 import { Link } from "react-router-dom";
+import { useFetch } from "../../../shared/hooks/useFetch";
+import { ExportJson } from "../filters/export/ExportService";
 
 import "./JudgesData.css";
+import JudgesFilter from "../filters/judgesFilter/JudgesFilter";
 
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const managers = [
@@ -19,39 +22,61 @@ const managers = [
 
 const headers = ["Judge ID", "SSID", "Name", "Court", "Email", "City"];
 
-const ListItem = (props) => {
-  let icon;
-  let sec1, sec2;
-  if (props.type === "sec") {
-    icon = <i className="fa-solid fa-user"></i>;
-    sec1 = props.sec.id;
-    sec2 = props.sec.name;
-  } else {
-    icon = <i className="fa-solid fa-gavel"></i>;
-    sec1 = props.case.id;
-    sec2 = props.case.type;
-  }
-  return (
-    <li>
-      {icon}
-      <div>
-        <p>{sec1}</p>
-      </div>
-      <div>
-        <p>{sec2}</p>
-      </div>
-      <div>
-        <Link>view</Link>
-      </div>
-    </li>
-  );
-};
-
 const JudgesData = () => {
   const [judges, setJudges] = useState([]);
   const [tableJudges, setTableJudges] = useState([]);
-
+  const [filteredTableJudges, setFilteredTableJudges] = useState([]);
   const [currentJudge, setCurrentJudge] = useState(null);
+
+  const [courtsList, setCourtsList] = useState([]);
+  const [courtData, isCourtDataLoading] = useFetch(
+    "GET",
+    `${REACT_APP_API_BASE_URL}/admin/court-branch`
+  );
+
+  useEffect(() => {
+    if (!isCourtDataLoading && courtData) {
+      let tmpArray = courtData.map((court) => court.name);
+      setCourtsList(tmpArray);
+    }
+  }, [courtData, isCourtDataLoading]);
+
+  const applySearchHandler = useCallback(
+    (searchVal, searchBy) => {
+      let judges;
+      if (searchVal === "") {
+        setFilteredTableJudges(tableJudges);
+        return;
+      } else if (searchBy === "judge id") {
+        judges = tableJudges.filter((t) => {
+          return t.rowData.judge_id.includes(searchVal);
+        });
+
+        setFilteredTableJudges(judges);
+      } else if (searchBy === "ssid") {
+        judges = tableJudges.filter((t) => {
+          return t.rowData.ssid.includes(searchVal);
+        });
+
+        setFilteredTableJudges(judges);
+      } else if (searchBy === "name") {
+        judges = tableJudges.filter((t) => {
+          return t.rowData.name.includes(searchVal);
+        });
+
+        setFilteredTableJudges(judges);
+      }
+    },
+    [tableJudges]
+  );
+
+  const exportHandler = () => {
+    let tmps = filteredTableJudges.map((j) => {
+      return j.rowData.judge_id;
+    });
+    let exportedObjs = judges.filter((j) => tmps.includes(j.judge_id));
+    ExportJson(exportedObjs);
+  };
 
   const fetchJudges = async () => {
     try {
@@ -79,6 +104,25 @@ const JudgesData = () => {
     }
   };
 
+  const applyFilterHandler = async (courtName) => {
+    if (courtName === "") {
+      fetchJudges();
+      return;
+    }
+    const court = courtData.find((c) => c.name === courtName);
+    try {
+      const response = await fetch(
+        `${REACT_APP_API_BASE_URL}/admin/judges/court/${court._id}`
+      );
+      const response_data = await response.json();
+      if (response.ok === true) {
+        setJudges(response_data.result);
+      }
+    } catch (error) {
+      console.error("error cant fetch data");
+    }
+  };
+
   useEffect(() => {
     fetchJudges();
   }, []);
@@ -87,7 +131,6 @@ const JudgesData = () => {
     let elements = [];
     for (let i = 0; i < judges.length; i++) {
       const element = judges[i];
-      console.log(element);
       elements.push({
         rowData: {
           judge_id: element.judge_id,
@@ -113,7 +156,7 @@ const JudgesData = () => {
     }
 
     setTableJudges(elements);
-    console.log("in judges array");
+    setFilteredTableJudges(elements);
   }, [judges]);
 
   return (
@@ -160,34 +203,18 @@ const JudgesData = () => {
           </div>
         </div>
       </div>
-      <div className="judges-details-tables">
-        <div className="judges-details-tables-sec">
-          <div>
-            <h2>Secretaries</h2>
-          </div>
-          <ul>
-            <ListItem
-              sec={{ id: "4085663124", name: "ali jamal yousef" }}
-              type="sec"
-            />
-          </ul>
-        </div>
-        <div className="judges-details-tables-courts">
-          <div>
-            <h2>Cases</h2>
-          </div>
-          <ul>
-            <ListItem case={{ type: "traffic", id: 15632 }} type="case" />
-            <ListItem case={{ type: "traffic", id: 15632 }} type="case" />
-            <ListItem case={{ type: "traffic", id: 15632 }} type="case" />
-          </ul>
-        </div>
-      </div>
-      <div className="judges-filter" id="filter">
-        filter
-      </div>
       <div className="judges-table" id="table">
-        <Table headers={headers} data={tableJudges} headerAction="details" />
+        <JudgesFilter
+          court_names={courtsList}
+          applyFilterHandler={applyFilterHandler}
+          applySearchHandler={applySearchHandler}
+          exportHandler={exportHandler}
+        />
+        <Table
+          headers={headers}
+          data={filteredTableJudges}
+          headerAction="details"
+        />
       </div>
     </div>
   );

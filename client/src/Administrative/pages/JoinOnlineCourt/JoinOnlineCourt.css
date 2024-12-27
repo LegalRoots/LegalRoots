@@ -1,7 +1,7 @@
 .admin-online-court-main {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
 
   width: calc(100% - 200px);
@@ -9,8 +9,20 @@
   height: 98vh;
   max-height: 98vh;
   overflow: hidden;
+  overflow-y: scroll;
   padding: 0;
   margin: 0;
+  padding-top: 4rem;
+  gap: 6rem;
+}
+
+.admin-online-court-mycourts {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  padding: 2rem 2rem;
 }
 
 @media only screen and (max-width: 1200px) {
@@ -18,5 +30,15 @@
     width: 100%;
     height: 100vh;
     max-height: unset;
+  }
+
+  .admin-online-court-mycourts {
+    padding: 2rem 1rem;
+  }
+}
+
+@media only screen and (max-width: 540px) {
+  .admin-online-court-mycourts {
+    padding: 2rem 0rem;
   }
 }

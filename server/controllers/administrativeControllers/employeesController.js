@@ -18,7 +18,10 @@ const addEmployee = async (req, res, next) => {
   // const photoBuffer = fs.readFileSync("./uploads/me.jpg");
   if (
     req.body.ssid &&
-    req.body.full_name &&
+    req.body.first_name &&
+    req.body.second_name &&
+    req.body.third_name &&
+    req.body.last_name &&
     req.body.job &&
     req.body.gender &&
     req.body.birthdate &&
@@ -26,19 +29,41 @@ const addEmployee = async (req, res, next) => {
     req.body.email &&
     req.body.password
   ) {
+    let fn =
+      req.body.first_name +
+      " " +
+      req.body.second_name +
+      " " +
+      req.body.third_name +
+      " " +
+      req.body.last_name;
+
     let employee_id = await getNextIdValue("employeeId");
     employee_id = employee_id.toString();
+
+    let courtId;
+    if (req.body.court_branch === "") {
+      courtId = null;
+    } else {
+      courtId = req.body.court_branch;
+    }
+    console.log(req.body.court_branch);
+
     const employee = new Employee({
       ssid: req.body.ssid,
-      employee_id,
-      full_name: req.body.full_name,
+      employee_id: employee_id,
+      full_name: fn,
+      first_name: req.body.first_name,
+      second_name: req.body.second_name,
+      third_name: req.body.third_name,
+      last_name: req.body.last_name,
       job: req.body.job,
       gender: req.body.gender,
       birthdate: req.body.birthdate,
       phone: req.body.phone,
       email: req.body.email,
       password: req.body.password,
-      court_branch: req.body.court_branch || "",
+      court_branch: courtId,
       employee_photo: req.files["photo"][0].buffer,
       id_photo: req.files["idPhoto"][0].buffer,
       isValid: true,
@@ -46,11 +71,12 @@ const addEmployee = async (req, res, next) => {
     const result = await employee.save();
     res.json(result);
   } else {
-    res.json({ message: "Error, missing some fields" });
+    res.status(400).json({ message: "Error, missing some fields" });
   }
 };
+
 const getEmployees = async (req, res, next) => {
-  let result = await Employee.find().exec();
+  let result = await Employee.find().populate("court_branch").exec();
 
   let employees = [];
   for (var i = 0; i < result.length; i += 1) {
@@ -62,6 +88,25 @@ const getEmployees = async (req, res, next) => {
   }
 
   res.json(employees);
+};
+
+const getEmployeeBySSID = async (req, res, next) => {
+  if (!req.params.ssid) {
+    return res.status(400).json({ message: "ssid is required" });
+  }
+
+  let result = await Employee.findOne({ ssid: req.params.ssid })
+    .populate("court_branch")
+    .exec();
+
+  if (!result) {
+    return res.status(404).json({ message: "employee not found" });
+  }
+
+  let image = result.employee_photo.toString("base64");
+  result.employee_photo = "";
+
+  res.json({ employee: { data: result, employee_photo: image } });
 };
 
 const getEmployeesLight = async (req, res, next) => {
@@ -91,19 +136,26 @@ const getEmployeesByCourtId = async (req, res) => {
   }
 
   try {
-    const employees = await Employee.find({ court_branch: courtId })
-      .select("-employee_photo -id_photo")
+    const result = await Employee.find({ court_branch: courtId })
+      .populate("court_branch")
       .exec();
 
-    if (employees.length === 0) {
+    if (result.length === 0) {
       return res
         .status(404)
         .json({ message: `no employees found at court ${courtId}` });
     }
 
-    return res
-      .status(200)
-      .json({ count: employees.length, employees: employees });
+    let employees = [];
+    for (var i = 0; i < result.length; i += 1) {
+      let image = result[i].employee_photo.toString("base64");
+      result[i].employee_photo = "";
+      const employee = { data: result[i], image: image };
+
+      employees.push(employee);
+    }
+
+    return res.status(200).json(employees);
   } catch (error) {
     return res.status(500).json({ message: "internal server error", error });
   }
@@ -146,4 +198,5 @@ module.exports = {
   getEmployeesByCourtId,
   getEmployeesByCourtName,
   getEmployeesLight,
+  getEmployeeBySSID,
 };

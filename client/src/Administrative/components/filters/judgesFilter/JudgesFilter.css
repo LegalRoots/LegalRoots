@@ -1,0 +1,29 @@
+.judges-container-filter {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  background: white;
+  padding-bottom: 0rem;
+  border-radius: 10px 10px 0px 0px;
+  margin-bottom: 1rem;
+}
+
+.judges-container-filter__searchbar {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.judges-container-filter__searchbar select,
+.judges-container-filter__searchbar input {
+  font-size: 12px !important;
+  margin: 0;
+}
+.judges-container-filter__searchbar .custom-select {
+  width: 150px;
+}

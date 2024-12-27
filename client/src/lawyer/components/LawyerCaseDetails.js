@@ -20,6 +20,7 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
+import { useToast } from "@chakra-ui/react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -27,7 +28,7 @@ import axios from "axios";
 const LawyerCaseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const toast = useToast();
   const [caseData, setCaseData] = useState(null);
   const [plaintiff, setPlaintiff] = useState(null);
   const [defendant, setDefendant] = useState(null);
@@ -125,6 +126,10 @@ const LawyerCaseDetails = () => {
         isClosable: true,
       });
     }
+  };
+
+  const handleCloseAddNoteModal = () => {
+    setAddNoteModalOpen(false);
   };
 
   if (!caseData) return <Typography>Loading...</Typography>;

@@ -93,9 +93,11 @@ const Input = (props) => {
   }
   return (
     <div className={`${props.className} aydi-input`}>
-      <label htmlFor={props.id}>{props.label}</label>
+      {props.label && <label htmlFor={props.id}>{props.label}</label>}
       {cinput}
-      {!inputState.isValid && inputState.isTouched && <p>{props.errorMsg}</p>}
+      {!inputState.isValid && inputState.isTouched && props.errorMsg && (
+        <p>{props.errorMsg}</p>
+      )}
     </div>
   );
 };

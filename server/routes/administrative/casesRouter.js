@@ -1,6 +1,8 @@
 const express = require("express");
 const casesController = require("../../controllers/administrativeControllers/casesController");
 const casesBController = require("../../controllers/administrativeControllers/casesBController");
+const casesFilterController = require("../../controllers/administrativeControllers/filters/casesFilterController");
+
 const router = express.Router();
 
 //create cases
@@ -70,3 +72,7 @@ router.post(
   "/case/lawyer/def/remove",
   casesBController.removeLawyerFromDefendantLawyers
 );
+
+//filters -------------------------------------------------------
+router.post("/case/filter", casesFilterController.getFilteredCases);
+router.get("/case/filter/:id?", casesFilterController.getCasesByPartialId);
