@@ -7,7 +7,13 @@ import {
   CardActions,
   Button,
   CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Collapse,
 } from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import axios from "axios";
 import { AuthContext } from "../../shared/context/auth";
 
@@ -15,6 +21,7 @@ const PendingCases = () => {
   const [pendingCases, setPendingCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(null);
+  const [expandedCard, setExpandedCard] = useState(null); // Tracks the currently expanded card
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
@@ -54,6 +61,10 @@ const PendingCases = () => {
     }
   };
 
+  const toggleExpand = (cardId) => {
+    setExpandedCard((prev) => (prev === cardId ? null : cardId));
+  };
+
   if (loading) {
     return (
       <Box
@@ -84,7 +95,7 @@ const PendingCases = () => {
           >
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Case Title: {assignment.caseId.case_title}
+                Case Title: {assignment.caseId.Case.caseType.name}
               </Typography>
               <Typography>
                 <strong>Client:</strong> {assignment.clientId.first_name}{" "}
@@ -97,17 +108,76 @@ const PendingCases = () => {
                 <strong>Requested At:</strong>{" "}
                 {new Date(assignment.requestedAt).toLocaleString()}
               </Typography>
-              {assignment.caseId.case_description && (
-                <Typography>
-                  <strong>Case Details:</strong>{" "}
-                  {assignment.caseId.case_description}
-                </Typography>
-              )}
-              {assignment.caseId.case_type && (
-                <Typography>
-                  <strong>Case Type:</strong> {assignment.caseId.case_type}
-                </Typography>
-              )}
+              <Typography>
+                <strong>Case Description:</strong>{" "}
+                {assignment.caseId.Case.description}
+              </Typography>
+              <Typography>
+                <strong>Judges:</strong>{" "}
+                {assignment.caseId.Case.judges
+                  .map((judge) => judge.first_name + " " + judge.last_name)
+                  .join(", ")}
+              </Typography>
+              <Button
+                size="small"
+                onClick={() => toggleExpand(assignment._id)}
+                endIcon={
+                  expandedCard === assignment._id ? (
+                    <ExpandLess />
+                  ) : (
+                    <ExpandMore />
+                  )
+                }
+              >
+                More Details
+              </Button>
+              <Collapse in={expandedCard === assignment._id}>
+                <List>
+                  <ListItem>
+                    <ListItemText
+                      primary="Case Type"
+                      secondary={assignment.caseId.Case.caseType.name}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemText
+                      primary="Case Documents"
+                      secondary={assignment.caseId.case_documents.map((doc) => (
+                        <a
+                          key={doc._id}
+                          href={`http://localhost:5000/${doc.path}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {doc.path.split("\\").pop()}
+                        </a>
+                      ))}
+                    />
+                  </ListItem>
+
+                  <ListItem>
+                    <ListItemText
+                      primary="Court Details:"
+                      secondary={
+                        assignment.caseId.Case.court_branch.name +
+                        ", " +
+                        assignment.caseId.Case.court_branch.city
+                      }
+                    />
+                  </ListItem>
+
+                  {Object.keys(assignment.caseId.Case.data).map((dataKey) => (
+                    <ListItem key={dataKey}>
+                      <ListItemText
+                        primary={dataKey}
+                        secondary={assignment.caseId.Case.data[dataKey]}
+                      />
+                    </ListItem>
+                  ))}
+
+                  <Divider />
+                </List>
+              </Collapse>
             </CardContent>
             <CardActions sx={{ justifyContent: "flex-end" }}>
               <Button

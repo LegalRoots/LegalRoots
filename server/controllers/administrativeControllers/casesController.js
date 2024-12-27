@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const CaseType = require("../../models/administrative/caseType");
 const Case = require("../../models/administrative/case");
 const Judge = require("../../models/administrative/Judge");
+const ClientCase = require("../../models/caseModel");
 const url = process.env.MONGODB_URI;
 mongoose
   .connect(url)
@@ -81,6 +82,27 @@ const addCase = async (req, res, next) => {
       data: validData,
     });
     await newCase.save();
+    const newClientCase = new ClientCase({
+      Case: newCase._id,
+      user: plaintiff,
+      user_type: "plaintiff",
+      case_documents: [],
+      tasks: [],
+      notes: [],
+      lawyer: [],
+    });
+    const newDefendantCase = new ClientCase({
+      Case: newCase._id,
+      user: defendant,
+      user_type: "defendant",
+      case_documents: [],
+      tasks: [],
+      notes: [],
+      lawyer: [],
+    });
+    await newClientCase.save();
+    await newDefendantCase.save();
+
     res.status(201).json({ message: "Case created!", case: newCase });
   } catch (error) {
     res.status(400).json({ error: error.message });

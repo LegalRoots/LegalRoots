@@ -60,3 +60,12 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
   io.emit("updateProfile", user);
   res.status(200).json({ message: "Profile updated successfully.", user });
 });
+exports.getUserBySSID = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ SSID: req.params.userId });
+
+  if (!user) {
+    return next(new AppError("User not found.", 404));
+  }
+
+  res.status(200).json({ user });
+});

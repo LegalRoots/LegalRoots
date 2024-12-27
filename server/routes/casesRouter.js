@@ -27,9 +27,11 @@ module.exports = router;
 router.get("/", casesController.getAllCases);
 router.post("/assignLawyer", casesController.assignLawyer);
 
-router.get("/user/:id", casesController.getUserCases);
-router.get("/user/:id/all", casesController.getAllUserCases);
-router.get("/lawyer/:id", casesController.getLawyerCases);
+router.get("/user/defendant/:id", casesController.getUserDefendantCases);
+router.get("/user/plaintiff/:id", casesController.getUserPlaintiffCases);
+router.get("/user/:id", casesController.getAllUserCases);
+router.get("/lawyerDefendant/:id", casesController.getLawyerDefendantCases);
+router.get("/lawyerPlaintiff/:id", casesController.getLawyerPlaintiffCases);
 router.post("/assign-lawyer/:lawyerId", casesController.assignLawyer);
 router.put("/assignments/:id", casesController.updateAssignment);
 router.get(
@@ -37,7 +39,7 @@ router.get(
   casesController.getPendingAssignments
 );
 router.get("/:id", casesController.getCase);
-router.put("/:id", casesController.updateCase);
+
 router.post("/tasks/:caseId", casesController.addTask);
 router.delete("/:caseId/tasks/:taskId", casesController.deleteTask);
 router.put("/:caseId/tasks/:taskId", casesController.updateTask);

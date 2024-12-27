@@ -14,7 +14,6 @@ mongoose
 
 const getCasesByPlaintiffSSID = async (req, res) => {
   const { plaintiff } = req.params;
-
   if (!plaintiff) {
     return res.status(400).json({ message: "plaintiff ssid is required" });
   }

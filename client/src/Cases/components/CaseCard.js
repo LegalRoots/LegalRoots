@@ -1,296 +1,204 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   Card,
   CardContent,
   Typography,
-  CardActions,
-  Button,
-  Avatar,
-  Stack,
   Chip,
+  Stack,
+  Avatar,
   Tooltip,
   Box,
-  List,
-  ListItem,
-  ListItemText,
-  Drawer,
-  TextField,
-  IconButton,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Divider,
+  Button,
 } from "@mui/material";
-import { format } from "date-fns";
-import { Close } from "@mui/icons-material";
-import axios from "axios";
 import Grid from "@mui/material/Grid2";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { format } from "date-fns";
 import { AuthContext } from "../../shared/context/auth";
-const CaseCard = () => {
-  const { user } = useContext(AuthContext);
+import { useNavigate } from "react-router-dom";
 
-  const [cases, setCases] = useState([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [newCase, setNewCase] = useState({
-    case_title: "",
-    case_type: "",
-    case_description: "",
-    court_date: "",
-  });
+const CaseCard = () => {
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const [plaintiffCases, setPlaintiffCases] = useState([]);
+  const [defendantCases, setDefendantCases] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("plaintiff");
 
   useEffect(() => {
-    const fetchCases = async () => {
+    const fetchPlaintiffCases = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/JusticeRoots/cases/user/${user._id}/all`
+          `http://localhost:5000/JusticeRoots/cases/user/plaintiff/${user.SSID}`
         );
-        setCases(response.data);
-        console.log(response.data);
+        setPlaintiffCases(response.data);
       } catch (error) {
-        console.error("Error fetching cases:", error);
+        console.error("Error fetching plaintiff cases:", error);
       }
     };
 
-    fetchCases();
-  }, []);
+    const fetchDefendantCases = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/JusticeRoots/cases/user/defendant/${user.SSID}`
+        );
+        setDefendantCases(response.data);
+      } catch (error) {
+        console.error("Error fetching defendant cases:", error);
+      }
+    };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewCase((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    fetchPlaintiffCases();
+    fetchDefendantCases();
+  }, [user.SSID]);
+  const renderCaseCard = (caseData) => {
+    const {
+      Case: {
+        caseType,
+        judges,
+        court_branch,
+        data,
+        description,
+        init_date,
+        isActive,
+        isClosed,
+      },
+      lawyer,
+    } = caseData;
+
+    return (
+      <Card
+        key={caseData._id}
+        sx={{
+          mb: 2,
+          border: `2px solid ${isClosed ? "red" : isActive ? "green" : "gray"}`,
+          borderRadius: "12px",
+          padding: 2,
+        }}
+      >
+        <CardContent>
+          <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+            <Typography variant="h6">{caseType?.name}</Typography>
+            <Chip
+              label={isClosed ? "Closed" : isActive ? "Active" : "Inactive"}
+              color={isClosed ? "error" : isActive ? "success" : "default"}
+            />
+          </Stack>
+
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Typography variant="body2" color="text.secondary">
+                {description}
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                <strong>Court:</strong> {court_branch?.name} (
+                {court_branch?.city})
+              </Typography>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                <strong>Filed On:</strong>{" "}
+                {format(new Date(init_date), "dd MMM yyyy")}
+              </Typography>
+              <Divider sx={{ mt: 2 }} />
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                <strong>Details:</strong>
+              </Typography>
+              <Stack spacing={1} mt={1}>
+                {Object.entries(data).map(([key, value]) => (
+                  <Typography key={key} variant="body2">
+                    {key}: {value}
+                  </Typography>
+                ))}
+              </Stack>
+              <Box mt={2}>
+                <Button
+                  onClick={() => {
+                    navigate(`/user/my-cases/${caseData._id}`);
+                  }}
+                  variant="contained"
+                  size="small"
+                >
+                  Show More Details
+                </Button>
+              </Box>
+            </Grid>
+
+            <Divider orientation="vertical" flexItem />
+
+            <Grid size={{ xs: 12, md: 3 }}>
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                <strong>Judges:</strong>
+              </Typography>
+              <Stack direction="row" spacing={1} mt={1}>
+                {judges.map((judge) => (
+                  <Tooltip
+                    key={judge._id}
+                    title={`${judge.first_name} ${judge.last_name}`}
+                  >
+                    <Avatar>{judge.first_name[0]}</Avatar>
+                  </Tooltip>
+                ))}
+              </Stack>
+              <Typography variant="body2" sx={{ mt: 2 }}>
+                <strong>Lawyers:</strong>
+              </Typography>
+              <Stack direction="row" spacing={1} mt={1}>
+                {lawyer &&
+                  lawyer.map((lawyerr) => (
+                    <Tooltip
+                      key={lawyerr._id}
+                      title={`${lawyerr.first_name} ${lawyerr.last_name}`}
+                    >
+                      <Avatar>{lawyerr.first_name[0]}</Avatar>
+                    </Tooltip>
+                  ))}
+              </Stack>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+    );
   };
 
-  const handleAddCase = async () => {
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/JusticeRoots/cases?userId=${user._id}`,
-        newCase
-      );
-      setCases((prev) => [...prev, response.data]);
-      setDrawerOpen(false);
-    } catch (error) {
-      console.error("Error adding new case:", error);
-    }
-  };
+  const renderCases = () => {
+    const cases =
+      selectedCategory === "plaintiff" ? plaintiffCases : defendantCases;
 
-  const handleMarkDone = async (caseId) => {
-    try {
-      const response = await axios.post(
-        `http://localhost:5000/JusticeRoots/cases/markDone`,
-        {
-          caseId,
-        }
+    if (cases.length === 0) {
+      return (
+        <Typography>No cases where you are a {selectedCategory}.</Typography>
       );
-      const updatedCases = cases.map((caseItem) =>
-        caseItem._id === caseId ? response.data : caseItem
-      );
-      setCases(updatedCases);
-    } catch (error) {
-      console.error("Error marking case as done:", error);
     }
+
+    return cases.map((caseData) => renderCaseCard(caseData));
   };
 
   return (
-    <Box sx={{ width: "80%" }}>
-      <Typography gutterBottom variant="h4" component="div">
-        Cases
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        sx={{ marginBottom: "16px", width: "fit-content" }}
-        onClick={() => setDrawerOpen(true)}
-      >
-        Add New Case
-      </Button>
-      <Grid
-        sx={{
-          width: "100%",
-        }}
-        container
-        spacing={2}
-      >
-        {cases.map((caseItem) => (
-          <Grid key={caseItem._id} size={{ xs: 12, sm: 6, md: 4 }}>
-            <Card
-              key={caseItem._id}
-              sx={{
-                height: "100%",
-                width: "100%",
-                borderRadius: 2,
-                marginBottom: "16px",
-              }}
-            >
-              <CardContent>
-                <Typography
-                  variant="h5"
-                  component="div"
-                  sx={{ fontWeight: "bold", marginBottom: "8px" }}
-                >
-                  {caseItem.case_title}
-                </Typography>
-                <Chip
-                  label={caseItem.case_type}
-                  sx={{
-                    backgroundColor: "primary.main",
-                    color: "white",
-                    fontWeight: "bold",
-                    marginBottom: "12px",
-                  }}
-                />
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ marginBottom: "12px" }}
-                >
-                  {caseItem.case_description}
-                </Typography>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  sx={{ marginBottom: "12px" }}
-                >
-                  <Tooltip title="Lawyer">
-                    <Avatar sx={{ bgcolor: "#4caf50" }}>
-                      {caseItem.lawyer
-                        ? caseItem.lawyer.first_name.charAt(0).toUpperCase()
-                        : "N/A"}
-                    </Avatar>
-                  </Tooltip>
-                  <Typography variant="subtitle1" color="text.primary">
-                    {caseItem.lawyer
-                      ? caseItem.lawyer.first_name +
-                        " " +
-                        caseItem.lawyer.last_name
-                      : "No lawyer assigned"}
-                  </Typography>
-                </Stack>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Court Date:{" "}
-                  <span style={{ fontWeight: "bold" }}>
-                    {format(
-                      new Date(caseItem.court_date),
-                      "MMMM dd, yyyy h:mm a"
-                    )}
-                  </span>
-                </Typography>
-                <Typography
-                  variant="subtitle2"
-                  color={
-                    caseItem.status === "Open" ? "success.main" : "warning.main"
-                  }
-                  sx={{ marginTop: "12px", fontWeight: "bold" }}
-                >
-                  Status: {caseItem.status}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Box
-                  sx={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Button
-                    onClick={() => {
-                      navigate(`/user/my-cases/${caseItem._id}`);
-                    }}
-                    variant="outlined"
-                    size="small"
-                    color="primary"
-                  >
-                    View Details
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      handleMarkDone(caseItem._id);
-                    }}
-                    variant="outlined"
-                    size="small"
-                    color="secondary"
-                  >
-                    Mark as Completed
-                  </Button>
-                </Box>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-      <Drawer
-        anchor="right"
-        open={drawerOpen}
-        PaperProps={{ width: 400 }}
-        onClose={() => setDrawerOpen(false)}
-      >
-        <Box
-          sx={{
-            width: 400,
-            padding: 2,
-          }}
+    <Box sx={{ padding: 4 }}>
+      <FormControl fullWidth sx={{ mb: 4 }}>
+        <InputLabel id="case-category-select-label">Case Category</InputLabel>
+        <Select
+          labelId="case-category-select-label"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
         >
-          <Box sx={{ display: "flex" }} mb={2}>
-            <Typography width={"100%"} variant="h6">
-              Add New Case
-            </Typography>
-            <IconButton
-              sx={{ width: "20px" }}
-              onClick={() => setDrawerOpen(false)}
-            >
-              <Close />
-            </IconButton>
-          </Box>
-          <TextField
-            fullWidth
-            label="Case Title"
-            name="case_title"
-            value={newCase.case_title}
-            onChange={handleInputChange}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Case Type"
-            name="case_type"
-            value={newCase.case_type}
-            onChange={handleInputChange}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Case Description"
-            name="case_description"
-            value={newCase.case_description}
-            onChange={handleInputChange}
-            margin="normal"
-            multiline
-            rows={4}
-          />
-          <TextField
-            fullWidth
-            label="Court Date"
-            name="court_date"
-            value={newCase.court_date}
-            onChange={handleInputChange}
-            margin="normal"
-            type="datetime-local"
-            slotProps={{
-              inputLabel: { shrink: true },
-            }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ marginTop: "16px" }}
-            onClick={handleAddCase}
-          >
-            Add Case
-          </Button>
-        </Box>
-      </Drawer>
+          <MenuItem value="plaintiff">Plaintiff Cases</MenuItem>
+          <MenuItem value="defendant">Defendant Cases</MenuItem>
+        </Select>
+      </FormControl>
+
+      <Grid container spacing={4}>
+        <Grid size={12}>
+          <Typography variant="h5" gutterBottom>
+            {selectedCategory === "plaintiff"
+              ? "Plaintiff Cases"
+              : "Defendant Cases"}
+          </Typography>
+          {renderCases()}
+        </Grid>
+      </Grid>
     </Box>
   );
 };

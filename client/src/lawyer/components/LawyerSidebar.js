@@ -47,7 +47,6 @@ const LawyerSidebar = () => {
       <Divider color="gold" />
       <List>
         <ListItem
-          button
           selected={activeItem === "main-feed"}
           onClick={() => handleItemClick("main-feed")}
         >
@@ -58,7 +57,6 @@ const LawyerSidebar = () => {
         </ListItem>
 
         <ListItem
-          button
           selected={activeItem === "pending-cases"}
           onClick={() => handleItemClick("pending-cases")}
         >
@@ -69,7 +67,6 @@ const LawyerSidebar = () => {
         </ListItem>
 
         <ListItem
-          button
           selected={activeItem === "my-cases"}
           onClick={() => handleItemClick("my-cases")}
         >
@@ -80,7 +77,6 @@ const LawyerSidebar = () => {
         </ListItem>
 
         <ListItem
-          button
           selected={activeItem === "profile-settings"}
           onClick={() => handleItemClick("profile-settings")}
         >
