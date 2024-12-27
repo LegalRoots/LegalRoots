@@ -119,7 +119,7 @@ const getAssignedCasesByEmployeeId = async (req, res) => {
   }
 
   try {
-    assignedCases = await AssignedCases.find({ employeeId: id })
+    assignedCases = await AssignedCases.find({ employeeId: id, isValid: true })
       .populate("caseId")
       .populate("employeeId", "-employee_photo -id_photo");
 
@@ -143,8 +143,84 @@ const getAssignedCasesByEmployeeId = async (req, res) => {
   }
 };
 
+const updateAssignment = async (req, res) => {
+  try {
+    const { caseId, employeeId, assignmentId } = req.body;
+
+    if (!caseId || !employeeId || !assignmentId) {
+      return res.status(400).json({
+        message: "caseId, employeeId, and assignmentId are required.",
+      });
+    }
+
+    if (
+      caseId.length !== 24 ||
+      employeeId.length !== 24 ||
+      assignmentId.length !== 24
+    ) {
+      return res.status(400).json({
+        message: "Invalid caseId, employeeId, or assignmentId.",
+      });
+    }
+
+    const employee = await Employee.findById({ _id: employeeId }).exec();
+    const chosenCase = await Case.findById({ _id: caseId }).exec();
+    const existingAssignment = await AssignedCases.findById({
+      _id: assignmentId,
+    }).exec();
+
+    if (!employee) {
+      return res.status(404).json({
+        message: "Employee not found.",
+      });
+    }
+
+    if (!chosenCase) {
+      return res.status(404).json({
+        message: "Case not found.",
+      });
+    }
+
+    if (!existingAssignment) {
+      return res.status(404).json({
+        message: "Assignment not found.",
+      });
+    }
+
+    // Invalidate the previous assignment for the case
+    const prevAssignment = await AssignedCases.findOneAndUpdate(
+      { caseId: caseId, isValid: true },
+      { isValid: false, disable_date: new Date() },
+      { new: true }
+    );
+
+    // Create a new assignment
+    const newAssignment = new AssignedCases({
+      caseId,
+      employeeId,
+      isValid: true,
+      add_date: new Date(),
+    });
+
+    const savedAssignment = await newAssignment.save();
+
+    res.status(201).json({
+      message: "Assignment updated successfully!",
+      previousAssignment: prevAssignment,
+      newAssignment: savedAssignment,
+    });
+  } catch (error) {
+    console.error("Error updating assignment:", error);
+    res.status(500).json({
+      message: "Failed to update assignment.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createAssignment,
   getAllAssignedCases,
   getAssignedCasesByEmployeeId,
+  updateAssignment,
 };

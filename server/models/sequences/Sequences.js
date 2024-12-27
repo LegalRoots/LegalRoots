@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const SequenceScehma = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
+  sequenceName: { type: String, required: true, unique: true },
   seq: { type: Number, default: 0 },
 });
 

@@ -1,6 +1,6 @@
 import "./Select.css";
 
-const Select = ({ id, label, value, options, placeholder, onChange }) => {
+const Select = ({ id, label, value, options, placeholder, onChange, name }) => {
   return (
     <div className="custom-select">
       <label htmlFor={id}>{label}</label>
@@ -9,6 +9,7 @@ const Select = ({ id, label, value, options, placeholder, onChange }) => {
         onChange={onChange}
         value={value}
         className="custom-select"
+        name={name}
       >
         {placeholder && (
           <option disabled value={placeholder.toLowerCase()}>

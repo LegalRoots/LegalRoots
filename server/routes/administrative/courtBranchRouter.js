@@ -3,6 +3,8 @@ const courtBranchController = require("../../controllers/administrativeControlle
 const router = express.Router();
 
 router.post("/court-branch", courtBranchController.createCourtBranch);
+router.put("/court-branch/:id?", courtBranchController.updateCourtBranch);
+
 router.get("/court-branch", courtBranchController.getAllCourtBranches);
 router.get("/court-branch/:id", courtBranchController.getCourtBranchById);
 

@@ -16,6 +16,10 @@
   width: 100%;
 }
 
+.admin-case-profile-pages > div {
+  min-height: 400px;
+}
+
 .admin-case-profile-buttons {
   display: flex;
   align-items: center;

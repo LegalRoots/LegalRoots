@@ -9,6 +9,10 @@ import Judge from "../pages/Judges/Judges";
 import JoinOnlineCourt from "../pages/JoinOnlineCourt/JoinOnlineCourt";
 import Courts from "../pages/Courts/Courts";
 import Cases from "../pages/Cases/Cases";
+import Profile from "../pages/Profile/Profile";
+import Assignments from "../pages/Assignments/Assignments";
+import ScheduledCourts from "../pages/ScheduledCourts/ScheduledCourts";
+import CourtBranch from "../pages/courtBranches/CourtBranch";
 
 const Administrative = () => {
   let routes = (
@@ -19,6 +23,10 @@ const Administrative = () => {
       <Route path="/onlinecourt" Component={Courts} />
       <Route path="/onlinecourt/join" Component={JoinOnlineCourt} />
       <Route path="/cases/*" Component={Cases} />
+      <Route path="/profile/:id" Component={Profile} />
+      <Route path="/assignments/*" Component={Assignments} />
+      <Route path="/courts/scheduled/*" Component={ScheduledCourts} />
+      <Route path="/courtbranch/*" Component={CourtBranch} />
     </Routes>
   );
   return (

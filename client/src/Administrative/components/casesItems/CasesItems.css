@@ -81,11 +81,13 @@
   justify-content: center;
   align-items: flex-start;
   width: 100%;
+  background: white;
+  border-radius: 10px;
 }
 
 .casesItems-container-wrapper-table {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   width: 100%;
@@ -95,8 +97,24 @@
   padding: 1rem;
   animation: admin-table-grow 300ms linear forwards;
   overflow: hidden;
+  overflow-x: scroll;
 }
 
 .casesItems-container-table button {
   background-color: var(--gold);
+}
+
+@media only screen and (max-width: 900px) {
+  .casesItems-container-charts-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+  .casesItems-container-chart {
+    width: 100%;
+    padding: 4rem;
+  }
 }
