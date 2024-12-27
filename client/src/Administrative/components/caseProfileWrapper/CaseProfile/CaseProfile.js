@@ -49,7 +49,7 @@ const CaseProfile = ({ pickedCase, evidencesList, judgesList }) => {
         </button>
       </div>
       <div className="admin-case-profile-pages">
-        {profilePagesState === 1 && evidencesList?.length > 0 ? (
+        {profilePagesState === 1 ? (
           <EvidencesList evidences={evidencesList} />
         ) : profilePagesState === 2 ? (
           <CourtsList

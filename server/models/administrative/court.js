@@ -51,7 +51,8 @@ const CourtSchema = new mongoose.Schema(
       required: true,
     },
     initiator: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Judge",
       required: true,
     },
     admins: {

@@ -23,6 +23,8 @@ router.get(
   employeesController.getEmployeesByCourtName
 );
 router.get("/employees", employeesController.getEmployees);
+router.get("/employees/ssid/:ssid?", employeesController.getEmployeeBySSID);
+
 router.get("/employees/light", employeesController.getEmployeesLight);
 router.post(
   "/judges",
@@ -33,5 +35,6 @@ router.post(
 //judges
 router.get("/judges", judgesController.getJudges);
 router.get("/judges/:id", judgesController.getJudgeById);
+router.get("/judges/ssid/:id", judgesController.getJudgeBySSID);
 router.get("/judges/court/:id", judgesController.getJudgesByCourtId);
 module.exports = router;

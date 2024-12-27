@@ -4,6 +4,7 @@ const router = express.Router();
 
 //create cases
 router.post("/case/assign", assignedCasesController.createAssignment);
+router.post("/case/reassign", assignedCasesController.updateAssignment);
 
 router.get("/case/assigned", assignedCasesController.getAllAssignedCases);
 router.get(

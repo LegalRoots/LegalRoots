@@ -60,9 +60,13 @@ function Evidence({ evidence }) {
 function EvidencesList({ evidences }) {
   return (
     <div className="admin-evidences-container">
-      {evidences.map((evidence) => (
-        <Evidence key={evidence._id} evidence={evidence} />
-      ))}
+      {evidences ? (
+        evidences.map((evidence) => (
+          <Evidence key={evidence._id} evidence={evidence} />
+        ))
+      ) : (
+        <div>no evidences found</div>
+      )}
     </div>
   );
 }

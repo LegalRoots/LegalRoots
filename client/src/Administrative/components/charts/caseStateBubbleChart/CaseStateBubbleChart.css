@@ -26,3 +26,19 @@
 .casesItems-container-bubblechart-wrapper > div:nth-child(2) label {
   font-size: 12px;
 }
+
+@media only screen and (max-width: 900px) {
+  .casesItems-container-bubblechart-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    background-color: white;
+    min-height: 500px;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 10px;
+  }
+}

@@ -1,0 +1,32 @@
+.admin-assignments-table__newCourt {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  gap: 0.3rem;
+  padding-left: 0.5rem;
+  transition: 0.3s ease;
+}
+
+.admin-assignments-table-actions {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-assignments-table__newCourt p {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+.admin-assignments-table__newCourt i {
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+}
+
+.admin-assignments-table__newCourt:hover {
+  color: var(--gold);
+}

@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../../shared/context/auth";
 import { useContext } from "react";
 const Sidebar = () => {
-  const { logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
+
   return (
     <div className="sidebar-container">
       <div className="sidebar-logo">
@@ -12,6 +13,9 @@ const Sidebar = () => {
         <p>Administrative Commision</p>
       </div>
       <div className="sidebar-links">
+        <Link to={`/admin/profile/${user.ssid}`}>
+          <p>Profile</p>
+        </Link>
         <Link to="/admin/emp">
           <p>Employees</p>
         </Link>
@@ -27,14 +31,17 @@ const Sidebar = () => {
         <Link to="/admin/onlinecourt">
           <p>Courts</p>
         </Link>
+        <Link to="/admin/courts/scheduled">
+          <p>Scheduled Courts</p>
+        </Link>
         <Link to="/admin/cases">
           <p>Cases</p>
         </Link>
-        <Link to="/admin/onlinecourt">
-          <p>Acounts</p>
+        <Link to="/admin/assignments">
+          <p>Assignments</p>
         </Link>
-        <Link to="/admin/onlinecourt">
-          <p>History</p>
+        <Link to="/admin/courtbranch">
+          <p>Court Branches</p>
         </Link>
       </div>
       <div className="sidebar-links__logout">

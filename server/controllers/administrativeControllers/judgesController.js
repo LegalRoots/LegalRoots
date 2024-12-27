@@ -125,6 +125,40 @@ const getJudgeById = async (req, res, next) => {
   res.json(judge);
 };
 
+const getJudgeBySSID = async (req, res, next) => {
+  if (!req.params.id) {
+    return res.status(400).json({ message: "id not found" });
+  }
+
+  const result = await Judge.findOne({ ssid: req.params.id })
+    .populate("court_name")
+    .exec();
+
+  if (!result) {
+    return res.status(404).json({ message: "judge not found" });
+  }
+
+  const judge_photo = result.judge_photo?.toString("base64");
+  const id_photo = result.id_photo?.toString("base64");
+  const pp_photo = result.pp_photo?.toString("base64");
+
+  let judge = { data: result };
+
+  if (judge_photo) {
+    judge = { ...judge, judge_photo: judge_photo };
+    result.judge_photo = "";
+  }
+  if (id_photo) {
+    judge = { ...judge, id_photo: id_photo };
+    result.id_photo = "";
+  }
+  if (pp_photo) {
+    judge = { ...judge, pp_photo: pp_photo };
+    result.pp_photo = "";
+  }
+  res.json(judge);
+};
+
 const getJudgesByCourtId = async (req, res, next) => {
   if (!req.params.id) {
     return res.status(400).json({ message: "id not found" });
@@ -138,10 +172,11 @@ const getJudgesByCourtId = async (req, res, next) => {
   if (result.length === 0) {
     return res.status(404).json({ message: "judges not found" });
   }
-  res.status(200).json({ judges: result });
+  res.status(200).json({ result });
 };
 
 exports.addJudge = addJudge;
 exports.getJudges = getJudges;
 exports.getJudgeById = getJudgeById;
 exports.getJudgesByCourtId = getJudgesByCourtId;
+exports.getJudgeBySSID = getJudgeBySSID;

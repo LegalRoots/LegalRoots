@@ -15,7 +15,7 @@
   align-items: flex-start;
 
   background: linear-gradient(90deg, var(--black) 20%, var(--white) 40%);
-  box-shadow: 0.5px 0.5px 2px rgba(50, 50, 50, 0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 1rem;
   width: 100%;
   overflow: hidden;

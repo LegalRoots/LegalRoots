@@ -81,6 +81,9 @@ const addCase = async (req, res, next) => {
       data: validData,
     });
     await newCase.save();
+
+    LAST_WRITE_TO_CASE = new Date();
+
     res.status(201).json({ message: "Case created!", case: newCase });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -107,6 +110,7 @@ const getCasesByCaseTypeId = async (req, res) => {
 
     // Return the found cases
     res.status(200).json({ cases });
+    LAST_FETCH_BY_CASETYPEID = new Date();
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -114,9 +118,14 @@ const getCasesByCaseTypeId = async (req, res) => {
 };
 
 const getAllCases = async (req, res) => {
+  const courtId = req.query.court;
+
   try {
-    // Fetch all cases from the database
-    const cases = await Case.find().populate([
+    let filter = {};
+    if (courtId && courtId.length === 24) {
+      filter.court_branch = courtId;
+    }
+    let cases = await Case.find(filter).populate([
       { path: "court_branch", select: "name" },
       {
         path: "caseType",

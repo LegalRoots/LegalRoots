@@ -1,8 +1,9 @@
 import { useParams, useLocation } from "react-router-dom";
-import "./CaseProfileWrapper.css";
 import { useEffect, useState } from "react";
 import { useFetch } from "../../../shared/hooks/useFetch";
 import CaseProfile from "./CaseProfile/CaseProfile";
+
+import "./CaseProfileWrapper.css";
 
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
