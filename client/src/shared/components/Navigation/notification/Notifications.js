@@ -58,7 +58,7 @@ const Notifications = ({ userId }) => {
     );
     try {
       await fetch(
-        `/JusticeRoots/notifications/${userId}/${type}/read/${notificationId}`,
+        `http://localhost:5000/JusticeRoots/notifications/${userId}/${type}/read/${notificationId}`,
         {
           method: "PUT",
         }

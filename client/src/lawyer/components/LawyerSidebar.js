@@ -8,6 +8,7 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
+import GroupsIcon from "@mui/icons-material/Groups";
 import PendingIcon from "@mui/icons-material/Pending";
 import {
   Dashboard,
@@ -46,48 +47,142 @@ const LawyerSidebar = () => {
       </Typography>
       <Divider color="gold" />
       <List>
+        {/* Main Feed */}
         <ListItem
-          button
           selected={activeItem === "main-feed"}
           onClick={() => handleItemClick("main-feed")}
+          sx={{
+            backgroundColor:
+              activeItem === "main-feed" ? "primary.main" : "inherit",
+            color: activeItem === "main-feed" ? "white" : "inherit",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            },
+          }}
         >
           <ListItemIcon>
-            <Forum sx={{ color: "primary.main" }} />
+            <Forum
+              sx={{
+                color: activeItem === "main-feed" ? "white" : "primary.main",
+              }}
+            />
           </ListItemIcon>
-          <Typography sx={{ color: "white" }}>Main Feed</Typography>
+          <Typography
+            sx={{ color: activeItem === "main-feed" ? "white" : "inherit" }}
+          >
+            Main Feed
+          </Typography>
         </ListItem>
 
+        {/* Pending Cases */}
         <ListItem
-          button
           selected={activeItem === "pending-cases"}
           onClick={() => handleItemClick("pending-cases")}
+          sx={{
+            backgroundColor:
+              activeItem === "pending-cases" ? "primary.main" : "inherit",
+            color: activeItem === "pending-cases" ? "white" : "inherit",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            },
+          }}
         >
           <ListItemIcon>
-            <PendingIcon sx={{ color: "primary.main" }} />
+            <PendingIcon
+              sx={{
+                color:
+                  activeItem === "pending-cases" ? "white" : "primary.main",
+              }}
+            />
           </ListItemIcon>
-          <Typography sx={{ color: "white" }}>Pending Cases</Typography>
+          <Typography
+            sx={{ color: activeItem === "pending-cases" ? "white" : "inherit" }}
+          >
+            Pending Cases
+          </Typography>
         </ListItem>
 
+        {/* My Cases */}
         <ListItem
-          button
           selected={activeItem === "my-cases"}
           onClick={() => handleItemClick("my-cases")}
+          sx={{
+            backgroundColor:
+              activeItem === "my-cases" ? "primary.main" : "inherit",
+            color: activeItem === "my-cases" ? "white" : "inherit",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            },
+          }}
         >
           <ListItemIcon>
-            <Gavel sx={{ color: "primary.main" }} />
+            <Gavel
+              sx={{
+                color: activeItem === "my-cases" ? "white" : "primary.main",
+              }}
+            />
           </ListItemIcon>
-          <Typography sx={{ color: "white" }}>My Cases</Typography>
+          <Typography
+            sx={{ color: activeItem === "my-cases" ? "white" : "inherit" }}
+          >
+            My Cases
+          </Typography>
+        </ListItem>
+
+        {/* Join a Court */}
+        <ListItem
+          selected={activeItem === "join-court"}
+          onClick={() => handleItemClick("join-court")}
+          sx={{
+            backgroundColor:
+              activeItem === "join-court" ? "primary.main" : "inherit",
+            color: activeItem === "join-court" ? "white" : "inherit",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            },
+          }}
+        >
+          <ListItemIcon>
+            <GroupsIcon
+              sx={{
+                color: activeItem === "join-court" ? "white" : "primary.main",
+              }}
+            />
+          </ListItemIcon>
+          <Typography
+            sx={{ color: activeItem === "join-court" ? "white" : "inherit" }}
+          >
+            Join a Court
+          </Typography>
         </ListItem>
 
         <ListItem
-          button
           selected={activeItem === "profile-settings"}
           onClick={() => handleItemClick("profile-settings")}
+          sx={{
+            backgroundColor:
+              activeItem === "profile-settings" ? "primary.main" : "inherit",
+            color: activeItem === "profile-settings" ? "white" : "inherit",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            },
+          }}
         >
           <ListItemIcon>
-            <Settings sx={{ color: "primary.main" }} />
+            <Settings
+              sx={{
+                color:
+                  activeItem === "profile-settings" ? "white" : "primary.main",
+              }}
+            />
           </ListItemIcon>
-          <Typography sx={{ color: "white" }}>Profile Settings</Typography>
+          <Typography
+            sx={{
+              color: activeItem === "profile-settings" ? "white" : "inherit",
+            }}
+          >
+            Profile Settings
+          </Typography>
         </ListItem>
       </List>
     </div>

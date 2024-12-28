@@ -2,6 +2,7 @@ const Case = require("../models/caseModel");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
+const User = require("../models/userModel");
 const Lawyer = require("../models/lawyerModel");
 const path = require("path");
 const { assign } = require("nodemailer/lib/shared");
@@ -52,9 +53,27 @@ exports.getCase = async (req, res, next) => {
   try {
     const caseData = await Case.findById(id)
       .populate("user", "name email")
-      .populate("lawyer", "first_name last_name specialization")
-      .populate("tasks.assignedTo", "first_name last_name email")
+
+      .populate("lawyer")
       .populate("notes.addedBy", "first_name last_name email")
+      .populate({
+        path: "Case",
+        populate: [
+          { path: "caseType" },
+          {
+            path: "court_branch",
+            populate: { path: "admin", select: "full_name" },
+          },
+          {
+            path: "judges",
+            populate: { path: "court_name", select: "full_name" },
+          },
+          { path: "plaintiff" },
+          { path: "defendant" },
+          { path: "defendant_lawyers" },
+          { path: "plaintiff_lawyers" },
+        ],
+      })
       .exec();
 
     res.json(caseData);
@@ -68,13 +87,11 @@ exports.uploadDocument = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const caseData = await Case.findById(id)
-      .populate("user", "name email")
-      .exec();
+    const caseData = await Case.findById(id);
+
     if (!caseData) {
       return res.status(404).json({ message: "Case not found!" });
     }
-
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded!" });
     }
@@ -85,8 +102,7 @@ exports.uploadDocument = async (req, res, next) => {
       path: `${req.file.path}`,
       extension: fileExtension,
     });
-
-    await caseData.save();
+    await caseData.save({ validateModifiedOnly: true });
     res.status(200).json({
       message: "Document uploaded successfully!",
       case: caseData,
@@ -98,60 +114,138 @@ exports.uploadDocument = async (req, res, next) => {
       .json({ message: "Failed to upload document", error: error.message });
   }
 };
-exports.updateCase = async (req, res, next) => {
-  const io = req.app.get("io");
-  const { id } = req.params;
-  const { case_title, case_type, case_description, court_date } = req.body;
-  const updatedCase = await Case.findByIdAndUpdate(
-    id,
-    { case_title, case_type, case_description, court_date },
-    { new: true }
-  );
-  res.json(updatedCase);
-};
+
 exports.addNote = async (req, res, next) => {
-  const { id } = req.params;
-  const { note } = req.body;
-  const { user } = req.body;
-  const newNote = {
-    note,
-    addedBy: user,
-  };
-  const updatedCase = await Case.findByIdAndUpdate(
-    id,
-    { $push: { notes: newNote } },
-    { new: true }
-  );
-  sendNotification(
-    updatedCase.user,
-    "User",
-    `New note added to case: ${updatedCase.case_title}`,
-    req.app.get("io")
-  );
-  res.json(updatedCase);
+  try {
+    const { id } = req.params;
+    const { note, user, userType } = req.body;
+    if (!["User", "Lawyer"].includes(userType)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid userType. Must be 'User' or 'Lawyer'." });
+    }
+
+    const newNote = {
+      note,
+      addedBy: user,
+      addedByType: userType,
+    };
+
+    const updatedCase = await Case.findByIdAndUpdate(
+      id,
+      { $push: { notes: newNote } },
+      { new: true }
+    ).populate("notes.addedBy");
+
+    if (!updatedCase) {
+      return res.status(404).json({ error: "Case not found." });
+    }
+
+    const userA = await User.find({ SSID: updatedCase.user });
+    sendNotification(
+      userA[0]._id.toString(),
+      "User",
+      `New note added to case: ${updatedCase.Case._id}`,
+      req.app.get("io")
+    );
+
+    updatedCase.lawyer.forEach((lawyer) => {
+      sendNotification(
+        lawyer,
+        "Lawyer",
+        `New note added to case: ${updatedCase.Case._id}`,
+        req.app.get("io")
+      );
+    });
+
+    res.status(200).json(updatedCase);
+  } catch (error) {
+    console.error("Error adding note:", error);
+    res.status(500).json({ error: "An error occurred while adding the note." });
+  }
 };
-exports.deleteCase = async (req, res, next) => {
-  const { id } = req.params;
-  await Case.findByIdAndDelete(id);
-  res.json({ message: "Case deleted successfully!" });
-};
-exports.getUserCases = async (req, res, next) => {
+
+exports.getUserDefendantCases = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const cases = await Case.find({ user: id, lawyer: null })
+    const cases = await Case.find({ user: id, user_type: "defendant" })
       .populate("lawyer", "first_name last_name")
+      .populate({
+        path: "Case",
+        populate: [
+          { path: "caseType" },
+          { path: "court_branch" },
+          { path: "judges" },
+          { path: "plaintiff" },
+          { path: "defendant" },
+          { path: "defendant_lawyers" },
+          { path: "plaintiff_lawyers" },
+        ],
+      })
+      .populate("user")
+      .populate("notes.addedBy", "first_name last_name email")
       .exec();
+    res.json(cases);
+  } catch (error) {
+    console.error("Error fetching user cases:", error);
+
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getUserPlaintiffCases = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const cases = await Case.find({ user: id, user_type: "plaintiff" })
+      .populate("lawyer", "first_name last_name")
+
+      .populate({
+        path: "Case",
+        populate: [
+          { path: "caseType" },
+          {
+            path: "court_branch",
+            populate: { path: "admin", select: "full_name" },
+          },
+          { path: "judges" },
+          { path: "plaintiff" },
+          { path: "defendant" },
+          { path: "defendant_lawyers" },
+          { path: "plaintiff_lawyers" },
+        ],
+      })
+
+      .populate("notes.addedBy", "first_name last_name email")
+      .populate("lawyer")
+      .exec();
+    console.log(cases);
+
     res.json(cases);
   } catch (error) {
     console.error("Error fetching user cases:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 exports.getAllUserCases = async (req, res, next) => {
   const { id } = req.params;
   try {
     const cases = await Case.find({ user: id })
-      .populate("lawyer", "first_name last_name")
+      .populate({
+        path: "Case",
+        populate: [
+          { path: "caseType" },
+          {
+            path: "court_branch",
+            populate: { path: "admin", select: "full_name" },
+          },
+          { path: "judges" },
+          { path: "plaintiff" },
+          { path: "defendant" },
+          { path: "defendant_lawyers" },
+          { path: "plaintiff_lawyers" },
+        ],
+      })
       .exec();
     res.json(cases);
   } catch (error) {
@@ -160,13 +254,54 @@ exports.getAllUserCases = async (req, res, next) => {
   }
 };
 
-exports.getLawyerCases = async (req, res, next) => {
+exports.getLawyerDefendantCases = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const cases = await Case.find({
-      lawyer: id,
-    })
-      .populate("user", "first_name last_name email")
+    const cases = await Case.find({ lawyer: id, user_type: "defendant" })
+      .populate("lawyer", "first_name last_name")
+      .populate({
+        path: "Case",
+        populate: [
+          { path: "caseType" },
+          {
+            path: "court_branch",
+            populate: { path: "admin", select: "full_name" },
+          },
+          { path: "judges" },
+          { path: "plaintiff" },
+          { path: "defendant" },
+          { path: "defendant_lawyers" },
+          { path: "plaintiff_lawyers" },
+        ],
+      })
+      .exec();
+    res.json(cases);
+  } catch (error) {
+    console.error("Error fetching lawyer cases:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getLawyerPlaintiffCases = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const cases = await Case.find({ lawyer: id, user_type: "plaintiff" })
+      .populate("lawyer", "first_name last_name")
+      .populate({
+        path: "Case",
+        populate: [
+          { path: "caseType" },
+          {
+            path: "court_branch",
+            populate: { path: "admin", select: "full_name" },
+          },
+          { path: "judges" },
+          { path: "plaintiff" },
+          { path: "defendant" },
+          { path: "defendant_lawyers" },
+          { path: "plaintiff_lawyers" },
+        ],
+      })
       .exec();
     res.json(cases);
   } catch (error) {
@@ -177,14 +312,22 @@ exports.getLawyerCases = async (req, res, next) => {
 
 exports.assignLawyer = async (req, res) => {
   const { lawyerId, caseId } = req.body;
+
   try {
+    const CASE = await Case.findById(caseId).populate("lawyer");
+    if (CASE.lawyer.some((lawyer) => lawyer._id.toString() === lawyerId)) {
+      return res.status(400).json({
+        message: "Lawyer already assigned to this case",
+      });
+    }
+
     const lawyer = await Lawyer.findById(lawyerId).select("-passwordConfirm");
     if (!lawyer) {
       return res.status(404).json({ message: "Lawyer not found" });
     }
+
     const clientId = req.body.user;
     const existingAssignment = lawyer.assignments.find((assignment) => {
-      console.log(assignment);
       return (
         assignment.caseId.toString() === caseId &&
         assignment.clientId.toString() === clientId &&
@@ -198,7 +341,10 @@ exports.assignLawyer = async (req, res) => {
           "You already have a pending request with this lawyer for the selected case.",
       });
     }
+
     lawyer.assignments.push({ clientId, caseId });
+
+    const user = await User.findById(clientId);
 
     sendNotification(
       clientId,
@@ -209,22 +355,25 @@ exports.assignLawyer = async (req, res) => {
     sendNotification(
       lawyer._id,
       "Lawyer",
-      `New assignment request from client: ${clientId}`,
+      `New assignment request from client: ${user.first_name} ${user.last_name}`,
       req.app.get("io")
     );
+
     await lawyer.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Assignment request sent successfully!",
     });
   } catch (error) {
     console.error("Error assigning lawyer:", error);
-    res.status(500).json({
+
+    return res.status(500).json({
       message: "An error occurred while assigning the lawyer.",
       error,
     });
   }
 };
+
 exports.confirmLawyerAssignment = async (req, res) => {
   const { lawyerId, assignmentId } = req.params;
   const { status } = req.body;
@@ -246,13 +395,27 @@ exports.getPendingAssignments = async (req, res) => {
   const { lawyerId } = req.params;
 
   try {
-    const lawyer = await Lawyer.findById(lawyerId).populate({
-      path: "assignments",
-      populate: [
-        { path: "clientId", select: "first_name last_name email" },
-        { path: "caseId", select: "case_title case_description case_type" },
-      ],
-    });
+    const lawyer = await Lawyer.findById(lawyerId)
+      .select("assignments")
+      .populate("assignments.clientId", "first_name last_name email")
+      .populate({
+        path: "assignments.caseId",
+        populate: {
+          path: "Case",
+          populate: [
+            { path: "caseType" },
+            {
+              path: "court_branch",
+              populate: { path: "admin", select: "full_name" },
+            },
+            { path: "judges" },
+            { path: "plaintiff" },
+            { path: "defendant" },
+            { path: "defendant_lawyers" },
+            { path: "plaintiff_lawyers" },
+          ],
+        },
+      });
 
     if (!lawyer) {
       return res.status(404).json({ message: "Lawyer not found" });
@@ -278,9 +441,29 @@ exports.updateAssignment = async (req, res) => {
     { $set: { "assignments.$.status": status } },
     { new: true }
   );
-  await Case.findByIdAndUpdate(updatedAssignment.assignments.id(id).caseId, {
-    lawyer: status === "Accepted" ? updatedAssignment._id : null,
+
+  if (status === "Denied") {
+    return res.json(updatedAssignment);
+  }
+
+  const updatedCase = await Case.findByIdAndUpdate(
+    updatedAssignment.assignments.id(id).caseId,
+    {
+      lawyer: status === "Accepted" ? updatedAssignment._id : null,
+    },
+    { new: true }
+  ).populate("Case");
+
+  if (updatedCase.user_type === "plaintiff") {
+    updatedCase.Case.plaintiff_lawyers.push(updatedAssignment.SSID);
+  } else {
+    updatedCase.Case.defendant_lawyers.push(updatedAssignment.SSID);
+  }
+  await updatedCase.lawyer.push(updatedAssignment._id);
+  updatedCase.Case.save({
+    validateBeforeSave: false,
   });
+
   const lawyer = await Lawyer.findById(updatedAssignment._id);
   lawyer.ongoingCases += 1;
   lawyer.save();

@@ -16,6 +16,7 @@ const monthShortcuts = [
 ];
 
 const MyCourtsList = ({ courts, showDetailsHandler }) => {
+  console.log(courts);
   return (
     <div className="court-cards-container">
       {courts.map((court, index) => (

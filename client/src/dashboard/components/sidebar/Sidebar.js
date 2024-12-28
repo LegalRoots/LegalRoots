@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Sidebar.css";
+import GroupsIcon from "@mui/icons-material/Groups";
 const { useLocation, useNavigate } = require("react-router-dom");
 const Sidebar = () => {
   const [activeItem, setActiveItem] = useState("main-feed");
@@ -41,6 +42,15 @@ const Sidebar = () => {
           <span className="material-symbols-outlined">person_add</span>
           <span> Hire a Lawyer</span>{" "}
         </li>
+
+        <li
+          className={activeItem === "join-court" ? "active" : ""}
+          onClick={() => handleItemClick("join-court")}
+        >
+          <span class="material-symbols-outlined">groups_2</span>
+          <span>Join Court</span>{" "}
+        </li>
+
         <li
           className={activeItem === "profile-settings" ? "active" : ""}
           onClick={() => handleItemClick("profile-settings")}

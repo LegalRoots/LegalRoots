@@ -1,6 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, Fragment } from "react";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import EmailIcon from "@mui/icons-material/Email";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
+import { AccessTime, CheckCircle, HourglassEmpty } from "@mui/icons-material";
+import PhoneIcon from "@mui/icons-material/Phone";
 import StarIcon from "@mui/icons-material/Star";
 import {
   Card,
@@ -20,13 +25,15 @@ import {
   TextField,
   Stack,
   IconButton,
+  Divider,
   Rating,
 } from "@mui/material";
 import { useToast } from "@chakra-ui/react";
 import Grid from "@mui/material/Grid2";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DownloadIcon from "@mui/icons-material/Download";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { useNavigate } from "react-router-dom";
+
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import NoteAddIcon from "@mui/icons-material/NoteAdd";
@@ -35,24 +42,94 @@ import { AuthContext } from "../../shared/context/auth";
 const { useParams } = require("react-router-dom");
 
 const Case = () => {
+  const navigate = useNavigate();
   const toast = useToast();
   const { user } = useContext(AuthContext);
   const { id } = useParams();
-  const [caseData, setCaseData] = useState({});
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [caseData, setCaseData] = useState(null);
   const [newDocument, setNewDocument] = useState(null);
-  const [editedCase, setEditedCase] = useState({});
   const [addNoteModalOpen, setAddNoteModalOpen] = useState(false);
   const [newNote, setNewNote] = useState("");
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [lawyerFeedback, setLawyerFeedback] = useState(null);
+  const [defendant, setDefendant] = useState("");
+  const [defendantLawyers, setDefendantLawyers] = useState("");
+  const [plaintiff, setPlaintiff] = useState("");
+  const [plaintiffLawyers, setPlaintiffLawyers] = useState("");
   const [newFeedback, setNewFeedback] = useState("");
   const [rating, setRating] = useState(0);
+  const [courtData, setCourtData] = useState(null);
+  const [courtAdmins, setCourtAdmins] = useState({});
   useEffect(() => {
     const fetchCase = async () => {
       try {
         const response = await axios.get(
           `http://localhost:5000/JusticeRoots/cases/${id}`
         );
+
+        const courtRes = await axios.get(
+          `http://localhost:5000/admin/court/caseId/${response.data.Case._id}`
+        );
+        setCourtData(courtRes.data.courts);
+
+        const allAdmins = [
+          ...new Set(courtRes.data.courts.map((court) => court.admins).flat()),
+        ];
+
+        const adminResponses = await Promise.all(
+          allAdmins.map((adminId) =>
+            axios.get(`http://localhost:5000/admin/judges/ssid/${adminId}`)
+          )
+        );
+
+        const adminsMap = adminResponses.reduce((acc, res, index) => {
+          acc[allAdmins[index]] = res.data.data;
+          return acc;
+        }, {});
+
+        setCourtAdmins(adminsMap);
+
+        try {
+          const caseDefendant = await axios.get(
+            `http://localhost:5000/JusticeRoots/users/${response.data.Case.defendant}`
+          );
+          setDefendant(caseDefendant.data.user);
+        } catch (error) {
+          setDefendant("No defendant found");
+        }
+
+        try {
+          const caseDefendantLawyers = await Promise.all(
+            response.data.Case.defendant_lawyers.map((lawyerId) =>
+              axios.get(
+                `http://localhost:5000/JusticeRoots/lawyers/ssid/${lawyerId}`
+              )
+            )
+          );
+          setDefendantLawyers(caseDefendantLawyers.map((res) => res.data.data));
+        } catch (error) {
+          setDefendantLawyers("No defendant lawyers found");
+        }
+
+        const casePlaintiff = await axios.get(
+          `http://localhost:5000/JusticeRoots/users/${response.data.Case.plaintiff}`
+        );
+        setPlaintiff(casePlaintiff.data.user);
+
+        try {
+          const casePlaintiffLawyers = await Promise.all(
+            response.data.Case.plaintiff_lawyers.map((lawyerId) =>
+              axios.get(
+                `http://localhost:5000/JusticeRoots/lawyers/ssid/${lawyerId}`
+              )
+            )
+          );
+
+          setPlaintiffLawyers(casePlaintiffLawyers.map((res) => res.data.data));
+        } catch (error) {
+          setPlaintiffLawyers("No plaintiff lawyers found");
+        }
+
         setCaseData(response.data);
       } catch (error) {
         console.error("Failed to fetch case:", error);
@@ -93,7 +170,7 @@ const Case = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/JusticeRoots/lawyers/${caseData.lawyer._id}/reviews`,
+        `http://localhost:5000/JusticeRoots/lawyers/${lawyerFeedback._id}/reviews`,
         { feedback: newFeedback, rating, user: user._id }
       );
 
@@ -151,31 +228,6 @@ const Case = () => {
     }
   };
 
-  const handleEditCase = async () => {
-    try {
-      const response = await axios.put(
-        `http://localhost:5000/JusticeRoots/cases/${id}`,
-        editedCase
-      );
-      setCaseData(response.data);
-      setEditModalOpen(false);
-      toast({
-        title: "Case updated successfully!",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-    } catch (error) {
-      console.error("Failed to update case:", error);
-      toast({
-        title: "Failed to update case!",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
   const handleAddNote = async () => {
     if (!newNote.trim()) {
       toast({
@@ -189,12 +241,14 @@ const Case = () => {
     try {
       const response = await axios.post(
         `http://localhost:5000/JusticeRoots/cases/${id}/notes`,
-        { note: newNote, user: user._id }
+        { note: newNote, user: user._id, userType: "User" }
       );
+
       setCaseData((prev) => ({
         ...prev,
-        notes: [...prev.notes, response.data],
+        notes: response.data.notes,
       }));
+
       setNewNote("");
       setAddNoteModalOpen(false);
       toast({ title: "Note added successfully!", status: "success" });
@@ -209,19 +263,6 @@ const Case = () => {
     }
   };
 
-  const handleOpenEditModal = () => {
-    setEditedCase({
-      case_title: caseData.case_title,
-      case_description: caseData.case_description,
-      case_type: caseData.case_type,
-    });
-    setEditModalOpen(true);
-  };
-
-  const handleCloseEditModal = () => {
-    setEditModalOpen(false);
-  };
-
   const handleOpenAddNoteModal = () => {
     setAddNoteModalOpen(true);
   };
@@ -230,31 +271,14 @@ const Case = () => {
     setAddNoteModalOpen(false);
   };
 
-  const handleDeleteCase = async () => {
-    if (window.confirm("Are you sure you want to delete this case?")) {
-      try {
-        await axios.delete(`http://localhost:5000/JusticeRoots/cases/${id}`);
-        toast({
-          title: "Case deleted successfully!",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-        window.location.href = "/user/my-cases";
-      } catch (error) {
-        console.error("Failed to delete case:", error);
-        toast({
-          title: "Failed to delete case!",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      }
-    }
+  if (!caseData) return <Typography variant="h5">Loading...</Typography>;
+  const getFriendlyName = (path) => {
+    const fileName = path.split("/").pop();
+    const parts = fileName.split("-");
+    const extIndex = fileName.lastIndexOf(".");
+    const originalName = parts.slice(0, -2).join("-");
+    return `${originalName}${fileName.substring(extIndex)}`;
   };
-
-  if (!caseData.case_title)
-    return <Typography variant="h5">Loading...</Typography>;
 
   return (
     <Box
@@ -264,7 +288,7 @@ const Case = () => {
         alignItems: "flex-start",
       }}
     >
-      <Card sx={{ width: "100%", margin: 2, boxShadow: 6, borderRadius: 3 }}>
+      <Card sx={{ width: "80%", margin: 2, boxShadow: 6, borderRadius: 3 }}>
         <CardContent>
           <Box
             display="flex"
@@ -272,40 +296,190 @@ const Case = () => {
             alignItems="center"
             sx={{ width: "100%" }}
           >
-            <Typography variant="h5" gutterBottom color="primary">
-              {caseData.case_title}
-            </Typography>
-            <IconButton
-              sx={{ width: "40px", height: "40px" }}
-              color="error"
-              onClick={handleDeleteCase}
-              title="Delete Case"
-              size="large"
+            <Box
+              sx={{ width: "100%" }}
+              display="flex"
+              justifyContent="space-between"
+              mb={2}
             >
-              <DeleteIcon />
-            </IconButton>
+              <Typography
+                sx={{ marginRight: 2 }}
+                variant="h5"
+                gutterBottom
+                color="primary"
+              >
+                {caseData.Case.caseType.name}
+              </Typography>
+              {caseData.Case.isActive && (
+                <Chip label="Active" color="success" />
+              )}
+              {caseData.Case.isClosed && <Chip label="Closed" color="error" />}
+            </Box>
           </Box>
 
           <Typography variant="body1" color="text.secondary" gutterBottom>
-            {caseData.case_description}
-          </Typography>
-          <Box display="flex" justifyContent="space-between" mb={2}>
-            <Chip label={`Type: ${caseData.case_type}`} color="info" />
-            <Chip label={`Status: ${caseData.status}`} color="success" />
-          </Box>
-          <Typography variant="body2" color="text.secondary">
-            Court Date: {new Date(caseData.court_date).toLocaleString()}
+            {caseData.Case.description}
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Created At: {new Date(caseData.createdAt).toLocaleString()}
+            <strong>
+              Court: {caseData.Case.court_branch.name} |{" "}
+              {caseData.Case.court_branch.city}
+            </strong>
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            <strong>Court Admin:</strong>{" "}
+            {caseData.Case.court_branch.admin.full_name}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            <strong>Court Date: </strong> {caseData.Case.init_date}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            <strong>More Details: </strong>
+            {Object.entries(caseData.Case.data).map(([key, value]) => (
+              <Fragment key={key}>
+                <strong>{key}: </strong>
+                {value}
+                <br />
+              </Fragment>
+            ))}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Defendant:{" "}
+            {defendant.first_name
+              ? defendant.first_name + " " + defendant.last_name
+              : "No defendant found"}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Defendant Lawyers:{" "}
+            {defendantLawyers.length > 0
+              ? defendantLawyers
+                  .map((lawyer) => lawyer.first_name + " " + lawyer.last_name)
+                  .join(", ")
+              : "No defendant lawyers found"}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Plaintiff:{" "}
+            {plaintiff.first_name
+              ? plaintiff.first_name + " " + plaintiff.last_name
+              : "No plaintiff found"}
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Plaintiff Lawyers:{" "}
+              {plaintiffLawyers.length > 0
+                ? plaintiffLawyers
+                    .map((lawyer) => lawyer.first_name + " " + lawyer.last_name)
+                    .join(", ")
+                : "No plaintiff lawyers found"}
+            </Typography>
           </Typography>
 
-          <Typography variant="body1" color="text.secondary" gutterBottom>
-            Lawyer:{" "}
-            {caseData.lawyer
-              ? caseData.lawyer.first_name + " " + caseData.lawyer.last_name
-              : "No lawyer assigned"}
+          <Divider
+            sx={{ margin: "1rem 0", backgroundColor: "rgba(0, 0, 0, 0.12)" }}
+          />
+          <Typography variant="h6" gutterBottom>
+            Lawyers:
           </Typography>
+          {caseData.lawyer.map((lawyerr) => {
+            return (
+              <Box key={lawyerr._id} display="flex" alignItems="center" gap={2}>
+                <img
+                  src={`http://localhost:5000/${lawyerr}`}
+                  alt="Lawyer"
+                  style={{ width: 100, height: 100, borderRadius: "50%" }}
+                />
+                <Box>
+                  <Typography variant="h6" gutterBottom>
+                    {lawyerr.first_name + " " + lawyerr.last_name}
+                    <Rating
+                      name="lawyer-rating"
+                      value={lawyerr.assessment}
+                      readOnly
+                      size="small"
+                      sx={{
+                        ml: 1,
+                      }}
+                    />
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    {lawyerr.email}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    {lawyerr.specialization}
+                  </Typography>
+
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      startIcon={<StarIcon />}
+                      onClick={() => {
+                        handleAddFeedBack();
+                        setLawyerFeedback(lawyerr);
+                      }}
+                    >
+                      Add Feedback
+                    </Button>
+                  </Box>
+                </Box>
+              </Box>
+            );
+          })}
+          <Divider
+            sx={{ margin: "1rem 0", backgroundColor: "rgba(0, 0, 0, 0.12)" }}
+          />
+          <Typography variant="h6" gutterBottom>
+            Judges:
+          </Typography>
+          {caseData.Case.judges.map((judge) => (
+            <Box key={judge._id} display="flex" alignItems="center" gap={2}>
+              <img
+                src={`http://localhost:5000/${judge.photo}`}
+                alt="Judge"
+                style={{ width: 100, height: 100, borderRadius: "50%" }}
+              />
+              <Box>
+                <Typography variant="h6" gutterBottom>
+                  {judge.first_name +
+                    " " +
+                    judge.second_name +
+                    " " +
+                    judge.third_name +
+                    " " +
+                    judge.last_name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <LocationOnIcon
+                    sx={{ fontSize: 16, verticalAlign: "middle" }}
+                  />{" "}
+                  {judge.address.city + ", " + judge.address.street}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <PhoneIcon sx={{ fontSize: 16, verticalAlign: "middle" }} />
+                  {judge.phone}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <EmailIcon sx={{ fontSize: 16, verticalAlign: "middle" }} />
+                  {judge.email}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  <AccessTimeFilledIcon
+                    sx={{ fontSize: 16, verticalAlign: "middle" }}
+                  />
+                  {judge.experience} of experience
+                </Typography>
+              </Box>
+            </Box>
+          ))}
+          <Divider
+            sx={{ margin: "1rem 0", backgroundColor: "rgba(0, 0, 0, 0.12)" }}
+          />
 
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -318,7 +492,7 @@ const Case = () => {
                     <ListItem key={index} divider>
                       <ListItemText
                         primary={`Document ${index + 1}`}
-                        secondary={doc.path}
+                        secondary={getFriendlyName(doc.path)}
                       />
                       <Button
                         variant="outlined"
@@ -346,18 +520,22 @@ const Case = () => {
             <AccordionDetails>
               {caseData.notes.length ? (
                 <List>
-                  {caseData.notes.map((note) => (
-                    <ListItem key={note._id} divider>
-                      <ListItemText
-                        primary={note.note}
-                        secondary={`Added by: ${
-                          note.addedBy.first_name + " " + note.addedBy.last_name
-                        } | Created: ${new Date(
-                          note.createdAt
-                        ).toLocaleString()}`}
-                      />
-                    </ListItem>
-                  ))}
+                  {caseData.notes.map((note) => {
+                    return (
+                      <ListItem key={note._id} divider>
+                        <ListItemText
+                          primary={note.note}
+                          secondary={`Added by: ${
+                            note.addedBy.first_name +
+                            " " +
+                            note.addedBy.last_name
+                          } | Created: ${new Date(
+                            note.createdAt
+                          ).toLocaleString()}`}
+                        />
+                      </ListItem>
+                    );
+                  })}
                 </List>
               ) : (
                 <Typography color="text.secondary">
@@ -370,15 +548,6 @@ const Case = () => {
 
         <CardActions sx={{ flexWrap: "wrap", justifyContent: "space-evenly" }}>
           <Box display="flex" gap={1} flexWrap="wrap">
-            <Button
-              size="small"
-              variant="contained"
-              color="primary"
-              onClick={handleOpenEditModal}
-            >
-              Edit Case
-            </Button>
-
             <Button
               size="small"
               variant="contained"
@@ -421,101 +590,106 @@ const Case = () => {
             >
               Upload Document
             </Button>
-            <Button
-              size="small"
-              variant="contained"
-              onClick={handleAddFeedBack}
-              startIcon={<AddCommentIcon />}
-            >
-              Give a Feed Back
-            </Button>
           </Box>
         </CardActions>
       </Card>
+      <Grid container spacing={2}>
+        <Typography variant="h5" sx={{ marginTop: 2 }}>
+          Courts
+        </Typography>
+        {courtData.map((court) => (
+          <Grid item xs={12} sm={12} md={12} key={court._id}>
+            <Card variant="outlined" sx={{ width: "400px", margin: 2 }}>
+              <CardContent>
+                <Typography variant="h6" component="div">
+                  Case ID: {court.caseId}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {court.description}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Initiator:</strong>{" "}
+                  {court.initiator.first_name +
+                    " " +
+                    court.initiator.second_name +
+                    " " +
+                    court.initiator.third_name +
+                    " " +
+                    court.initiator.last_name}
+                </Typography>
 
-      {/* Edit Modal */}
-      <Modal
-        open={editModalOpen}
-        onClose={handleCloseEditModal}
-        aria-labelledby="edit-case-modal"
-        aria-describedby="edit-case-description"
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "background.paper",
-            borderRadius: 3,
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <Stack spacing={2}>
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Typography id="edit-case-modal" variant="h6">
-                Edit Case
-              </Typography>
-              <IconButton
-                sx={{ width: 40, height: 40 }}
-                onClick={handleCloseEditModal}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <TextField
-              label="Case Title"
-              name="case_title"
-              value={editedCase.case_title}
-              onChange={(e) =>
-                setEditedCase({ ...editedCase, case_title: e.target.value })
-              }
-              fullWidth
-              variant="outlined"
-            />
-            <TextField
-              label="Case Description"
-              name="case_description"
-              value={editedCase.case_description}
-              onChange={(e) =>
-                setEditedCase({
-                  ...editedCase,
-                  case_description: e.target.value,
-                })
-              }
-              fullWidth
-              multiline
-              rows={3}
-              variant="outlined"
-            />
-            <TextField
-              label="Case Type"
-              name="case_type"
-              value={editedCase.case_type}
-              onChange={(e) =>
-                setEditedCase({ ...editedCase, case_type: e.target.value })
-              }
-              fullWidth
-              variant="outlined"
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleEditCase}
-              fullWidth
-            >
-              Save Changes
-            </Button>
-          </Stack>
-        </Box>
-      </Modal>
+                <Typography variant="body2" color="text.secondary">
+                  <AccessTime
+                    sx={{ verticalAlign: "middle", marginRight: 0.5 }}
+                  />
+                  {new Date(court.time).toLocaleString()}
+                </Typography>
 
+                <Typography variant="body2" color="text.secondary">
+                  {!court.hasStarted && !court.hasFinished && (
+                    <Chip label="Upcoming" color="primary" />
+                  )}
+                  {court.hasStarted && !court.hasFinished && (
+                    <Chip label="In Progress" color="secondary" />
+                  )}
+                  {court.hasFinished && (
+                    <Chip label="Finished" color="default" />
+                  )}
+                </Typography>
+
+                <Box sx={{ marginTop: 2 }}>
+                  <Typography variant="h6">Judges:</Typography>
+
+                  <List sx={{ padding: 0 }}>
+                    {court.admins.length === 0 ? (
+                      <Typography variant="body2" color="text.secondary">
+                        No admins assigned.
+                      </Typography>
+                    ) : (
+                      court.admins.map((admin) => (
+                        <div key={admin}>
+                          <ListItem sx={{ paddingLeft: 0, paddingRight: 0 }}>
+                            <ListItemText
+                              primary={
+                                courtAdmins[admin]
+                                  ? `${courtAdmins[admin].first_name} ${courtAdmins[admin].last_name}`
+                                  : "Admin not found"
+                              }
+                            />
+                          </ListItem>
+                          <Divider />
+                        </div>
+                      ))
+                    )}
+                  </List>
+                </Box>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ marginTop: 2 }}
+                >
+                  <strong>Guests:</strong> {court.guests.length} participants
+                </Typography>
+              </CardContent>
+              {!court.hasFinished && (
+                <CardActions>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    fullWidth
+                    onClick={() => {
+                      navigate(`/user/join-court`);
+                    }}
+                  >
+                    Join Court
+                  </Button>
+                </CardActions>
+              )}
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
       {/* Add Note Modal */}
       <Modal
         open={addNoteModalOpen}

@@ -31,6 +31,15 @@ router.delete("/caseType/:id", casesController.deleteCaseType);
 router.put("/caseType/:id", casesController.updateCaseFields);
 module.exports = router;
 
+router.get(
+  "/case/plaintiff/:plaintiff",
+  casesBController.getCasesByPlaintiffSSID
+);
+router.get(
+  "/case/defendant/:defendant",
+  casesBController.getCasesByDefendantSSID
+);
+
 //operations for lawyers and users ----------------------------------------------
 router.get("/case/user/:plaintiff?", casesBController.getCasesByPlaintiffSSID);
 router.get("/case/user/:defendant?", casesBController.getCasesByDefendantSSID);

@@ -6,6 +6,11 @@ const caseSchema = new mongoose.Schema({
     // defendant or plaintiff
     ssid: { type: String, required: true },
   },
+  user_type: {
+    type: String,
+    enum: ["plaintiff", "defendant"],
+    required: true,
+  },
   case_documents: [
     {
       path: { type: String, required: true },
@@ -37,16 +42,27 @@ const caseSchema = new mongoose.Schema({
       },
       addedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        required: true,
+        refPath: "notes.addedByType",
+      },
+      addedByType: {
+        type: String,
+        enum: ["User", "Lawyer"],
+        required: true,
       },
     },
   ],
+
   lawyer: [
     {
-      ssid: { type: String, required: true },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Lawyer",
     },
   ],
-  Case: {},
+  Case: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Case",
+  },
 });
 
 caseSchema.plugin(AutoIncrement, { inc_field: "case_id" });

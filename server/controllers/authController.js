@@ -7,6 +7,7 @@ const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const Employee = require("../models/administrative/employee");
 const sendEmail = require("./../utils/SendEmail");
+const Judge = require("../models/administrative/Judge");
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -137,10 +138,23 @@ exports.login = catchAsync(async (req, res, next) => {
       .select("+password")
       .populate(["job", "court_branch"]);
 
-    if (!admin) {
+    if (!admin || !admin.correctPassword(password, admin.password)) {
       return next(new AppError("Incorrect email or password", 401));
     }
     createSendToken(admin, 200, req, res, "Admin");
+  } else if (type === "Judge") {
+    const { ssid, password } = req.body;
+
+    if (!ssid || !password) {
+      return next(new AppError("Please provide email and password!", 400));
+    }
+    const judge = await Judge.findOne({ ssid: ssid })
+      .select("+password")
+      .populate("court_name");
+    if (!judge || password !== judge.password) {
+      return next(new AppError("Incorrect email or password", 401));
+    }
+    createSendToken(judge, 200, req, res, "Judge");
   }
 });
 

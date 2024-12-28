@@ -5,8 +5,10 @@ const router = express.Router();
 
 // Basic CRUD for lawyers
 router.get("/", lawyersController.getAllLawyers);
+router.get("/recommended", lawyersController.recommendLawyer);
 
 router.get("/:id", lawyersController.getLawyerDetails);
+router.get("/ssid/:ssid", lawyersController.getLawyerBySSID);
 router.patch("/:id", lawyersController.updateLawyer);
 router.delete("/:id", lawyersController.deleteLawyer);
 
@@ -17,7 +19,6 @@ router.post("/:lawyerId/reviews", lawyersController.addClientReview);
 router.put("/:id/reviews", lawyersController.updateClientReview);
 router.patch("/:id/achievements", lawyersController.addAchievement);
 
-// router.get("/recommend", lawyersController.recommendLawyer);
 // router.get("/recommend/wonCases", lawyersController.recommendLawyerByWonCases);
 // router.get(
 //   "/recommend/assessment",

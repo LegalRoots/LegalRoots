@@ -232,3 +232,52 @@ exports.addAchievement = async (req, res) => {
     });
   }
 };
+exports.getLawyerBySSID = async (req, res) => {
+  try {
+    const lawyer = await Lawyer.findOne({ SSID: req.params.ssid });
+    if (!lawyer) {
+      return res.status(404).json({
+        status: "fail",
+        message: "No lawyer found with that SSID",
+      });
+    }
+    res.status(200).json({
+      status: "success",
+      data: lawyer,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+exports.recommendLawyer = async (req, res) => {
+  const { limit = 5 } = req.query;
+
+  try {
+    const query = { isAvailable: true, isVerified: true };
+
+    const lawyers = await Lawyer.find(query).populate("clientReviews.clientId");
+
+    const scoredLawyers = lawyers.map((lawyer) => {
+      const assessmentWeight = 0.4;
+      const wonCasesWeight = 0.6;
+
+      const score =
+        (lawyer.assessment || 0) * assessmentWeight +
+        (lawyer.wonCases || 0) * wonCasesWeight;
+
+      return { ...lawyer.toObject(), score };
+    });
+
+    const recommendedLawyers = scoredLawyers
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
+
+    res.status(200).json(recommendedLawyers);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "An error occurred while fetching lawyers" });
+  }
+};

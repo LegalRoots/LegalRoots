@@ -56,15 +56,29 @@ const HireALawyer = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openDetailsModal, setOpenDetailsModal] = useState(false);
   const [lawyerDetails, setLawyerDetails] = useState(null);
+  const [recommendedLawyers, setRecommendedLawyers] = useState(null);
 
   useEffect(() => {
+    const fetchRecommendedLawyer = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/JusticeRoots/lawyers/recommended`
+        );
+        const data = await response.json();
+        console.log(data);
+        setRecommendedLawyers(data);
+      } catch (error) {
+        console.error("Error fetching lawyer recommendations:", error);
+      }
+    };
+    fetchRecommendedLawyer();
+
     const fetchLawyers = async () => {
       try {
         const response = await axios.get(
           "http://localhost:5000/JusticeRoots/lawyers"
         );
         setLawyers(response.data.data.lawyers);
-        console.log(response.data.data.lawyers);
       } catch (error) {
         console.error("Error fetching lawyers:", error);
       } finally {
@@ -77,7 +91,7 @@ const HireALawyer = () => {
   const handleHireLawyer = (lawyerId) => async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/JusticeRoots/cases/user/${user._id}`
+        `http://localhost:5000/JusticeRoots/cases/user/${user.SSID}`
       );
       setUserCases(response.data);
       setSelectedLawyer(lawyerId);
@@ -110,7 +124,8 @@ const HireALawyer = () => {
       toast({
         title: "Error",
         description:
-          "You already have a pending request with this lawyer for the selected case.",
+          error.response?.data?.message ||
+          "Failed to assign lawyer to the case",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -120,68 +135,10 @@ const HireALawyer = () => {
 
   const handleMoreDetails = (lawyer) => () => {
     setLawyerDetails(lawyer);
-    console.log(lawyer);
+
     setOpenDetailsModal(true);
   };
 
-  const fetchRecommendedLawyer = async (specialization) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/JusticeRoots/lawyers/recommend?specialization=${specialization}`
-      );
-      setLawyerDetails(response.data.data.lawyer);
-      setOpenDetailsModal(true);
-    } catch (error) {
-      console.error("Error fetching recommended lawyer:", error);
-      toast({
-        title: "Error",
-        description: "No available lawyer found for the given specialization.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const fetchRecommendedLawyerByWonCases = async (specialization) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/JusticeRoots/lawyers/recommend/wonCases?specialization=${specialization}`
-      );
-      setLawyerDetails(response.data.data.lawyer);
-      setOpenDetailsModal(true);
-    } catch (error) {
-      console.error("Error fetching recommended lawyer:", error);
-      toast({
-        title: "Error",
-        description: "No available lawyer found for the given specialization.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const fetchRecommendedLawyerByAssessment = async (specialization) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/JusticeRoots/lawyers/recommend/assessment?specialization=${specialization}`
-      );
-      setLawyerDetails(response.data.data.lawyer);
-      setOpenDetailsModal(true);
-    } catch (error) {
-      console.error("Error fetching recommended lawyer:", error);
-      toast({
-        title: "Error",
-        description: "No available lawyer found for the given specialization.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  // Group lawyers by specialization
   const groupedLawyers = lawyers.reduce((acc, lawyer) => {
     const specialization = lawyer.specialization || "General";
     if (!acc[specialization]) {
@@ -191,7 +148,6 @@ const HireALawyer = () => {
     return acc;
   }, {});
 
-  // Filter lawyers based on search term
   const filteredLawyers = Object.keys(groupedLawyers).reduce(
     (acc, specialization) => {
       const filtered = groupedLawyers[specialization].filter(
@@ -255,7 +211,7 @@ const HireALawyer = () => {
                 >
                   <Box display="flex" justifyContent="center" pt={2}>
                     <Avatar
-                      src={`http://localhost:3000/images/${lawyer.photo}`}
+                      src={`http://localhost:5000/images/${lawyer.photo}`}
                       alt={`${lawyer.first_name} ${lawyer.last_name}`}
                       sx={{
                         width: 100,
@@ -314,7 +270,7 @@ const HireALawyer = () => {
               </Grid>
             ))}
           </Grid>
-          <Button
+          {/* <Button
             variant="contained"
             color="primary"
             onClick={() => fetchRecommendedLawyer(specialization)}
@@ -334,10 +290,9 @@ const HireALawyer = () => {
             onClick={() => fetchRecommendedLawyerByAssessment(specialization)}
           >
             Recommend Lawyer (Assessment)
-          </Button>
+          </Button> */}
         </Box>
       ))}
-
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogTitle>Select a Case</DialogTitle>
         <DialogContent>
@@ -355,12 +310,44 @@ const HireALawyer = () => {
                   onClick={() => handleCaseSelection(userCase._id)}
                 >
                   <ListItemText
-                    primary={userCase.case_title}
+                    primary={`Case ID: ${userCase._id}`}
                     secondary={
                       <>
-                        Case Type: {userCase.case_type} <br />
-                        Case Description: {userCase.case_description} <br />
-                        Case ID: {userCase._id}
+                        <strong>Case Type:</strong>{" "}
+                        {userCase.Case?.caseType?.name || "N/A"} <br />
+                        <strong>Case Description:</strong>{" "}
+                        {userCase.Case?.description || "No description"} <br />
+                        <strong>Initiated On:</strong>{" "}
+                        {new Date(
+                          userCase.Case?.init_date
+                        ).toLocaleDateString() || "Unknown"}{" "}
+                        <br />
+                        <strong>Is Active:</strong>{" "}
+                        {userCase.Case?.isActive ? "Yes" : "No"} <br />
+                        <strong>Judges:</strong>{" "}
+                        {userCase.Case?.judges?.length > 0
+                          ? userCase.Case.judges
+                              .map(
+                                (judge) =>
+                                  `${judge.first_name} ${judge.last_name}`
+                              )
+                              .join(", ")
+                          : "None"}{" "}
+                        <br />
+                        <strong>Plaintiff:</strong>{" "}
+                        {userCase.Case?.plaintiff || "Unknown"} <br />
+                        <strong>Defendant:</strong>{" "}
+                        {userCase.Case?.defendant || "Unknown"} <br />
+                        <strong>Case Fields:</strong>{" "}
+                        {userCase.Case?.caseType?.fields?.length > 0
+                          ? userCase.Case.caseType.fields
+                              .map((field) => `${field.name} (${field.type})`)
+                              .join(", ")
+                          : "None"}{" "}
+                        <br />
+                        <strong>Court Branch:</strong>{" "}
+                        {userCase.Case?.court_branch?.name || "N/A"} <br />
+                        <br />
                       </>
                     }
                   />
@@ -374,6 +361,7 @@ const HireALawyer = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
       {lawyerDetails && (
         <Dialog
           open={openDetailsModal}
@@ -386,7 +374,7 @@ const HireALawyer = () => {
             {/* Lawyer's Photo and Basic Info */}
             <Box display="flex" alignItems="center" mb={3}>
               <Avatar
-                src={`http://localhost:3000/images/${lawyerDetails.photo}`}
+                src={`http://localhost:5000/images/${lawyerDetails.photo}`}
                 alt="Lawyer's photo"
                 sx={{ width: 100, height: 100, marginRight: 2 }}
               />
