@@ -13,6 +13,7 @@ import Profile from "../pages/Profile/Profile";
 import Assignments from "../pages/Assignments/Assignments";
 import ScheduledCourts from "../pages/ScheduledCourts/ScheduledCourts";
 import CourtBranch from "../pages/courtBranches/CourtBranch";
+import Users from "../pages/Users/Users";
 
 const Administrative = () => {
   let routes = (
@@ -27,6 +28,7 @@ const Administrative = () => {
       <Route path="/assignments/*" Component={Assignments} />
       <Route path="/courts/scheduled/*" Component={ScheduledCourts} />
       <Route path="/courtbranch/*" Component={CourtBranch} />
+      <Route path="/users/*" Component={Users} />
     </Routes>
   );
   return (
