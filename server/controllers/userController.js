@@ -3,6 +3,27 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const factory = require("./factoryController");
 const sendNotification = require("./notificationsController").sendNotification;
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+
+    res.status(200).json({
+      status: "success",
+      results: users.length,
+      data: {
+        users,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: "Failed to fetch users",
+      error: err.message,
+    });
+  }
+};
+
 exports.toggleFollow = catchAsync(async (req, res, next) => {
   const io = req.app.get("io");
 

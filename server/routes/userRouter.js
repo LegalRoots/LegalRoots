@@ -31,6 +31,7 @@ router.post(
   authController.signup
 );
 
+router.get("/", userController.getAllUsers);
 router.post("/login", authController.login);
 router.put("/updateProfile", userController.updateProfile);
 router.post("/check-email", authController.checkEmail);

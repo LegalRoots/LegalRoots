@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-const permissionSchema = new mongoose.Schema({
-  name: {
-    type: mongoose.Schema.Types.Mixed,
-  },
-  description: {
-    type: mongoose.Schema.Types.Mixed,
-  },
-});
+// const permissionSchema = new mongoose.Schema({
+//   name: {
+//     type: mongoose.Schema.Types.Mixed,
+//   },
+//   description: {
+//     type: mongoose.Schema.Types.Mixed,
+//   },
+// });
 
 const jobSchema = new mongoose.Schema(
   {
@@ -15,15 +15,14 @@ const jobSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      unique: true,
     },
     description: {
       type: String,
       required: true,
       trim: true,
     },
-    permissions: {
-      type: permissionSchema,
-    },
+    permissions: { type: Map, of: mongoose.Schema.Types.Mixed },
     isValid: {
       type: Boolean,
       required: true,

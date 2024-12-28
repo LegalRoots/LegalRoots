@@ -78,6 +78,10 @@ const getCourtDetailsByCourtId = async (req, res) => {
     courtDetails.time = court.time;
     courtDetails.caseType = pickedCase.caseType.name;
     courtDetails.court_branch = pickedCase.court_branch.name;
+    courtDetails.hasStarted = court.hasStarted;
+    courtDetails.hasFinished = court.hasFinished;
+    courtDetails.meeting_id = court.meeting_id;
+
     courtDetails.defense_team = [
       ...pickedCase.defendant_lawyers,
       pickedCase.defendant,
@@ -186,6 +190,7 @@ const getAllCourts = async (req, res) => {
         path: "initiator",
         select: "-judge_photo -pp_photo -id_photo",
       })
+      .sort({ time: -1 })
       .exec();
     // Respond with the retrieved courts
     return res.status(200).json({
@@ -258,6 +263,7 @@ const getCourtsByJudgeId = async (req, res) => {
         path: "initiator",
         select: "-judge_photo -pp_photo -id_photo",
       })
+      .sort({ time: -1 })
       .exec();
 
     if (!court) {
@@ -286,6 +292,7 @@ const getCourtsByGuestId = async (req, res) => {
         path: "initiator",
         select: "-judge_photo -pp_photo -id_photo",
       })
+      .sort({ time: -1 })
       .exec();
 
     if (!courts.length) {

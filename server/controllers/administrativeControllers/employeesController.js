@@ -76,7 +76,7 @@ const addEmployee = async (req, res, next) => {
 };
 
 const getEmployees = async (req, res, next) => {
-  let result = await Employee.find().populate("court_branch").exec();
+  let result = await Employee.find().populate(["job", "court_branch"]).exec();
 
   let employees = [];
   for (var i = 0; i < result.length; i += 1) {
@@ -96,7 +96,7 @@ const getEmployeeBySSID = async (req, res, next) => {
   }
 
   let result = await Employee.findOne({ ssid: req.params.ssid })
-    .populate("court_branch")
+    .populate(["job", "court_branch"])
     .exec();
 
   if (!result) {
@@ -110,7 +110,7 @@ const getEmployeeBySSID = async (req, res, next) => {
 };
 
 const getEmployeesLight = async (req, res, next) => {
-  let result = await Employee.find().exec();
+  let result = await Employee.find().populate(["job", "court_branch"]).exec();
 
   let employees = [];
   for (var i = 0; i < result.length; i += 1) {
@@ -137,7 +137,7 @@ const getEmployeesByCourtId = async (req, res) => {
 
   try {
     const result = await Employee.find({ court_branch: courtId })
-      .populate("court_branch")
+      .populate(["job", "court_branch"])
       .exec();
 
     if (result.length === 0) {

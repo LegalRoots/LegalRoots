@@ -58,6 +58,20 @@ const CourtDetails = ({ courtId }) => {
             <p>Court Branch: {court.court_branch}</p>
             <p>Date: {new Date(court.time).toLocaleDateString()}</p>
             <p>Time: {new Date(court.time).toLocaleTimeString()}</p>
+            <p>
+              Status:{" "}
+              {court.hasStarted && court.hasFinished
+                ? "finished"
+                : court.hasStarted && !court.hasFinished
+                ? "ongoing"
+                : "didn't start yet"}
+            </p>
+            <p>
+              Meeting id:
+              {court.hasStarted
+                ? court.meeting_id
+                : " meeting id will be availabe when the court starts"}
+            </p>
           </div>
           <div className="court-details">
             <div className="group">

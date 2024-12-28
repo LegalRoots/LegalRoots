@@ -45,7 +45,7 @@ const EmployeesTable = () => {
           tmp = court_branch.name;
         }
         const arrElement = {
-          rowData: { employee_id, full_name, c: tmp, job, phone },
+          rowData: { employee_id, full_name, c: tmp, job: job.title, phone },
           actionData: {
             id: employee_id,
             actionHandler: changeCurrentEmployee,
@@ -74,10 +74,12 @@ const EmployeesTable = () => {
   return (
     <div className="employeesTable">
       <div className="employeesTable-actions">
-        <Link to="/admin/emp/new">
-          <i className="fa-solid fa-circle-plus"></i>
-          <p>Add Employee</p>
-        </Link>
+        {ctx?.user?.permissions?.employees?.manage && (
+          <Link to="/admin/emp/new">
+            <i className="fa-solid fa-circle-plus"></i>
+            <p>Add Employee</p>
+          </Link>
+        )}
       </div>
       <div className="employees-table-container">
         <div className="employees-table-wrapper" ref={tableRef}>
