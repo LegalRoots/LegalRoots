@@ -10,7 +10,11 @@ const employeeSchema = new mongoose.Schema({
   second_name: { type: String, required: true },
   third_name: { type: String, required: true },
   last_name: { type: String, required: true },
-  job: { type: String, required: true },
+  job: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Job",
+    required: true,
+  },
   gender: { type: String, required: true },
   birthdate: { type: String, required: true },
   phone: { type: String, required: true },

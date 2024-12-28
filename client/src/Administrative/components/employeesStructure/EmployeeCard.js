@@ -38,9 +38,23 @@ const EmployeeCard = forwardRef(({ employees, id }, ref) => {
   if (employee) {
     for (let key in employee.data) {
       if (map.has(key)) {
-        sections.push(
-          <Section key={key} title={map.get(key)} value={employee.data[key]} />
-        );
+        if (key === "job") {
+          sections.push(
+            <Section
+              key={key}
+              title={map.get(key)}
+              value={employee.data[key].title}
+            />
+          );
+        } else {
+          sections.push(
+            <Section
+              key={key}
+              title={map.get(key)}
+              value={employee.data[key]}
+            />
+          );
+        }
       }
     }
   }

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
 import Button from "../../../shared/components/Button2/Button";
 import { useFetch } from "../../../shared/hooks/useFetch";
 import CaseView from "./caseView/CaseView";
 import { useNavigate } from "react-router-dom";
 import Overlay from "../../../shared/components/aydi/overlay/Overlay";
+import { AuthContext } from "../../../shared/context/auth";
+import { useContext, useEffect, useState } from "react";
 
 import "./CasesItem.css";
 import AssignmentPage from "./assignmentPage/AssignmentPage";
@@ -16,6 +17,14 @@ const CasesItem = ({ pickedCaseId, toggleTableStateHandler }) => {
   const [message, setMessage] = useState("loading...");
   const [pickedCase, setPickedCase] = useState(null);
   const navigate = useNavigate();
+  const { type, user } = useContext(AuthContext);
+  const [perms, setPerms] = useState(null);
+
+  useEffect(() => {
+    if (user && user.job?.permissions) {
+      setPerms(user.job?.permissions);
+    }
+  }, [type, user]);
 
   const [data, isLoading] = useFetch(
     "GET",
@@ -73,7 +82,7 @@ const CasesItem = ({ pickedCaseId, toggleTableStateHandler }) => {
               size="2"
               type="button"
               onClick={assignHandler}
-              disabled={pickedCase.isAssigned}
+              disabled={pickedCase.isAssigned || !perms.cases.assign}
             >
               assign
             </Button>

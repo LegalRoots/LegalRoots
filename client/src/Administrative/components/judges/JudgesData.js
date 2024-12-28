@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useContext } from "react";
 
 import Table from "../../../shared/components/Table/Table";
 import PersonalCard from "./PersonalCard";
@@ -6,6 +6,7 @@ import Card from "../judgesManagerCard/Card";
 import { Link } from "react-router-dom";
 import { useFetch } from "../../../shared/hooks/useFetch";
 import { ExportJson } from "../filters/export/ExportService";
+import { AuthContext } from "../../../shared/context/auth";
 
 import "./JudgesData.css";
 import JudgesFilter from "../filters/judgesFilter/JudgesFilter";
@@ -27,6 +28,16 @@ const JudgesData = () => {
   const [tableJudges, setTableJudges] = useState([]);
   const [filteredTableJudges, setFilteredTableJudges] = useState([]);
   const [currentJudge, setCurrentJudge] = useState(null);
+
+  const { user } = useContext(AuthContext);
+
+  const [perms, setPerms] = useState(null);
+
+  useEffect(() => {
+    if (user?.job.permissions) {
+      setPerms(user.job.permissions);
+    }
+  }, [user]);
 
   const [courtsList, setCourtsList] = useState([]);
   const [courtData, isCourtDataLoading] = useFetch(
@@ -184,22 +195,28 @@ const JudgesData = () => {
             <a href="#tab">view all</a>
           </div>
           <div className="judges-actions">
-            <Link to="/admin/judges/new">
-              <i className="fa-solid fa-circle-plus"></i>
-              new judge
-            </Link>
-            <Link to="/admin/judges#table">
-              <i className="fa-solid fa-minus"></i>
-              delete judge
-            </Link>
-            <a href="#table">
-              <i className="fa-solid fa-globe"></i>
-              active judges
-            </a>
-            <a href="/admin/judges#filter">
-              <i className="fa-solid fa-magnifying-glass"></i>
-              search
-            </a>
+            <div>
+              {perms?.user?.permissions?.judges?.manage && (
+                <Link to="/admin/judges/new">
+                  <i className="fa-solid fa-circle-plus"></i>
+                  new judge
+                </Link>
+              )}
+              {perms?.user?.permissions?.judges?.manage && (
+                <Link to="/admin/judges#table">
+                  <i className="fa-solid fa-minus"></i>
+                  delete judge
+                </Link>
+              )}
+              <a href="#table">
+                <i className="fa-solid fa-globe"></i>
+                active judges
+              </a>
+              <a href="/admin/judges#filter">
+                <i className="fa-solid fa-magnifying-glass"></i>
+                search
+              </a>
+            </div>
           </div>
         </div>
       </div>

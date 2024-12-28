@@ -15,16 +15,52 @@ const createJob = async (req, res) => {
   try {
     const { title, description, permissions } = req.body;
 
-    if (!title || !description) {
+    if (!title || !description || !permissions) {
       return res.status(400).json({
         message: "title and description are required",
       });
     }
 
+    let perms = {
+      users: {
+        view: permissions.users?.view || false,
+        manage: permissions.users?.manage || false,
+      },
+      employees: {
+        view: permissions.employees?.view || false,
+        manage: permissions.employees?.manage || false,
+      },
+      judges: {
+        view: permissions.judges?.view || false,
+        manage: permissions.judges?.manage || false,
+      },
+      cases: {
+        view: permissions.cases?.view || false,
+        manage: permissions.cases?.manage || false,
+        assign: permissions.cases?.assign || false,
+        control: permissions.cases?.control || false,
+      },
+      caseTypes: {
+        view: permissions.caseTypes?.view || false,
+        manage: permissions.caseTypes?.manage || false,
+      },
+      courtBranches: {
+        view: permissions.courtBranches?.view || false,
+        manage: permissions.courtBranches?.manage || false,
+      },
+      jobs: {
+        view: permissions.jobs?.view || false,
+        manage: permissions.jobs?.manage || false,
+      },
+      scheduled: {
+        view: permissions.scheduled?.view || false,
+      },
+    };
+
     const newJob = new Job({
       title,
       description,
-      permissions: permissions || {},
+      permissions: perms,
       isValid: true,
     });
 

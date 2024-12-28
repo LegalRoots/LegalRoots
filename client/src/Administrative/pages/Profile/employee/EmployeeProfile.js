@@ -39,7 +39,7 @@ const EmployeeProfile = ({
         </div>
         <div className="detail-group">
           <span className="label">Job:</span>
-          <span>{job}</span>
+          <span>{job?.title}</span>
         </div>
         <div className="detail-group">
           <span className="label">Gender:</span>

@@ -136,7 +136,7 @@ exports.login = catchAsync(async (req, res, next) => {
     }
     const admin = await Employee.findOne({ ssid: ssid })
       .select("+password")
-      .populate("court_branch");
+      .populate(["job", "court_branch"]);
 
     if (!admin || !admin.correctPassword(password, admin.password)) {
       return next(new AppError("Incorrect email or password", 401));

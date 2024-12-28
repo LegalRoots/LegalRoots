@@ -101,39 +101,77 @@
 
   border-radius: 5px;
   background-color: #ddd;
-  padding: 3rem 0rem;
-  padding-left: 4rem;
 
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  padding: 1rem 0rem;
+}
+
+.judges-details-numbers .judges-actions > div {
+  width: 270px;
+  height: calc(100% - 253px);
+  max-height: calc(100% - 253px);
+  min-height: calc(100% - 253px);
+
+  border-radius: 5px;
+  background-color: #ddd;
+  padding: 3rem 0rem;
+  /* padding-left: 4rem; */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   justify-content: flex-start;
   gap: 1.5rem;
   /* box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5); */
 }
 
-.judges-actions > a {
+.judges-actions div > a {
   display: flex;
   gap: 0.5rem;
   align-items: center;
   transition: 0.3s ease-out;
   font-weight: 800;
+  text-align: left;
+  width: 140px;
   font-size: 1rem;
   /* animation: name duration timing-function delay iteration-count direction
     fill-mode; */
   animation: shine 1s ease-in forwards;
 }
 
-.judges-actions > a:nth-child(1) {
+.judges-actions > h2 {
+  width: 100%;
+  text-align: center;
+  position: relative;
+  width: fit-content;
+}
+
+.judges-actions > h2::after {
+  content: "";
+  width: 120%;
+  height: 3px;
+  position: absolute;
+  background-color: var(--black);
+  bottom: -7px;
+  left: -10%;
+  border-radius: 10px;
+}
+
+.judges-actions div > a:nth-child(1) {
   animation: shine 0.5s ease-in forwards;
 }
-.judges-actions > a:nth-child(2) {
+.judges-actions div > a:nth-child(2) {
   animation: shine 0.5s ease-in 0.2s forwards;
 }
-.judges-actions > a:nth-child(3) {
+.judges-actions div > a:nth-child(3) {
   animation: shine 0.5s ease-in 0.4s forwards;
 }
-.judges-actions > a:nth-child(4) {
+.judges-actions div > a:nth-child(4) {
   animation: shine 0.5s ease-in 0.6s forwards;
 }
 
@@ -152,7 +190,7 @@
   }
 }
 
-.judges-actions > a:hover {
+.judges-actions div > a:hover {
   color: var(--gold-darker);
   font-size: 1rem;
 }
