@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment, useContext } from "react";
 import {
   Box,
   Typography,
@@ -21,11 +21,23 @@ import {
   IconButton,
 } from "@mui/material";
 import { useToast } from "@chakra-ui/react";
+import DownloadIcon from "@mui/icons-material/Download";
+import { AccessTime, CheckCircle, HourglassEmpty } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
+import NoteAddIcon from "@mui/icons-material/NoteAdd";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate, useParams } from "react-router-dom";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import EmailIcon from "@mui/icons-material/Email";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
+import PhoneIcon from "@mui/icons-material/Phone";
+import StarIcon from "@mui/icons-material/Star";
 import axios from "axios";
-
+import { AuthContext } from "../../shared/context/auth";
 const LawyerCaseDetails = () => {
+  const { user } = useContext(AuthContext);
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
@@ -37,12 +49,36 @@ const LawyerCaseDetails = () => {
   const [newDocument, setNewDocument] = useState(null);
   const [addNoteModalOpen, setAddNoteModalOpen] = useState(false);
   const [newNote, setNewNote] = useState("");
+  const [courtData, setCourtData] = useState(null);
+  const [courtAdmins, setCourtAdmins] = useState({});
   useEffect(() => {
     const fetchCase = async () => {
       try {
         const response = await axios.get(
           `http://localhost:5000/JusticeRoots/cases/${id}`
         );
+
+        const courtRes = await axios.get(
+          `http://localhost:5000/admin/court/caseId/${response.data.Case._id}`
+        );
+        setCourtData(courtRes.data.courts);
+
+        const allAdmins = [
+          ...new Set(courtRes.data.courts.map((court) => court.admins).flat()),
+        ];
+
+        const adminResponses = await Promise.all(
+          allAdmins.map((adminId) =>
+            axios.get(`http://localhost:5000/admin/judges/ssid/${adminId}`)
+          )
+        );
+
+        const adminsMap = adminResponses.reduce((acc, res, index) => {
+          acc[allAdmins[index]] = res.data.data;
+          return acc;
+        }, {});
+
+        setCourtAdmins(adminsMap);
 
         try {
           const caseDefendant = await axios.get(
@@ -106,7 +142,7 @@ const LawyerCaseDetails = () => {
     try {
       const response = await axios.post(
         `http://localhost:5000/JusticeRoots/cases/${id}/notes`,
-        { note: newNote, user: user._id }
+        { note: newNote, user: user._id, userType: "Lawyer" }
       );
 
       setCaseData((prev) => ({
@@ -132,6 +168,38 @@ const LawyerCaseDetails = () => {
     setAddNoteModalOpen(false);
   };
 
+  const handleDocumentUpload = async () => {
+    if (!newDocument) {
+      toast({
+        title: "Please select a document to upload!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", newDocument);
+    try {
+      await axios.post(
+        `http://localhost:5000/JusticeRoots/cases/${id}/documents`,
+        formData
+      );
+      setNewDocument(null);
+    } catch (error) {
+      console.error("Failed to upload document:", error);
+      toast({
+        title: "Failed to upload document!",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleOpenAddNoteModal = () => {
+    setAddNoteModalOpen(true);
+  };
   if (!caseData) return <Typography>Loading...</Typography>;
 
   return (
@@ -229,65 +297,7 @@ const LawyerCaseDetails = () => {
           <Divider
             sx={{ margin: "1rem 0", backgroundColor: "rgba(0, 0, 0, 0.12)" }}
           />
-          <Typography variant="h6" gutterBottom>
-            Lawyers:
-          </Typography>
-          {caseData.lawyer.map((lawyerr) => {
-            return (
-              <Box key={lawyerr._id} display="flex" alignItems="center" gap={2}>
-                <img
-                  src={`http://localhost:5000/${lawyerr}`}
-                  alt="Lawyer"
-                  style={{ width: 100, height: 100, borderRadius: "50%" }}
-                />
-                <Box>
-                  <Typography variant="h6" gutterBottom>
-                    {lawyerr.first_name + " " + lawyerr.last_name}
-                    <Rating
-                      name="lawyer-rating"
-                      value={lawyerr.assessment}
-                      readOnly
-                      size="small"
-                      sx={{
-                        ml: 1,
-                      }}
-                    />
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {lawyerr.email}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {lawyerr.specialization}
-                  </Typography>
 
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      startIcon={<StarIcon />}
-                      onClick={() => {
-                        handleAddFeedBack();
-                        setLawyerFeedback(lawyerr);
-                      }}
-                    >
-                      Add Feedback
-                    </Button>
-                  </Box>
-                </Box>
-              </Box>
-            );
-          })}
-          <Divider
-            sx={{ margin: "1rem 0", backgroundColor: "rgba(0, 0, 0, 0.12)" }}
-          />
           <Typography variant="h6" gutterBottom>
             Judges:
           </Typography>
@@ -450,6 +460,104 @@ const LawyerCaseDetails = () => {
           </Box>
         </CardActions>
       </Card>
+
+      <Grid container spacing={2}>
+        <Typography variant="h5" sx={{ marginTop: 2 }}>
+          Courts
+        </Typography>
+        {courtData.map((court) => (
+          <Grid item xs={12} sm={12} md={12} key={court._id}>
+            <Card variant="outlined" sx={{ width: "400px", margin: 2 }}>
+              <CardContent>
+                <Typography variant="h6" component="div">
+                  Case ID: {court.caseId}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {court.description}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Initiator:</strong>{" "}
+                  {court.initiator.first_name +
+                    " " +
+                    court.initiator.second_name +
+                    " " +
+                    court.initiator.third_name +
+                    " " +
+                    court.initiator.last_name}
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary">
+                  <AccessTime
+                    sx={{ verticalAlign: "middle", marginRight: 0.5 }}
+                  />
+                  {new Date(court.time).toLocaleString()}
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary">
+                  {!court.hasStarted && !court.hasFinished && (
+                    <Chip label="Upcoming" color="primary" />
+                  )}
+                  {court.hasStarted && !court.hasFinished && (
+                    <Chip label="In Progress" color="secondary" />
+                  )}
+                  {court.hasFinished && (
+                    <Chip label="Finished" color="default" />
+                  )}
+                </Typography>
+
+                <Box sx={{ marginTop: 2 }}>
+                  <Typography variant="h6">Judges:</Typography>
+
+                  <List sx={{ padding: 0 }}>
+                    {court.admins.length === 0 ? (
+                      <Typography variant="body2" color="text.secondary">
+                        No admins assigned.
+                      </Typography>
+                    ) : (
+                      court.admins.map((admin) => (
+                        <div key={admin}>
+                          <ListItem sx={{ paddingLeft: 0, paddingRight: 0 }}>
+                            <ListItemText
+                              primary={
+                                courtAdmins[admin]
+                                  ? `${courtAdmins[admin].first_name} ${courtAdmins[admin].last_name}`
+                                  : "Admin not found"
+                              }
+                            />
+                          </ListItem>
+                          <Divider />
+                        </div>
+                      ))
+                    )}
+                  </List>
+                </Box>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ marginTop: 2 }}
+                >
+                  <strong>Guests:</strong> {court.guests.length} participants
+                </Typography>
+              </CardContent>
+              {!court.hasFinished && (
+                <CardActions>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    fullWidth
+                    onClick={() => {
+                      navigate(`/lawyer/join-court`);
+                    }}
+                  >
+                    Join Court
+                  </Button>
+                </CardActions>
+              )}
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
 
       {/* Add Note Modal */}
       <Modal

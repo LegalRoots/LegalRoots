@@ -9,7 +9,8 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
-    const fileName = `${req.params.id}-${Date.now()}${ext}`;
+    const originalName = path.basename(file.originalname, ext);
+    const fileName = `${originalName}-${req.params.id}-${Date.now()}${ext}`;
     cb(null, fileName);
   },
 });
@@ -43,7 +44,7 @@ router.get("/:id", casesController.getCase);
 router.post("/tasks/:caseId", casesController.addTask);
 router.delete("/:caseId/tasks/:taskId", casesController.deleteTask);
 router.put("/:caseId/tasks/:taskId", casesController.updateTask);
-router.delete("/:id", casesController.deleteCase);
+
 router.post("/:id/notes", casesController.addNote);
 router.post("/", casesController.addCase);
 router.post("/markDone", casesController.markDone);

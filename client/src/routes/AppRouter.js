@@ -25,6 +25,8 @@ import PendingCases from "../lawyer/components/PendingCases";
 import LawyerCases from "../lawyer/components/LawyerCases";
 import LawyerCaseDetail from "../lawyer/components/LawyerCaseDetails";
 import OnlineCourt from "../OnlineCourts/pages/OnlineCourt/OnlineCourt";
+import JoinMeeting from "../shared/components/JoinMeeting/JoinMeeting";
+import Chat from "../Chat/Chat";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
@@ -35,6 +37,22 @@ const router = createBrowserRouter(
         <Route element={<UserRouter />}>
           <Route path={"/user"} element={<Dashboard />}>
             <Route path={"/user/hire-lawyer"} element={<HireLawyer />} />
+            <Route
+              path={"/user/join-court"}
+              element={
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh",
+                    width: "60%",
+                  }}
+                >
+                  <JoinMeeting />
+                </div>
+              }
+            />
             <Route path={"/user/main-feed"} index element={<MainFeed />} />
             <Route path={"/user/my-cases"} element={<CaseCard />} />
             <Route path={"/user/my-cases/:id"} element={<CasesPage />} />
@@ -48,6 +66,22 @@ const router = createBrowserRouter(
         {/* Lawyer Routes */}
         <Route element={<LawyerRouter />}>
           <Route path={"/lawyer"} element={<LawyerPage />}>
+            <Route
+              path={"/lawyer/join-court"}
+              element={
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh",
+                    width: "60%",
+                  }}
+                >
+                  <JoinMeeting />
+                </div>
+              }
+            />
             <Route path={"/lawyer/main-feed"} element={<MainFeed />} />
             <Route path={"/lawyer/pending-cases"} element={<PendingCases />} />
             <Route path={"/lawyer/my-cases"} element={<LawyerCases />} />
@@ -61,6 +95,8 @@ const router = createBrowserRouter(
         </Route>
 
         {/* Public Routes */}
+
+        <Route path={"/chat"} element={<Chat />} />
         <Route
           path={"/login"}
           element={
@@ -83,7 +119,10 @@ const router = createBrowserRouter(
           }
         />
         <Route path={"/signup"} element={<Signup />} />
-        <Route path="*" element={<p>Not Found</p>} />
+        <Route
+          path="*"
+          element={<div style={{ height: "100vh" }}>Not Found</div>}
+        />
       </Route>
     </Route>
   )

@@ -4,6 +4,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import EmailIcon from "@mui/icons-material/Email";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
+import { AccessTime, CheckCircle, HourglassEmpty } from "@mui/icons-material";
 import PhoneIcon from "@mui/icons-material/Phone";
 import StarIcon from "@mui/icons-material/Star";
 import {
@@ -31,6 +32,7 @@ import { useToast } from "@chakra-ui/react";
 import Grid from "@mui/material/Grid2";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DownloadIcon from "@mui/icons-material/Download";
+import { useNavigate } from "react-router-dom";
 
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
@@ -40,6 +42,7 @@ import { AuthContext } from "../../shared/context/auth";
 const { useParams } = require("react-router-dom");
 
 const Case = () => {
+  const navigate = useNavigate();
   const toast = useToast();
   const { user } = useContext(AuthContext);
   const { id } = useParams();
@@ -55,12 +58,36 @@ const Case = () => {
   const [plaintiffLawyers, setPlaintiffLawyers] = useState("");
   const [newFeedback, setNewFeedback] = useState("");
   const [rating, setRating] = useState(0);
+  const [courtData, setCourtData] = useState(null);
+  const [courtAdmins, setCourtAdmins] = useState({});
   useEffect(() => {
     const fetchCase = async () => {
       try {
         const response = await axios.get(
           `http://localhost:5000/JusticeRoots/cases/${id}`
         );
+
+        const courtRes = await axios.get(
+          `http://localhost:5000/admin/court/caseId/${response.data.Case._id}`
+        );
+        setCourtData(courtRes.data.courts);
+
+        const allAdmins = [
+          ...new Set(courtRes.data.courts.map((court) => court.admins).flat()),
+        ];
+
+        const adminResponses = await Promise.all(
+          allAdmins.map((adminId) =>
+            axios.get(`http://localhost:5000/admin/judges/ssid/${adminId}`)
+          )
+        );
+
+        const adminsMap = adminResponses.reduce((acc, res, index) => {
+          acc[allAdmins[index]] = res.data.data;
+          return acc;
+        }, {});
+
+        setCourtAdmins(adminsMap);
 
         try {
           const caseDefendant = await axios.get(
@@ -214,7 +241,7 @@ const Case = () => {
     try {
       const response = await axios.post(
         `http://localhost:5000/JusticeRoots/cases/${id}/notes`,
-        { note: newNote, user: user._id }
+        { note: newNote, user: user._id, userType: "User" }
       );
 
       setCaseData((prev) => ({
@@ -245,6 +272,13 @@ const Case = () => {
   };
 
   if (!caseData) return <Typography variant="h5">Loading...</Typography>;
+  const getFriendlyName = (path) => {
+    const fileName = path.split("/").pop();
+    const parts = fileName.split("-");
+    const extIndex = fileName.lastIndexOf(".");
+    const originalName = parts.slice(0, -2).join("-");
+    return `${originalName}${fileName.substring(extIndex)}`;
+  };
 
   return (
     <Box
@@ -254,7 +288,7 @@ const Case = () => {
         alignItems: "flex-start",
       }}
     >
-      <Card sx={{ width: "100%", margin: 2, boxShadow: 6, borderRadius: 3 }}>
+      <Card sx={{ width: "80%", margin: 2, boxShadow: 6, borderRadius: 3 }}>
         <CardContent>
           <Box
             display="flex"
@@ -440,9 +474,6 @@ const Case = () => {
                   />
                   {judge.experience} of experience
                 </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Qualifications: {judge.qualifications}
-                </Typography>
               </Box>
             </Box>
           ))}
@@ -461,7 +492,7 @@ const Case = () => {
                     <ListItem key={index} divider>
                       <ListItemText
                         primary={`Document ${index + 1}`}
-                        secondary={doc.path}
+                        secondary={getFriendlyName(doc.path)}
                       />
                       <Button
                         variant="outlined"
@@ -562,7 +593,103 @@ const Case = () => {
           </Box>
         </CardActions>
       </Card>
+      <Grid container spacing={2}>
+        <Typography variant="h5" sx={{ marginTop: 2 }}>
+          Courts
+        </Typography>
+        {courtData.map((court) => (
+          <Grid item xs={12} sm={12} md={12} key={court._id}>
+            <Card variant="outlined" sx={{ width: "400px", margin: 2 }}>
+              <CardContent>
+                <Typography variant="h6" component="div">
+                  Case ID: {court.caseId}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {court.description}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Initiator:</strong>{" "}
+                  {court.initiator.first_name +
+                    " " +
+                    court.initiator.second_name +
+                    " " +
+                    court.initiator.third_name +
+                    " " +
+                    court.initiator.last_name}
+                </Typography>
 
+                <Typography variant="body2" color="text.secondary">
+                  <AccessTime
+                    sx={{ verticalAlign: "middle", marginRight: 0.5 }}
+                  />
+                  {new Date(court.time).toLocaleString()}
+                </Typography>
+
+                <Typography variant="body2" color="text.secondary">
+                  {!court.hasStarted && !court.hasFinished && (
+                    <Chip label="Upcoming" color="primary" />
+                  )}
+                  {court.hasStarted && !court.hasFinished && (
+                    <Chip label="In Progress" color="secondary" />
+                  )}
+                  {court.hasFinished && (
+                    <Chip label="Finished" color="default" />
+                  )}
+                </Typography>
+
+                <Box sx={{ marginTop: 2 }}>
+                  <Typography variant="h6">Judges:</Typography>
+
+                  <List sx={{ padding: 0 }}>
+                    {court.admins.length === 0 ? (
+                      <Typography variant="body2" color="text.secondary">
+                        No admins assigned.
+                      </Typography>
+                    ) : (
+                      court.admins.map((admin) => (
+                        <div key={admin}>
+                          <ListItem sx={{ paddingLeft: 0, paddingRight: 0 }}>
+                            <ListItemText
+                              primary={
+                                courtAdmins[admin]
+                                  ? `${courtAdmins[admin].first_name} ${courtAdmins[admin].last_name}`
+                                  : "Admin not found"
+                              }
+                            />
+                          </ListItem>
+                          <Divider />
+                        </div>
+                      ))
+                    )}
+                  </List>
+                </Box>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ marginTop: 2 }}
+                >
+                  <strong>Guests:</strong> {court.guests.length} participants
+                </Typography>
+              </CardContent>
+              {!court.hasFinished && (
+                <CardActions>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    fullWidth
+                    onClick={() => {
+                      navigate(`/user/join-court`);
+                    }}
+                  >
+                    Join Court
+                  </Button>
+                </CardActions>
+              )}
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
       {/* Add Note Modal */}
       <Modal
         open={addNoteModalOpen}

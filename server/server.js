@@ -32,6 +32,22 @@ io.on("connection", (socket) => {
     console.log(`User ${userId} connected with socket ID ${socket.id}`);
   });
 
+  socket.on("joinConversation", (conversationId) => {
+    socket.join(conversationId);
+  });
+
+  socket.on("message", (message) => {
+    io.to(message.conversationId).emit("message", message);
+  });
+
+  socket.on("typing", ({ conversationId, user }) => {
+    socket.to(conversationId).emit("typing", { user });
+  });
+
+  socket.on("stopTyping", ({ conversationId, user }) => {
+    socket.to(conversationId).emit("stopTyping", { user });
+  });
+
   socket.on("startFollowing", (data) => {
     socket.emit("newNotification", {
       message: data.message,

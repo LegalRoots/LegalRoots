@@ -39,11 +39,11 @@ employeeSchema.pre("save", function (next) {
   next();
 });
 
-employeeSchema.methods.correctPassword = async function (
+employeeSchema.methods.correctPassword = function (
   candidatePassword,
   userPassword
 ) {
-  return await bcrypt.compare(candidatePassword, userPassword);
+  return candidatePassword === userPassword;
 };
 
 employeeSchema.methods.changedPasswordAfter = function (JWTTimestamp) {

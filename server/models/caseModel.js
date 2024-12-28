@@ -42,10 +42,17 @@ const caseSchema = new mongoose.Schema({
       },
       addedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        required: true,
+        refPath: "notes.addedByType",
+      },
+      addedByType: {
+        type: String,
+        enum: ["User", "Lawyer"],
+        required: true,
       },
     },
   ],
+
   lawyer: [
     {
       type: mongoose.Schema.Types.ObjectId,

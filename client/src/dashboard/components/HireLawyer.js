@@ -56,15 +56,29 @@ const HireALawyer = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openDetailsModal, setOpenDetailsModal] = useState(false);
   const [lawyerDetails, setLawyerDetails] = useState(null);
+  const [recommendedLawyers, setRecommendedLawyers] = useState(null);
 
   useEffect(() => {
+    const fetchRecommendedLawyer = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/JusticeRoots/lawyers/recommended`
+        );
+        const data = await response.json();
+        console.log(data);
+        setRecommendedLawyers(data);
+      } catch (error) {
+        console.error("Error fetching lawyer recommendations:", error);
+      }
+    };
+    fetchRecommendedLawyer();
+
     const fetchLawyers = async () => {
       try {
         const response = await axios.get(
           "http://localhost:5000/JusticeRoots/lawyers"
         );
         setLawyers(response.data.data.lawyers);
-        console.log(response.data.data.lawyers);
       } catch (error) {
         console.error("Error fetching lawyers:", error);
       } finally {
@@ -121,11 +135,10 @@ const HireALawyer = () => {
 
   const handleMoreDetails = (lawyer) => () => {
     setLawyerDetails(lawyer);
-    console.log(lawyer);
+
     setOpenDetailsModal(true);
   };
 
-  // Group lawyers by specialization
   const groupedLawyers = lawyers.reduce((acc, lawyer) => {
     const specialization = lawyer.specialization || "General";
     if (!acc[specialization]) {
@@ -135,7 +148,6 @@ const HireALawyer = () => {
     return acc;
   }, {});
 
-  // Filter lawyers based on search term
   const filteredLawyers = Object.keys(groupedLawyers).reduce(
     (acc, specialization) => {
       const filtered = groupedLawyers[specialization].filter(
@@ -335,20 +347,7 @@ const HireALawyer = () => {
                         <br />
                         <strong>Court Branch:</strong>{" "}
                         {userCase.Case?.court_branch?.name || "N/A"} <br />
-                        <strong>Documents:</strong>{" "}
-                        {userCase.case_documents?.length > 0
-                          ? `${userCase.case_documents.length} available`
-                          : "None"}{" "}
                         <br />
-                        <strong>Tasks:</strong>{" "}
-                        {userCase.tasks?.length > 0
-                          ? `${userCase.tasks.length} tasks`
-                          : "None"}{" "}
-                        <br />
-                        <strong>Notes:</strong>{" "}
-                        {userCase.notes?.length > 0
-                          ? `${userCase.notes.length} notes`
-                          : "None"}
                       </>
                     }
                   />

@@ -22,6 +22,7 @@ const evidenceRouter = require("./routes/administrative/evidenceRouter");
 const chartsRouter = require("./routes/administrative/chartsRouter");
 const jobsRouter = require("./routes/administrative/jobsRouter");
 const assignedCasesRouter = require("./routes/administrative/assignedCasesRouter");
+const conversationsRouter = require("./routes/conversationsRouter");
 
 const courtBranchRouter = require("./routes/administrative/courtBranchRouter");
 
@@ -36,6 +37,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use("/JusticeRoots/users", userRouter);
+app.use("/JusticeRoots/conversations", conversationsRouter);
 
 app.use("/JusticeRoots/lawyers", lawyersRouter);
 app.use("/JusticeRoots/notifications", notificationsRouter);

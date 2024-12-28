@@ -116,31 +116,55 @@ exports.uploadDocument = async (req, res, next) => {
 };
 
 exports.addNote = async (req, res, next) => {
-  const { id } = req.params;
-  const { note } = req.body;
-  const { user } = req.body;
-  const newNote = {
-    note,
-    addedBy: user,
-  };
-  const updatedCase = await Case.findByIdAndUpdate(
-    id,
-    { $push: { notes: newNote } },
-    { new: true }
-  );
-  sendNotification(
-    updatedCase.user,
-    "User",
-    `New note added to case: ${updatedCase.case_title}`,
-    req.app.get("io")
-  );
-  res.json(updatedCase);
+  try {
+    const { id } = req.params;
+    const { note, user, userType } = req.body;
+    if (!["User", "Lawyer"].includes(userType)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid userType. Must be 'User' or 'Lawyer'." });
+    }
+
+    const newNote = {
+      note,
+      addedBy: user,
+      addedByType: userType,
+    };
+
+    const updatedCase = await Case.findByIdAndUpdate(
+      id,
+      { $push: { notes: newNote } },
+      { new: true }
+    ).populate("notes.addedBy");
+
+    if (!updatedCase) {
+      return res.status(404).json({ error: "Case not found." });
+    }
+
+    const userA = await User.find({ SSID: updatedCase.user });
+    sendNotification(
+      userA[0]._id.toString(),
+      "User",
+      `New note added to case: ${updatedCase.Case._id}`,
+      req.app.get("io")
+    );
+
+    updatedCase.lawyer.forEach((lawyer) => {
+      sendNotification(
+        lawyer,
+        "Lawyer",
+        `New note added to case: ${updatedCase.Case._id}`,
+        req.app.get("io")
+      );
+    });
+
+    res.status(200).json(updatedCase);
+  } catch (error) {
+    console.error("Error adding note:", error);
+    res.status(500).json({ error: "An error occurred while adding the note." });
+  }
 };
-exports.deleteCase = async (req, res, next) => {
-  const { id } = req.params;
-  await Case.findByIdAndDelete(id);
-  res.json({ message: "Case deleted successfully!" });
-};
+
 exports.getUserDefendantCases = async (req, res, next) => {
   const { id } = req.params;
   try {
@@ -159,7 +183,6 @@ exports.getUserDefendantCases = async (req, res, next) => {
         ],
       })
       .populate("user")
-
       .populate("notes.addedBy", "first_name last_name email")
       .exec();
     res.json(cases);
