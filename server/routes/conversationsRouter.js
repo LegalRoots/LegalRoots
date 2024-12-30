@@ -9,4 +9,5 @@ router.get(
   conversationsController.getConversationMessages
 );
 router.post("/:conversationId/messages", conversationsController.sendMessage);
+router.post("/", conversationsController.createConversation);
 module.exports = router;

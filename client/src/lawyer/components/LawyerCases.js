@@ -102,7 +102,7 @@ const LawyerCases = () => {
     selectedType === "plaintiff" ? plaintiffCases : defendantCases;
 
   return (
-    <Box sx={{ width: "100%", padding: 4 }}>
+    <Box sx={{ width: "80%", padding: 4 }}>
       <Typography variant="h4" gutterBottom>
         Lawyer Cases
       </Typography>

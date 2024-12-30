@@ -47,6 +47,13 @@ const Login = () => {
       });
 
       const user = await response.json();
+      if (
+        user.data.userType === "Lawyer" &&
+        user.data.user.isVerified === false
+      ) {
+        navigate(`/not-verified`);
+        return;
+      }
 
       login(user, checkbox, type);
       setErrorMessage("");

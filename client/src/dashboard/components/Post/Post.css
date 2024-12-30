@@ -6,7 +6,7 @@
   margin-bottom: 1.2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: relative;
-  width: 50vw;
+  width: 40vw;
 }
 .author-info {
   display: flex;
@@ -159,7 +159,7 @@
   border-radius: 50%;
   margin-right: 10px;
 }
-.role-user {
+.role-User {
   color: var(--white);
   font-size: 0.8rem;
   margin: 0;
@@ -168,7 +168,7 @@
   border-radius: 5px;
   padding: 0 0.5rem;
 }
-.role-admin {
+.role-Admin {
   color: var(--white);
   font-size: 0.8rem;
   margin: 0;
@@ -177,12 +177,21 @@
   border-radius: 5px;
   padding: 0 0.5rem;
 }
-.role-lawyer {
+.role-Lawyer {
   color: var(--white);
   font-size: 0.8rem;
   margin: 0;
   margin-left: 1rem;
   background-color: #fc4100;
+  border-radius: 5px;
+  padding: 0 0.5rem;
+}
+.role-Judge {
+  color: var(--white);
+  font-size: 0.8rem;
+  margin: 0;
+  margin-left: 1rem;
+  background-color: #00b0ff;
   border-radius: 5px;
   padding: 0 0.5rem;
 }

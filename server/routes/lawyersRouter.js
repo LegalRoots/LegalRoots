@@ -6,8 +6,10 @@ const router = express.Router();
 // Basic CRUD for lawyers
 router.get("/", lawyersController.getAllLawyers);
 router.get("/recommended", lawyersController.recommendLawyer);
+router.get("/specializations", lawyersController.getSpecializations);
 
 router.get("/:id", lawyersController.getLawyerDetails);
+router.get("/:id/verify", lawyersController.verifyLawyer);
 router.get("/ssid/:ssid", lawyersController.getLawyerBySSID);
 router.patch("/:id", lawyersController.updateLawyer);
 router.delete("/:id", lawyersController.deleteLawyer);

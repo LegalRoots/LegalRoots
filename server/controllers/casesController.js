@@ -12,41 +12,6 @@ exports.getAllCases = async (req, res, next) => {
   const cases = await Case.find().exec();
   res.json(cases);
 };
-exports.addCase = async (req, res, next) => {
-  const { case_title, case_type, case_description, court_date } = req.body;
-  const { userId } = req.query;
-  console.log(userId);
-  const newCase = new Case({
-    case_title,
-    case_type,
-    case_description,
-    court_date,
-    user: userId,
-  });
-  const savedCase = await newCase.save();
-  res.json(savedCase);
-};
-exports.markDone = async (req, res, next) => {
-  const { caseId } = req.body;
-  try {
-    const updatedCase = await Case.findByIdAndUpdate(
-      caseId,
-      { status: "Resolved" },
-      { new: true }
-    )
-      .populate("lawyer", "first_name last_name")
-      .populate("user", "first_name last_name email");
-
-    if (!updatedCase) {
-      return res.status(404).json({ message: "Case not found" });
-    }
-
-    res.json(updatedCase);
-  } catch (error) {
-    console.error("Error marking case as resolved:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
 
 exports.getCase = async (req, res, next) => {
   const { id } = req.params;
@@ -320,8 +285,10 @@ exports.assignLawyer = async (req, res) => {
         message: "Lawyer already assigned to this case",
       });
     }
-
-    const lawyer = await Lawyer.findById(lawyerId).select("-passwordConfirm");
+    const lawyer = await Lawyer.findOne({
+      _id: lawyerId,
+      isVerified: true,
+    }).select("-passwordConfirm");
     if (!lawyer) {
       return res.status(404).json({ message: "Lawyer not found" });
     }
@@ -378,7 +345,10 @@ exports.confirmLawyerAssignment = async (req, res) => {
   const { lawyerId, assignmentId } = req.params;
   const { status } = req.body;
 
-  const lawyer = await Lawyer.findById(lawyerId);
+  const lawyer = await Lawyer.findOne({
+    _id: lawyerId,
+    isVerified: true,
+  });
   if (!lawyer) return res.status(404).json({ message: "Lawyer not found" });
 
   const assignment = lawyer.assignments.id(assignmentId);
@@ -395,7 +365,10 @@ exports.getPendingAssignments = async (req, res) => {
   const { lawyerId } = req.params;
 
   try {
-    const lawyer = await Lawyer.findById(lawyerId)
+    const lawyer = await Lawyer.findOne({
+      _id: lawyerId,
+      isVerified: true,
+    })
       .select("assignments")
       .populate("assignments.clientId", "first_name last_name email")
       .populate({
@@ -437,7 +410,7 @@ exports.updateAssignment = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   const updatedAssignment = await Lawyer.findOneAndUpdate(
-    { "assignments._id": id },
+    { "assignments._id": id, isVerified: true },
     { $set: { "assignments.$.status": status } },
     { new: true }
   );
@@ -446,13 +419,14 @@ exports.updateAssignment = async (req, res) => {
     return res.json(updatedAssignment);
   }
 
-  const updatedCase = await Case.findByIdAndUpdate(
-    updatedAssignment.assignments.id(id).caseId,
-    {
-      lawyer: status === "Accepted" ? updatedAssignment._id : null,
-    },
-    { new: true }
+  updatedAssignment.ongoingCases += 1;
+
+  const updatedCase = await Case.findById(
+    updatedAssignment.assignments.id(id).caseId
   ).populate("Case");
+
+  console.log(updatedCase);
+  console.log(updatedAssignment);
 
   if (updatedCase.user_type === "plaintiff") {
     updatedCase.Case.plaintiff_lawyers.push(updatedAssignment.SSID);
@@ -460,13 +434,13 @@ exports.updateAssignment = async (req, res) => {
     updatedCase.Case.defendant_lawyers.push(updatedAssignment.SSID);
   }
   await updatedCase.lawyer.push(updatedAssignment._id);
-  updatedCase.Case.save({
+  console.log(updatedCase.lawyer);
+  await updatedCase.Case.save({
     validateBeforeSave: false,
   });
-
-  const lawyer = await Lawyer.findById(updatedAssignment._id);
-  lawyer.ongoingCases += 1;
-  lawyer.save();
+  await updatedCase.save({
+    validateBeforeSave: false,
+  });
 
   sendNotification(
     updatedAssignment.assignments.id(id).clientId,
@@ -569,5 +543,21 @@ exports.addTask = async (req, res) => {
   } catch (error) {
     console.error("Error adding task:", error);
     res.status(500).json({ message: "Failed to add task", error });
+  }
+};
+exports.getMyLawyers = async (req, res) => {
+  const { ssid } = req.params;
+  try {
+    const cases = await Case.find({ user: ssid })
+      .populate("lawyer", "first_name last_name photo email consultation_price")
+      .exec();
+    const lawyers = cases
+      .map((caseItem) => caseItem.lawyer)
+      .filter((lawyer) => lawyer);
+
+    res.json(lawyers.flat());
+  } catch (error) {
+    console.error("Error fetching user cases:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

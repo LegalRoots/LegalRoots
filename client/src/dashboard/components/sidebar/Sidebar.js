@@ -44,11 +44,27 @@ const Sidebar = () => {
         </li>
 
         <li
+          className={activeItem === "pay-lawyer" ? "active" : ""}
+          onClick={() => handleItemClick("pay-lawyer")}
+        >
+          <span class="material-symbols-outlined">attach_money</span>
+          <span>Payment</span>{" "}
+        </li>
+
+        <li
           className={activeItem === "join-court" ? "active" : ""}
           onClick={() => handleItemClick("join-court")}
         >
           <span class="material-symbols-outlined">groups_2</span>
           <span>Join Court</span>{" "}
+        </li>
+
+        <li
+          className={activeItem === "chats" ? "active" : ""}
+          onClick={() => handleItemClick("chats")}
+        >
+          <span class="material-symbols-outlined">chat</span>
+          <span>Chats</span>{" "}
         </li>
 
         <li

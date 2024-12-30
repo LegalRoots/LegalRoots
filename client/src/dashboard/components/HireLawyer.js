@@ -19,12 +19,17 @@ import {
   DialogContent,
   DialogActions,
   Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   TextField,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import axios from "axios";
 import { AuthContext } from "../../shared/context/auth";
 import { useToast } from "@chakra-ui/react";
+import RecommendedLawyers from "./RecommendedLawyers";
 
 const HireALawyer = () => {
   function getRelativeTime(lastActive) {
@@ -57,38 +62,52 @@ const HireALawyer = () => {
   const [openDetailsModal, setOpenDetailsModal] = useState(false);
   const [lawyerDetails, setLawyerDetails] = useState(null);
   const [recommendedLawyers, setRecommendedLawyers] = useState(null);
+  const [specializations, setSpecializations] = useState([]);
+  const [selectedSpecialization, setSelectedSpecialization] = useState("");
 
   useEffect(() => {
-    const fetchRecommendedLawyer = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/JusticeRoots/lawyers/recommended`
-        );
-        const data = await response.json();
-        console.log(data);
-        setRecommendedLawyers(data);
-      } catch (error) {
-        console.error("Error fetching lawyer recommendations:", error);
-      }
-    };
-    fetchRecommendedLawyer();
-
-    const fetchLawyers = async () => {
+    const fetchSpecializations = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/JusticeRoots/lawyers"
+          "http://localhost:5000/JusticeRoots/lawyers/specializations"
         );
-        setLawyers(response.data.data.lawyers);
+        setSpecializations(response.data);
       } catch (error) {
-        console.error("Error fetching lawyers:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching specializations:", error);
       }
     };
-    fetchLawyers();
+
+    fetchSpecializations();
   }, []);
 
+  const handleSpecializationChange = async (event) => {
+    const specialization = event.target.value;
+    setSelectedSpecialization(specialization);
+
+    if (!specialization) return;
+
+    setLoading(true);
+    try {
+      const lawyersResponse = await axios.get(
+        `http://localhost:5000/JusticeRoots/lawyers?specialization=${specialization}`
+      );
+      setLawyers(lawyersResponse.data.data.lawyers);
+
+      // Fetch recommended lawyers for the selected specialization
+      const recommendedResponse = await axios.get(
+        `http://localhost:5000/JusticeRoots/lawyers/recommended?specialization=${specialization}`
+      );
+      console.log(recommendedResponse.data);
+      setRecommendedLawyers(recommendedResponse.data);
+    } catch (error) {
+      console.error("Error fetching lawyers or recommendations:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleHireLawyer = (lawyerId) => async () => {
+    console.log("hi?");
     try {
       const response = await axios.get(
         `http://localhost:5000/JusticeRoots/cases/user/${user.SSID}`
@@ -139,46 +158,8 @@ const HireALawyer = () => {
     setOpenDetailsModal(true);
   };
 
-  const groupedLawyers = lawyers.reduce((acc, lawyer) => {
-    const specialization = lawyer.specialization || "General";
-    if (!acc[specialization]) {
-      acc[specialization] = [];
-    }
-    acc[specialization].push(lawyer);
-    return acc;
-  }, {});
-
-  const filteredLawyers = Object.keys(groupedLawyers).reduce(
-    (acc, specialization) => {
-      const filtered = groupedLawyers[specialization].filter(
-        (lawyer) =>
-          lawyer.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          lawyer.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          specialization.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      if (filtered.length > 0) {
-        acc[specialization] = filtered;
-      }
-      return acc;
-    },
-    {}
-  );
-
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   return (
-    <Box sx={{ padding: 3 }}>
+    <Box sx={{ width: "80%", padding: 3 }}>
       <Typography variant="h4" gutterBottom>
         Hire a Lawyer
       </Typography>
@@ -190,109 +171,115 @@ const HireALawyer = () => {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      {Object.keys(filteredLawyers).map((specialization) => (
-        <Box key={specialization} sx={{ marginBottom: 5 }}>
-          <Typography variant="h5" sx={{ marginBottom: 2 }}>
-            {specialization}
-          </Typography>
-          <Divider sx={{ marginBottom: 2 }} />
-          <Grid container spacing={3}>
-            {filteredLawyers[specialization].map((lawyer) => (
-              <Grid sizes={{ xs: 12, sm: 6, md: 4 }} key={lawyer._id}>
-                <Card
-                  sx={{
-                    maxWidth: 345,
-                    borderRadius: 3,
-                    boxShadow: 6,
-                    padding: "1rem 2.5rem",
-                    transition: "transform 0.2s",
-                    "&:hover": { transform: "scale(1.05)" },
-                  }}
-                >
-                  <Box display="flex" justifyContent="center" pt={2}>
-                    <Avatar
-                      src={`http://localhost:5000/images/${lawyer.photo}`}
-                      alt={`${lawyer.first_name} ${lawyer.last_name}`}
-                      sx={{
-                        width: 100,
-                        height: 100,
-                        border: "2px solid #3f51b5",
-                      }}
-                    />
-                  </Box>
-                  <CardContent>
-                    <Typography variant="h6" textAlign="center">
-                      {lawyer.first_name} {lawyer.last_name}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="textSecondary"
-                      textAlign="center"
-                      gutterBottom
-                    >
-                      Specialization: {lawyer.specialization}
-                    </Typography>
-                    <Stack
-                      direction="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                      mt={2}
-                    >
-                      <Chip
-                        label={lawyer.isAvailable ? "Available" : "Unavailable"}
-                        color={lawyer.isAvailable ? "success" : "error"}
-                      />
-                      <Chip
-                        label={`$${lawyer.consultation_price}/hr`}
-                        color="primary"
-                      />
-                    </Stack>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      onClick={handleHireLawyer(lawyer._id)}
-                    >
-                      Hire Lawyer
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      fullWidth
-                      onClick={handleMoreDetails(lawyer)}
-                    >
-                      More Details
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-          {/* <Button
-            variant="contained"
-            color="primary"
-            onClick={() => fetchRecommendedLawyer(specialization)}
-          >
-            Recommend Lawyer
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => fetchRecommendedLawyerByWonCases(specialization)}
-          >
-            Recommend Lawyer (Won Cases)
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => fetchRecommendedLawyerByAssessment(specialization)}
-          >
-            Recommend Lawyer (Assessment)
-          </Button> */}
+      <FormControl fullWidth sx={{ mb: 3 }}>
+        <InputLabel>Specialization</InputLabel>
+        <Select
+          value={selectedSpecialization}
+          onChange={handleSpecializationChange}
+        >
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          {specializations.map((specialization) => (
+            <MenuItem key={specialization} value={specialization}>
+              {specialization}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <Box sx={{ marginBottom: 5 }}>
+        <Box
+          sx={{
+            marginBottom: 3,
+          }}
+        >
+          <RecommendedLawyers
+            handleShowDetails={handleMoreDetails}
+            handleHireLawyer={handleHireLawyer}
+            recommendedLawyers={recommendedLawyers}
+          />
         </Box>
-      ))}
+        <Divider />
+        <Typography variant="h5" textAlign="center" mt={3}>
+          All Lawyers
+        </Typography>
+        <Grid container spacing={3}>
+          {lawyers.map((lawyer) => (
+            <Grid sizes={{ xs: 12, sm: 6, md: 4 }} key={lawyer._id}>
+              <Card
+                sx={{
+                  maxWidth: 345,
+                  borderRadius: 3,
+                  boxShadow: 6,
+                  padding: "1rem 2.5rem",
+                  transition: "transform 0.2s",
+                  "&:hover": { transform: "scale(1.05)" },
+                }}
+              >
+                <Box display="flex" justifyContent="center" pt={2}>
+                  <Avatar
+                    src={`http://localhost:5000/uploads/images/${lawyer.photo}`}
+                    alt={`${lawyer.first_name} ${lawyer.last_name}`}
+                    sx={{
+                      width: 100,
+                      height: 100,
+                      border: "2px solid #3f51b5",
+                    }}
+                  />
+                </Box>
+                <CardContent>
+                  <Typography variant="h6" textAlign="center">
+                    {lawyer.first_name} {lawyer.last_name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    textAlign="center"
+                    gutterBottom
+                  >
+                    Specialization: {lawyer.specialization}
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mt={2}
+                  >
+                    <Chip
+                      label={lawyer.isAvailable ? "Available" : "Unavailable"}
+                      color={lawyer.isAvailable ? "success" : "error"}
+                    />
+                    <Chip
+                      label={`$${lawyer.consultation_price}/hr`}
+                      color="primary"
+                    />
+                  </Stack>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={handleHireLawyer(lawyer._id)}
+                  >
+                    Hire Lawyer
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    fullWidth
+                    onClick={handleMoreDetails(lawyer)}
+                  >
+                    More Details
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogTitle>Select a Case</DialogTitle>
         <DialogContent>
@@ -408,25 +395,6 @@ const HireALawyer = () => {
               </Box>
             </Box>
 
-            {/* Achievements and Certifications */}
-            <Box mb={3}>
-              <Typography variant="h6" gutterBottom>
-                Professional Details
-              </Typography>
-              <Typography variant="body1">
-                Achievements:{" "}
-                {lawyerDetails.achievements?.length > 0
-                  ? lawyerDetails.achievements.join(", ")
-                  : "None listed"}
-              </Typography>
-              <Typography variant="body1">
-                Certifications:{" "}
-                {lawyerDetails.additionalCertifications?.length > 0
-                  ? lawyerDetails.additionalCertifications.join(", ")
-                  : "None listed"}
-              </Typography>
-            </Box>
-
             {/* Contact Details */}
             <Box mb={3}>
               <Typography variant="h6" gutterBottom>
@@ -468,12 +436,7 @@ const HireALawyer = () => {
                     Ongoing Cases: {lawyerDetails.ongoingCases}
                   </Typography>
                 </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <Typography variant="body1">
-                    Average Response Time: {lawyerDetails.averageResponseTime}{" "}
-                    hrs
-                  </Typography>
-                </Grid>
+                <Grid size={{ xs: 12 }}></Grid>
               </Grid>
             </Box>
 

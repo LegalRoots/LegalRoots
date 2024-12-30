@@ -121,45 +121,6 @@ const Post = ({ post, setPosts }) => {
   const toggleContent = () => {
     setIsExpanded(!isExpanded);
   };
-  const isFollowing = user?.following?.includes(post.author._id);
-
-  const handleFollowUser = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:5000/JusticeRoots/users/${post?.author?._id}/follow`,
-        {
-          method: isFollowing ? "DELETE" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: user._id, userModel: type }),
-        }
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-        const updatedUser = {
-          ...user,
-          following: isFollowing
-            ? user.following.filter((id) => id !== post.author._id)
-            : [...user.following, post.author._id],
-        };
-        setUser(updatedUser);
-
-        if (localStorage.getItem("user")) {
-          localStorage.setItem("user", JSON.stringify(updatedUser));
-        }
-
-        if (sessionStorage.getItem("user")) {
-          sessionStorage.setItem("user", JSON.stringify(updatedUser));
-        }
-      } else {
-        console.error("Error following user:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
 
   const isLiked = post.likes.some((like) => {
     return like === user._id;
@@ -171,7 +132,7 @@ const Post = ({ post, setPosts }) => {
         <div className="author-info">
           <img
             src={
-              `http://localhost:5000/${post.author.photo}` ||
+              `http://localhost:5000/uploads/images/${post.author.photo}` ||
               "/images/default.png"
             }
             alt={`${post.author.first_name}'s avatar`}
@@ -179,8 +140,8 @@ const Post = ({ post, setPosts }) => {
           />
           <p>
             {post.author.first_name + " " + post.author.last_name}{" "}
-            <span className={"role-" + post.author.role}>
-              {post.author.role}
+            <span className={"role-" + post.authorModel}>
+              {post.authorModel}
             </span>
           </p>
         </div>
@@ -189,16 +150,6 @@ const Post = ({ post, setPosts }) => {
             {new Date(post.timestamp).toLocaleString()}
           </span>
         </div>
-
-        <button className="add-friend-button" onClick={handleFollowUser}>
-          {post.author._id === user._id ? (
-            ""
-          ) : isFollowing ? (
-            <span className="Following">Following</span>
-          ) : (
-            <span className="Follow">Follow</span>
-          )}
-        </button>
       </div>
       <p
         ref={contentRef}
@@ -244,7 +195,10 @@ const Post = ({ post, setPosts }) => {
         <form onSubmit={handlePostComment} className="comment-form">
           <img
             className="comment-img"
-            src={`http://localhost:5000/${user.photo}` || "/images/default.png"}
+            src={
+              `http://localhost:5000/uploads/images/${user.photo}` ||
+              "/images/default.png"
+            }
             alt=""
           />
           <input
@@ -265,7 +219,7 @@ const Post = ({ post, setPosts }) => {
               <div className="comment-head">
                 <img
                   src={
-                    `http://localhost:5000/${comment.author.photo}` ||
+                    `http://localhost:5000/uploads/images/${comment.author.photo}` ||
                     "/images/default.png"
                   }
                   alt="avatar"

@@ -36,6 +36,7 @@ const userSchema = new mongoose.Schema({
   gender: {
     type: String,
   },
+
   city: String,
   street: String,
   password: {
@@ -64,15 +65,18 @@ const userSchema = new mongoose.Schema({
   following: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      refPath: "followTypes",
     },
   ],
   followers: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      refPath: "followTypes",
     },
   ],
+  followTypes: {
+    enum: ["User", "Lawyer", "Judge", "Admin"],
+  },
   notifications: [
     {
       message: String,

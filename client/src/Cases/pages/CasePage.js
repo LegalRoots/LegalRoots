@@ -106,6 +106,7 @@ const Case = () => {
               )
             )
           );
+          console.log(caseDefendantLawyers);
           setDefendantLawyers(caseDefendantLawyers.map((res) => res.data.data));
         } catch (error) {
           setDefendantLawyers("No defendant lawyers found");
@@ -380,11 +381,17 @@ const Case = () => {
           </Typography>
           {caseData.lawyer.map((lawyerr) => {
             return (
-              <Box key={lawyerr._id} display="flex" alignItems="center" gap={2}>
+              <Box
+                sx={{ mb: 3 }}
+                key={lawyerr._id}
+                display="flex"
+                alignItems="center"
+                gap={2}
+              >
                 <img
-                  src={`http://localhost:5000/${lawyerr}`}
+                  src={`http://localhost:5000/uploads/images/${lawyerr.photo}`}
                   alt="Lawyer"
-                  style={{ width: 100, height: 100, borderRadius: "50%" }}
+                  style={{ width: 80, height: 80, borderRadius: "50%" }}
                 />
                 <Box>
                   <Typography variant="h6" gutterBottom>
@@ -438,9 +445,15 @@ const Case = () => {
             Judges:
           </Typography>
           {caseData.Case.judges.map((judge) => (
-            <Box key={judge._id} display="flex" alignItems="center" gap={2}>
+            <Box
+              sx={{ mb: 3 }}
+              key={judge._id}
+              display="flex"
+              alignItems="center"
+              gap={2}
+            >
               <img
-                src={`http://localhost:5000/${judge.photo}`}
+                src={`http://localhost:5000/uploads/images/${judge.photo}`}
                 alt="Judge"
                 style={{ width: 100, height: 100, borderRadius: "50%" }}
               />

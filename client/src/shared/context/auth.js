@@ -1,12 +1,13 @@
 import { createContext, useState, useEffect } from "react";
 import io from "socket.io-client";
-
+import Cookies from "js-cookie";
 const socket = io("http://localhost:5000");
 
 export const AuthContext = createContext({
   isLoggedIn: false,
   type: null,
   user: null,
+  token: null,
   login: (user) => {},
   logout: () => {},
   setUser: (user) => {},
@@ -24,10 +25,16 @@ export const AuthProvider = ({ children }) => {
     const savedType = sessionStorage.getItem("userType");
     return savedType ? JSON.parse(savedType) : null;
   });
+  const [token, setToken] = useState(() => {
+    const savedToken = Cookies.get("token");
+    return savedToken ? savedToken : null;
+  });
   const isLoggedIn = !!user;
   const login = (userData, checkbox, type) => {
     const userInfo = userData.data.user;
+    const token = userData.token;
     setUser(userInfo);
+    setToken(token);
     setType(type);
 
     if (checkbox) {
@@ -36,6 +43,8 @@ export const AuthProvider = ({ children }) => {
     }
     sessionStorage.setItem("userType", JSON.stringify(type));
     sessionStorage.setItem("user", JSON.stringify(userInfo));
+    Cookies.set("token", token, { expires: 7 });
+
     socket.connect();
     socket.emit("register", userInfo._id);
   };
@@ -47,6 +56,7 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.removeItem("user");
     localStorage.removeItem("userType");
     sessionStorage.removeItem("userType");
+    Cookies.remove("token");
 
     socket.disconnect();
   };
@@ -68,6 +78,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         isLoggedIn,
         user,
+        token,
         login,
         logout,
         setUser,

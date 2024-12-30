@@ -167,16 +167,24 @@ const lawyerSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Years of experience is required!"],
   },
-  achievements: [String],
-  additionalCertifications: [String],
-  paymentMethods: [String],
-  billingRate: {
-    type: Number,
-    required: false,
-  },
   lastActive: {
     type: Date,
     default: Date.now,
+  },
+  following: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "followTypes",
+    },
+  ],
+  followers: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "followTypes",
+    },
+  ],
+  followTypes: {
+    enum: ["User", "Lawyer", "Judge", "Admin"],
   },
 });
 
