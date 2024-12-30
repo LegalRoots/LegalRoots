@@ -95,6 +95,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 exports.login = catchAsync(async (req, res, next) => {
   const { type } = req.body;
+  console.log(req.body);
 
   if (type === "User") {
     const { email, password } = req.body;

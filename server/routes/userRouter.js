@@ -31,14 +31,11 @@ router.post(
   authController.signup
 );
 
-router.get("/:userId", userController.getUserBySSID);
-
 router.get("/", userController.getAllUsers);
 router.post("/login", authController.login);
 router.put("/updateProfile", userController.updateProfile);
 router.post("/check-email", authController.checkEmail);
 router.post("/check-SSID", authController.checkSSID);
-router.post("/:userId/follow", userController.toggleFollow);
-router.delete("/:userId/follow", userController.toggleFollow);
+router.get("/:userId", userController.getUserBySSID);
 
 module.exports = router;

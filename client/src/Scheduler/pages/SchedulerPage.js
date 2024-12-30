@@ -1,49 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Scheduler, { Resource } from "devextreme-react/scheduler";
-import "devextreme/dist/css/dx.light.css";
-import { Box, Typography, Paper, Button } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import Grid from "@mui/material/Grid2";
+import "devextreme/dist/css/dx.material.orange.light.css";
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    padding: theme.spacing(4),
-    backgroundColor: theme.palette.background.default,
-  },
-  title: {
-    textAlign: "center",
-    marginBottom: theme.spacing(2),
-  },
-  schedulerWrapper: {
-    marginTop: theme.spacing(4),
-    borderRadius: 8,
-    overflow: "hidden",
-  },
-  button: {
-    marginTop: theme.spacing(2),
-    backgroundColor: "#1e88e5",
-    color: "#fff",
-    "&:hover": {
-      backgroundColor: "#1565c0",
-    },
-  },
-  paper: {
-    padding: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    boxShadow: theme.shadows[3],
-  },
-}));
+import {
+  Box,
+  Typography,
+  Paper,
+  IconButton,
+  AppBar,
+  Toolbar,
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Grid from "@mui/material/Grid";
 
 const SchedulerPage = () => {
-  const groups = ["assignedTo"];
   const { id } = useParams();
+  const navigate = useNavigate();
   const caseId = id;
   const [schedulerData, setSchedulerData] = useState([]);
-  const classes = useStyles();
 
-  // Fetch tasks for the scheduler
   useEffect(() => {
     const fetchCase = async () => {
       try {
@@ -75,10 +52,10 @@ const SchedulerPage = () => {
       const response = await axios.post(
         `http://localhost:5000/JusticeRoots/cases/tasks/${id}`,
         {
-          text: text,
-          assignedTo: assignedTo,
-          startDate: startDate,
-          endDate: endDate,
+          text,
+          assignedTo,
+          startDate,
+          endDate,
           allDay: e.appointmentData.allDay,
           description: e.appointmentData.description,
         }
@@ -103,76 +80,103 @@ const SchedulerPage = () => {
   };
 
   return (
-    <Box className={classes.container}>
-      <Typography variant="h4" className={classes.title}>
-        Case Scheduler for Case #{caseId}
-      </Typography>
-      <Paper className={classes.paper}>
-        <Typography variant="h6">Tasks Overview</Typography>
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="body1">
-              View and manage tasks related to this case.
-            </Typography>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      <AppBar position="static" color="primary">
+        <Toolbar>
+          <IconButton
+            sx={{ width: "50px", height: "50px" }}
+            edge="start"
+            color="inherit"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h6" component="div">
+            Go Back
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Box
+        sx={{ padding: 3, backgroundColor: "background.default", flexGrow: 1 }}
+      >
+        <Paper sx={{ padding: 3, marginBottom: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Tasks for Case {caseId}
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="body1">
+                View and manage tasks related to this case.
+              </Typography>
+            </Grid>
           </Grid>
-        </Grid>
-      </Paper>
-      <Box className={classes.schedulerWrapper}>
-        <Scheduler
-          dataSource={schedulerData}
-          defaultCurrentDate={new Date()}
-          startDayHour={8}
-          endDayHour={18}
-          height={600}
-          onAppointmentFormOpening={(e) => {
-            e.form.itemOption("recurrenceRule", "disabled", true);
+        </Paper>
+        <Box
+          sx={{
+            marginTop: 3,
+            borderRadius: 2,
+            overflow: "hidden",
+            boxShadow: 3,
           }}
-          editing={{
-            allowAdding: true,
-            allowUpdating: true,
-            allowDeleting: true,
-            allowDragging: false,
-          }}
-          onAppointmentAdding={handleAppointmentAdding}
-          onAppointmentDeleted={async (e) => {
-            const { id } = e.appointmentData;
-            try {
-              await axios.delete(
-                `http://localhost:5000/JusticeRoots/cases/${caseId}/tasks/${id}`
-              );
-              setSchedulerData(schedulerData.filter((task) => task.id !== id));
-            } catch (error) {
-              console.error("Failed to delete task", error);
-            }
-          }}
-          groups={groups}
-          onAppointmentUpdated={async (e) => {
-            const updatedTask = e.appointmentData;
-            try {
-              await axios.put(
-                `http://localhost:5000/JusticeRoots/cases/${caseId}/tasks/${updatedTask.id}`,
-                updatedTask
-              );
-              setSchedulerData(
-                schedulerData.map((task) =>
-                  task.id === updatedTask.id ? updatedTask : task
-                )
-              );
-            } catch (error) {
-              console.error("Failed to update task", error);
-            }
-          }}
-          descriptionExpr="description"
         >
-          <Resource
-            fieldExpr="assignedTo"
-            dataSource={[
-              { id: "Lawyer", color: "#1e88e5", text: "Lawyer Tasks" },
-              { id: "Client", color: "#43a047", text: "Client Tasks" },
-            ]}
-            label="Assigned To"
-          />
-        </Scheduler>
+          <Scheduler
+            dataSource={schedulerData}
+            defaultCurrentDate={new Date()}
+            startDayHour={8}
+            endDayHour={18}
+            height={600}
+            onAppointmentFormOpening={(e) => {
+              e.form.itemOption("recurrenceRule", "disabled", true);
+            }}
+            editing={{
+              allowAdding: true,
+              allowUpdating: true,
+              allowDeleting: true,
+              allowDragging: false,
+            }}
+            onAppointmentAdding={handleAppointmentAdding}
+            onAppointmentDeleted={async (e) => {
+              const { id } = e.appointmentData;
+              try {
+                await axios.delete(
+                  `http://localhost:5000/JusticeRoots/cases/${caseId}/tasks/${id}`
+                );
+                setSchedulerData(
+                  schedulerData.filter((task) => task.id !== id)
+                );
+              } catch (error) {
+                console.error("Failed to delete task", error);
+              }
+            }}
+            groups={["assignedTo"]}
+            onAppointmentUpdated={async (e) => {
+              const updatedTask = e.appointmentData;
+              try {
+                await axios.put(
+                  `http://localhost:5000/JusticeRoots/cases/${caseId}/tasks/${updatedTask.id}`,
+                  updatedTask
+                );
+                setSchedulerData(
+                  schedulerData.map((task) =>
+                    task.id === updatedTask.id ? updatedTask : task
+                  )
+                );
+              } catch (error) {
+                console.error("Failed to update task", error);
+              }
+            }}
+            descriptionExpr="description"
+          >
+            <Resource
+              fieldExpr="assignedTo"
+              dataSource={[
+                { id: "Lawyer", color: "#1e88e5", text: "Lawyer Tasks" },
+                { id: "Client", color: "#43a047", text: "Client Tasks" },
+              ]}
+              label="Assigned To"
+            />
+          </Scheduler>
+        </Box>
       </Box>
     </Box>
   );

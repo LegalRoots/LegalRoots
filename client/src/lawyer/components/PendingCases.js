@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, Fragment } from "react";
 import {
   Box,
   Typography,
@@ -143,14 +143,16 @@ const PendingCases = () => {
                     <ListItemText
                       primary="Case Documents"
                       secondary={assignment.caseId.case_documents.map((doc) => (
-                        <a
-                          key={doc._id}
-                          href={`http://localhost:5000/${doc.path}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {doc.path.split("\\").pop()}
-                        </a>
+                        <Fragment key={doc._id}>
+                          <a
+                            href={`http://localhost:5000/${doc.path}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {doc.path.split("\\").pop()}
+                          </a>
+                          <br />
+                        </Fragment>
                       ))}
                     />
                   </ListItem>

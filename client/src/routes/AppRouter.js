@@ -26,7 +26,12 @@ import LawyerCases from "../lawyer/components/LawyerCases";
 import LawyerCaseDetail from "../lawyer/components/LawyerCaseDetails";
 import OnlineCourt from "../OnlineCourts/pages/OnlineCourt/OnlineCourt";
 import JoinMeeting from "../shared/components/JoinMeeting/JoinMeeting";
+import ChatsPage from "../Chat/ChatsPage";
+import LawyerChatsPage from "../Chat/LawyerChatsPage";
+import ChatBot from "../Chat/ChatBot";
 import Chat from "../Chat/Chat";
+import NotVerified from "../Authentication/pages/NotVerified";
+import PayLawyer from "../dashboard/components/PayLawyer";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
@@ -37,6 +42,7 @@ const router = createBrowserRouter(
         <Route element={<UserRouter />}>
           <Route path={"/user"} element={<Dashboard />}>
             <Route path={"/user/hire-lawyer"} element={<HireLawyer />} />
+            <Route path={"/user/pay-lawyer"} element={<PayLawyer />} />
             <Route
               path={"/user/join-court"}
               element={
@@ -55,6 +61,7 @@ const router = createBrowserRouter(
             />
             <Route path={"/user/main-feed"} index element={<MainFeed />} />
             <Route path={"/user/my-cases"} element={<CaseCard />} />
+            <Route path={"/user/chats"} element={<ChatsPage />} />
             <Route path={"/user/my-cases/:id"} element={<CasesPage />} />
             <Route
               path={"/user/profile-settings"}
@@ -84,6 +91,7 @@ const router = createBrowserRouter(
             />
             <Route path={"/lawyer/main-feed"} element={<MainFeed />} />
             <Route path={"/lawyer/pending-cases"} element={<PendingCases />} />
+            <Route path={"/lawyer/chats"} element={<LawyerChatsPage />} />
             <Route path={"/lawyer/my-cases"} element={<LawyerCases />} />
             <Route path={"/lawyer/cases/:id"} element={<LawyerCaseDetail />} />
           </Route>
@@ -96,7 +104,8 @@ const router = createBrowserRouter(
 
         {/* Public Routes */}
 
-        <Route path={"/chat"} element={<Chat />} />
+        <Route path={"/chat/:convId"} element={<Chat />} />
+        <Route path={"/not-verified"} element={<NotVerified />} />
         <Route
           path={"/login"}
           element={
@@ -123,6 +132,7 @@ const router = createBrowserRouter(
           path="*"
           element={<div style={{ height: "100vh" }}>Not Found</div>}
         />
+        <Route path={"/chatbot"} element={<ChatBot />} />
       </Route>
     </Route>
   )

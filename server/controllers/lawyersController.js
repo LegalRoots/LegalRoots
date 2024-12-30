@@ -3,10 +3,15 @@ const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 
 exports.getAllLawyers = async (req, res) => {
+  const query = req.query;
+  const queryObj = { ...query };
+  queryObj.isVerified = true;
+
   try {
-    const lawyers = await Lawyer.find()
+    const lawyers = await Lawyer.find(queryObj)
       .populate("assignments.clientId")
       .populate("clientReviews.clientId", "first_name last_name");
+
     res.status(200).json({
       status: "success",
       results: lawyers.length,
@@ -23,15 +28,24 @@ exports.getAllLawyers = async (req, res) => {
 };
 exports.getLawyerDetails = async (req, res) => {
   try {
-    const lawyer = await Lawyer.findById(req.params.id).populate(
-      "assignments.clientId"
-    );
+    const lawyer = await Lawyer.findOne({
+      _id: req.params.id,
+      isVerified: true,
+    }).populate("assignments.clientId");
+
+    if (!lawyer) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Lawyer not found or not verified",
+      });
+    }
+
     res.status(200).json({
       status: "success",
       data: lawyer,
     });
   } catch (err) {
-    res.status(404).json({
+    res.status(500).json({
       status: "fail",
       message: err.message,
     });
@@ -234,7 +248,10 @@ exports.addAchievement = async (req, res) => {
 };
 exports.getLawyerBySSID = async (req, res) => {
   try {
-    const lawyer = await Lawyer.findOne({ SSID: req.params.ssid });
+    const lawyer = await Lawyer.findOne({
+      SSID: req.params.ssid,
+      isVerified: true,
+    });
     if (!lawyer) {
       return res.status(404).json({
         status: "fail",
@@ -253,10 +270,10 @@ exports.getLawyerBySSID = async (req, res) => {
   }
 };
 exports.recommendLawyer = async (req, res) => {
-  const { limit = 5 } = req.query;
+  const { limit = 3, specialization } = req.query;
 
   try {
-    const query = { isAvailable: true, isVerified: true };
+    const query = { isAvailable: true, isVerified: true, specialization };
 
     const lawyers = await Lawyer.find(query).populate("clientReviews.clientId");
 
@@ -281,7 +298,17 @@ exports.recommendLawyer = async (req, res) => {
     res.status(500).json({ error: "An error occurred while fetching lawyers" });
   }
 };
-
+exports.getSpecializations = async (req, res) => {
+  try {
+    const specializations = await Lawyer.find().distinct("specialization");
+    res.status(200).json(specializations);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching specializations" });
+  }
+};
 exports.verifyLawyer = async (req, res) => {
   try {
     const { lawyer_id } = req.params;

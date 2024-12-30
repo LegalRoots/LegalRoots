@@ -6,7 +6,15 @@ const MessageSchema = new mongoose.Schema({
     ref: "Conversation",
     required: true,
   },
-  sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: "authorType",
+  },
+  authorType: {
+    type: String,
+    enum: ["User", "Lawyer", "Admin", "Judge"],
+    required: true,
+  },
   text: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
 });

@@ -8,6 +8,7 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
+import ChatIcon from "@mui/icons-material/Chat";
 import GroupsIcon from "@mui/icons-material/Groups";
 import PendingIcon from "@mui/icons-material/Pending";
 import {
@@ -153,6 +154,34 @@ const LawyerSidebar = () => {
             sx={{ color: activeItem === "join-court" ? "white" : "inherit" }}
           >
             Join a Court
+          </Typography>
+        </ListItem>
+
+        <ListItem
+          selected={activeItem === "chats"}
+          onClick={() => {
+            handleItemClick("chats");
+          }}
+          sx={{
+            backgroundColor:
+              activeItem === "chats" ? "primary.main" : "inherit",
+            color: activeItem === "chats" ? "white" : "inherit",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            },
+          }}
+        >
+          <ListItemIcon>
+            <ChatIcon
+              sx={{
+                color: activeItem === "chats" ? "white" : "primary.main",
+              }}
+            />
+          </ListItemIcon>
+          <Typography
+            sx={{ color: activeItem === "chats" ? "white" : "inherit" }}
+          >
+            Chat
           </Typography>
         </ListItem>
 
