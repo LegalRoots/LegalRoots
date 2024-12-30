@@ -7,6 +7,7 @@ const router = express.Router();
 router.get("/", lawyersController.getAllLawyers);
 router.get("/recommended", lawyersController.recommendLawyer);
 
+router.put("/verify/:lawyer_id?", lawyersController.verifyLawyer);
 router.get("/:id", lawyersController.getLawyerDetails);
 router.get("/ssid/:ssid", lawyersController.getLawyerBySSID);
 router.patch("/:id", lawyersController.updateLawyer);

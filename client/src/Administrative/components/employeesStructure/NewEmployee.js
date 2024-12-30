@@ -30,7 +30,7 @@ const NewEmployeee = () => {
     email: { value: "", isValid: false },
     password: { value: "", isValid: false },
     phone: { value: "", isValid: false },
-    court_branch: { value: "", isValid: false },
+    court_branch: { value: "", isValid: true },
   };
 
   const fileChangeHandler = (event) => {
@@ -43,11 +43,29 @@ const NewEmployeee = () => {
 
   const [formState, inputHandler, setFormData] = useForm(formData, false);
   const [courtsList, setCourtsList] = useState([]);
+  const [jobsList, setJobsList] = useState([]);
 
   const [courtData, isCourtDataLoading] = useFetch(
     "GET",
     `${REACT_APP_API_BASE_URL}/admin/court-branch`
   );
+
+  const [jobsData, isJobDataLoading] = useFetch(
+    "GET",
+    `${REACT_APP_API_BASE_URL}/admin/job`
+  );
+  useEffect(() => {
+    if (!isJobDataLoading && jobsData) {
+      let tmp = jobsData.jobs.map((j) => j.title);
+      setJobsList(tmp);
+
+      setFormData({
+        ...formData,
+        job: { value: tmp[0], isValid: true },
+      });
+    }
+  }, [jobsData, isJobDataLoading]);
+
   useEffect(() => {
     if (!isCourtDataLoading && courtData) {
       let tmpArray = courtData.map((court) => court.name);
@@ -58,6 +76,7 @@ const NewEmployeee = () => {
   const onSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(document.getElementById("forms"));
+    //setting the court value
     let court = courtData.find(
       (c) => c.name === formState.inputs.court_branch.value
     );
@@ -66,6 +85,10 @@ const NewEmployeee = () => {
     } else {
       formData.set("court_branch", "");
     }
+
+    //setting the job value
+    let job = jobsData.jobs.find((j) => j.title === formState.inputs.job.value);
+    formData.set("job", job._id);
 
     try {
       const response = await fetch(
@@ -87,8 +110,11 @@ const NewEmployeee = () => {
 
   const SelectHandler = (event) => {
     const val = event.target.value;
-
-    inputHandler("court_branch", val, true);
+    if (event.target.id === "court_branch") {
+      inputHandler("court_branch", val, true);
+    } else if (event.target.id === "job") {
+      inputHandler("job", val, true);
+    }
   };
 
   return (
@@ -106,13 +132,21 @@ const NewEmployeee = () => {
           errorMsg="invalid ssid"
           validators={VALIDATOR_EQUALLENGTH(9)}
         />
-        <div style={{ width: "80%" }}>
+        <div className="new-employee-selects">
           <Select
             label="Court Branch"
             placeholder="Court Branch"
             id="court_branch"
             options={["", ...courtsList]}
             value={formState.inputs.court_branch.value}
+            onChange={SelectHandler}
+          />
+          <Select
+            label="Job"
+            placeholder="job title"
+            id="job"
+            options={jobsList}
+            value={formState.inputs.job.value}
             onChange={SelectHandler}
           />
         </div>
@@ -161,17 +195,7 @@ const NewEmployeee = () => {
           errorMsg="invalid name"
           validators={VALIDATOR_MINLENGTH(1)}
         />
-        <Input
-          label="Job"
-          id="job"
-          name="job"
-          onInput={inputHandler}
-          type="text"
-          placeholder="job title"
-          className="new-employee__input"
-          errorMsg="invalid job"
-          validators={VALIDATOR_MINLENGTH(2)}
-        />
+
         <div className="new-employee__radio">
           <label>Gender :</label>
           <div>

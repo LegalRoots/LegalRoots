@@ -17,6 +17,21 @@
   padding-top: 1rem;
 }
 
+.admin-scheduledCourts-filter {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  align-self: center;
+  width: 80%;
+}
+
+.admin-scheduledCourts-filter input {
+  background-color: #eee;
+  border-color: #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 @media only screen and (max-width: 1200px) {
   .admin-scheduledCourts-container {
     width: 100%;

@@ -14,16 +14,20 @@ const Judge = () => {
       setPerms(user.job?.permissions);
     }
   }, [type, user]);
-  return (
-    <div className="judges-main">
-      {perms && (
-        <Routes>
-          {perms.judges?.view && <Route path="/" Component={JudgesData} />}
-          {perms.judges?.manage && <Route path="/new" Component={NewJudge} />}
-        </Routes>
-      )}
-    </div>
-  );
+
+  let routes;
+  if (type === "Admin") {
+    routes = (
+      <Routes>
+        {perms?.judges?.view && <Route path="/" Component={JudgesData} />}
+        {perms?.judges?.manage && <Route path="/new" Component={NewJudge} />}
+      </Routes>
+    );
+  } else {
+    routes = <Routes></Routes>;
+  }
+
+  return <div className="judges-main">{routes}</div>;
 };
 
 export default Judge;

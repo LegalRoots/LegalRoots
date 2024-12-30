@@ -44,6 +44,28 @@ const Users = () => {
     setTableState(f);
   };
 
+  const verifyHandler = async (event) => {
+    const { id } = event.target;
+
+    try {
+      const response = await fetch(
+        `${REACT_APP_API_BASE_URL}/JusticeRoots/lawyers/verify/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const response_data = await response.json();
+      if (response.ok === true) {
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="admin-assignments-container">
       {showOverlay && (
@@ -52,6 +74,8 @@ const Users = () => {
       <UsersTable
         users={tableState === 1 ? allUsers : allLawyers}
         tableStateHandler={tableStateHandler}
+        type={tableState}
+        verifyHandler={verifyHandler}
       />
     </div>
   );

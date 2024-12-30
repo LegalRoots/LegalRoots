@@ -31,7 +31,7 @@ const AssignmentsReplace = ({
       const element = data[index];
       const { employee_id, full_name, job, phone, _id } = element.data;
       const arrElement = {
-        rowData: { employee_id, full_name, job, phone },
+        rowData: { employee_id, full_name, job: job.title, phone },
         actionData: {
           id: _id,
           actionHandler: assignmentHandler,

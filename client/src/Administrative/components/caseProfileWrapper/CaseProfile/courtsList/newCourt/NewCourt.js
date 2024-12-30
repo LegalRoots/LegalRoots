@@ -33,9 +33,12 @@ const NewCourt = ({
   const [selectedWitnesses, setSelectedWitnesses] = useState([]);
   const [selectedEmployeesArray, setSelectedEmployeesArray] = useState([]);
   useEffect(() => {
+    console.log(pickedCase);
+    console.log(employeesData);
+
     if (!isEmployeesDataLoading && employeesData) {
-      let tmp = employeesData.employees.map((employee) => {
-        return `${employee.full_name} - (${employee.employee_id})`;
+      let tmp = employeesData.map((employee) => {
+        return `${employee.data.full_name} - (${employee.data.employee_id})`;
       });
       setEmployeesNames(tmp);
       setEmployees(employeesData.employees);

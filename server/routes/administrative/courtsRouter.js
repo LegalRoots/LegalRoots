@@ -21,4 +21,8 @@ router.get("/court/meeting_id/:id", courtsController.getMeetingId);
 
 router.delete("/court/:id", courtsController.deleteCourt);
 router.put("/court/:id", courtsController.replaceCourt);
+
+//filters
+router.get("/court/filter", courtsController.getCourtsByDate);
+
 module.exports = router;

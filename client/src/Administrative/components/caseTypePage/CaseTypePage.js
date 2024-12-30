@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
 import Button from "../../../shared/components/Button2/Button";
 import { useNavigate } from "react-router-dom";
-
+import { AuthContext } from "../../../shared/context/auth";
+import { useContext, useEffect, useState, useRef } from "react";
 import "./CaseTypePage.css";
 
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -51,6 +51,15 @@ const Field = ({ id, text, deleteFieldHandler, required }) => {
 };
 
 const CaseTypePage = ({ id, closeModalHandler }) => {
+  const { type, user } = useContext(AuthContext);
+
+  const [perms, setPerms] = useState(null);
+
+  useEffect(() => {
+    if (type === "Admin" && user?.job.permissions) {
+      setPerms(user.job.permissions);
+    }
+  }, [user]);
   const backgroundRef = useRef(null);
   const [caseTypeItem, setCaseTypeItem] = useState(null);
   const [renderedFieldsList, setRenderedFieldsList] = useState(GENERAL_FIELDS);
@@ -64,7 +73,6 @@ const CaseTypePage = ({ id, closeModalHandler }) => {
 
   const fetchData = async () => {
     try {
-      console.log(id);
       const response = await fetch(
         `${REACT_APP_API_BASE_URL}/admin/caseType/${id}`
       );
@@ -72,7 +80,6 @@ const CaseTypePage = ({ id, closeModalHandler }) => {
       const response_data = await response.json();
 
       if (response.ok === true) {
-        console.log(response_data);
         setCaseTypeItem(response_data.caseType);
       }
     } catch (error) {
@@ -145,22 +152,24 @@ const CaseTypePage = ({ id, closeModalHandler }) => {
               />
             ))}
           </div>
-          <div className="caseTypePage-buttons">
-            <Button color="black" size="2" onClick={deleteHandler}>
-              delete
-            </Button>
-            <Button
-              color="gold"
-              size="2"
-              onClick={() => {
-                navigate("/admin/cases/structure/update", {
-                  state: { caseTypeId: id },
-                });
-              }}
-            >
-              update
-            </Button>
-          </div>
+          {perms?.caseTypes?.manage && (
+            <div className="caseTypePage-buttons">
+              <Button color="black" size="2" onClick={deleteHandler}>
+                delete
+              </Button>
+              <Button
+                color="gold"
+                size="2"
+                onClick={() => {
+                  navigate("/admin/cases/structure/update", {
+                    state: { caseTypeId: id },
+                  });
+                }}
+              >
+                update
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>
