@@ -8,7 +8,7 @@ import "./UsersTable.css";
 
 const TABLE_HEADERS = ["ssid", "name", "email", "city"];
 
-const UsersTable = ({ users, tableStateHandler }) => {
+const UsersTable = ({ users, tableStateHandler, type, verifyHandler }) => {
   const [tableData, setTableData] = useState([]);
 
   const formatData = (data) => {
@@ -26,11 +26,13 @@ const UsersTable = ({ users, tableStateHandler }) => {
           city: city,
         },
       };
-      // arrElement.actionData = {
-      //   id: _id,
-      //   actionHandler: replaceHandler,
-      //   text: "replace",
-      // };
+      if (type === 2 && !element.isVerified) {
+        arrElement.actionData = {
+          id: element._id,
+          actionHandler: verifyHandler,
+          text: "verify",
+        };
+      }
 
       tmpArray.push(arrElement);
     }
@@ -69,7 +71,7 @@ const UsersTable = ({ users, tableStateHandler }) => {
             <Table
               data={tableData}
               headers={TABLE_HEADERS}
-              //   headerAction="replace employee"
+              headerAction={type === 2 && "verify"}
             />
           </div>
         </div>

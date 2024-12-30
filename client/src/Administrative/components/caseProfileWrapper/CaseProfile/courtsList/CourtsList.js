@@ -9,7 +9,7 @@ import EditCourt from "./editCourt/EditCourt";
 
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-const CourtItem = ({ court, judges, pickedCase }) => {
+const CourtItem = ({ court, judges, pickedCase, ctx }) => {
   const [courtState, setCourtState] = useState("");
   const [initiator, setInitiator] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -24,7 +24,7 @@ const CourtItem = ({ court, judges, pickedCase }) => {
       } else {
         setCourtState("Scheduled");
       }
-      let init = judges.find((j) => j._id === court.initiator);
+      let init = judges.find((j) => j._id === court.initiator._id);
       if (init) setInitiator(init);
     }
   }, [court, judges]);
@@ -101,12 +101,12 @@ const CourtItem = ({ court, judges, pickedCase }) => {
         {court.description}
       </p>
       <div className="admin-caseprofile-courts-item__buttons">
-        {!court.hasStarted && (
+        {!court.hasStarted && ctx.type === "Admin" && (
           <button onClick={cancelCourtHandler} id={court._id}>
             cancel
           </button>
         )}
-        {!court.hasStarted && (
+        {!court.hasStarted && ctx.type === "Admin" && (
           <button onClick={editCourtHandler} id={court._id}>
             edit
           </button>
@@ -116,7 +116,7 @@ const CourtItem = ({ court, judges, pickedCase }) => {
   );
 };
 
-const CourtsList = ({ caseId, pickedCase, judges }) => {
+const CourtsList = ({ caseId, pickedCase, judges, ctx }) => {
   const [courtsList, setCourtsList] = useState([]);
   const [showOverlay, setShowOverlay] = useState(false);
 
@@ -148,13 +148,16 @@ const CourtsList = ({ caseId, pickedCase, judges }) => {
       )}
 
       <div className="admin-caseprofile-courts-buttons">
-        <Button size="1" type="button" onClick={showOverlayHandler}>
-          <i className="fa-solid fa-plus"></i> new court
-        </Button>
+        {ctx.type === "Admin" && (
+          <Button size="1" type="button" onClick={showOverlayHandler}>
+            <i className="fa-solid fa-plus"></i> new court
+          </Button>
+        )}
       </div>
       <div className="admin-caseprofile-courts-list">
         {courtsList.map((court) => (
           <CourtItem
+            ctx={ctx}
             court={court}
             key={court._id}
             judges={judges}

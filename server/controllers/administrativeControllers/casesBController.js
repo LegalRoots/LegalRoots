@@ -151,6 +151,51 @@ const getCasesByDefendantLawyerSSID = async (req, res) => {
   }
 };
 
+const getCasesByJudgeId = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ message: "judge id is required" });
+  }
+
+  if (id.length !== 24) {
+    return res.status(400).json({ message: "id is invalid" });
+  }
+
+  try {
+    let cases = await Case.find().populate([
+      {
+        path: "caseType",
+        select: "name",
+      },
+      "court_branch",
+      {
+        path: "judges",
+        select: "-password -judge_photo -pp_photo -id_photo",
+      },
+    ]);
+
+    cases = cases.filter((c) => {
+      const j = c.judges.map((j) => String(j._id));
+      console.log(j);
+      return j.includes(id);
+    });
+
+    if (!cases.length) {
+      return res
+        .status(404)
+        .json({ message: "No cases found for the specified judge SSID." });
+    }
+
+    res.status(200).json({ count: cases.length, cases });
+  } catch (error) {
+    console.error("Error fetching cases by lawyer SSID:", error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while retrieving cases." });
+  }
+};
+
 const addLawyerToPlaintiffLawyers = async (req, res) => {
   const { caseId, lawyerSSID } = req.body;
 
@@ -280,4 +325,5 @@ module.exports = {
   addLawyerToDenedantLawyers,
   removeLawyerFromPlaintiffLawyers,
   removeLawyerFromDefendantLawyers,
+  getCasesByJudgeId,
 };

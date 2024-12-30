@@ -127,4 +127,55 @@ const getJobById = async (req, res) => {
   }
 };
 
-module.exports = { createJob, getAllJobs, getJobById };
+const updateJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const updatedJob = await Job.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedJob) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    res.status(200).json({
+      message: "Job updated successfully",
+      data: updatedJob,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "An error occurred while updating the job",
+      error: error.message,
+    });
+  }
+};
+
+const deleteJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedJob = await Job.findByIdAndDelete(id);
+
+    if (!deletedJob) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    res.status(200).json({
+      message: "Job deleted successfully",
+      data: deletedJob,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "An error occurred while deleting the job",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = { createJob, getAllJobs, getJobById, updateJob, deleteJob };

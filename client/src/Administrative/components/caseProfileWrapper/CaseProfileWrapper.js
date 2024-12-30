@@ -32,6 +32,7 @@ const CaseProfileWrapper = () => {
   useEffect(() => {
     if (!isLoading && data) {
       setPickedCase(data.case);
+      console.log(data.case);
     }
   }, [data, isLoading]);
 

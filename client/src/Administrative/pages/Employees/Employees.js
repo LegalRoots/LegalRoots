@@ -16,20 +16,25 @@ const Employees = () => {
     }
   }, [type, user]);
 
-  return (
-    <div className="employees-conatiner">
-      {perms && (
-        <Routes>
-          {perms.employees.view && (
-            <Route path="/" Component={EmployeesTable} />
-          )}
-          {!perms.employees.manage && (
-            <Route path="/new" Component={NewEmployee} />
-          )}
-        </Routes>
-      )}
-    </div>
-  );
+  let routes;
+  if (type === "Admin") {
+    routes = (
+      <Routes>
+        {perms?.employees.view && <Route path="/" Component={EmployeesTable} />}
+        {perms?.employees.manage && (
+          <Route path="/new" Component={NewEmployee} />
+        )}
+      </Routes>
+    );
+  } else {
+    routes = (
+      <Routes>
+        <Route path="/" Component={EmployeesTable} />
+      </Routes>
+    );
+  }
+
+  return <div className="employees-conatiner">{routes}</div>;
 };
 
 export default Employees;

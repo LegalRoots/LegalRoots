@@ -69,9 +69,7 @@ const CourtSchema = new mongoose.Schema(
     },
     decision: {
       type: String,
-      required: function () {
-        return this.hasFinished;
-      },
+      required: false,
     },
   },
   {

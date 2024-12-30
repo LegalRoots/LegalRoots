@@ -8,7 +8,7 @@ import NewJudge from "./newJudge/NewJudge";
 
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-const JudgesList = ({ judges, caseId }) => {
+const JudgesList = ({ judges, caseId, ctx }) => {
   const [action, setAction] = useState("");
   const [btnText, setBtnText] = useState(" Remove judge");
   const [inputValue, setInputValue] = useState("");
@@ -87,15 +87,17 @@ const JudgesList = ({ judges, caseId }) => {
           addJudgeHandler={addHandler}
         />
       )}
-      <div className="admin-judgeslist-buttons">
-        <Button size="1" type="button" onClick={toggleRemove}>
-          <i className="fa-solid fa-minus"></i>
-          {btnText}
-        </Button>
-        <Button size="1" type="button" onClick={showOverlayHandler}>
-          <i className="fa-solid fa-plus"></i> Add judge
-        </Button>
-      </div>
+      {ctx.type === "Admin" && (
+        <div className="admin-judgeslist-buttons">
+          <Button size="1" type="button" onClick={toggleRemove}>
+            <i className="fa-solid fa-minus"></i>
+            {btnText}
+          </Button>
+          <Button size="1" type="button" onClick={showOverlayHandler}>
+            <i className="fa-solid fa-plus"></i> Add judge
+          </Button>
+        </div>
+      )}
       <div className="admin-judgeslist-cards">
         {judges.map((judge) => (
           <Card

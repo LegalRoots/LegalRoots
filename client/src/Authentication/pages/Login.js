@@ -50,7 +50,14 @@ const Login = () => {
 
       login(user, checkbox, type);
       setErrorMessage("");
-      navigate(`/${type}/`);
+      console.log(type);
+      if (type === "Judge") {
+        navigate("/Admin/");
+        console.log("fff");
+      } else {
+        navigate(`/${type}/`);
+      }
+
       actions.resetForm();
     } catch (error) {
       console.error("Error during signup:", error);

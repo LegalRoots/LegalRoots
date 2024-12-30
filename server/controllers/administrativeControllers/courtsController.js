@@ -191,8 +191,9 @@ const getAllCourts = async (req, res) => {
         select: "-judge_photo -pp_photo -id_photo",
       })
       .sort({ time: -1 })
+      .limit(100)
       .exec();
-    // Respond with the retrieved courts
+
     return res.status(200).json({
       message: "Courts retrieved successfully",
       count: courts.length,
@@ -264,6 +265,7 @@ const getCourtsByJudgeId = async (req, res) => {
         select: "-judge_photo -pp_photo -id_photo",
       })
       .sort({ time: -1 })
+      .limit(100)
       .exec();
 
     if (!court) {
@@ -412,6 +414,44 @@ const replaceCourt = async (req, res) => {
   }
 };
 
+const getCourtsByDate = async (req, res) => {
+  try {
+    const { date } = req.query;
+
+    if (!date) {
+      return res.status(400).json({ message: "Date is required" });
+    }
+
+    const targetDate = new Date(date);
+    if (isNaN(targetDate.getTime())) {
+      return res.status(400).json({ message: "Invalid date format" });
+    }
+
+    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+
+    const courts = await Court.find({
+      time: { $gte: startOfDay, $lte: endOfDay },
+    })
+      .sort({ time: -1 })
+      .populate({
+        path: "initiator",
+        select: "-judge_photo -pp_photo -id_photo",
+      });
+
+    res.status(200).json({
+      message: "Courts retrieved successfully",
+      data: courts,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "An error occurred while retrieving courts",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createCourt,
   getAllCourts,
@@ -424,4 +464,5 @@ module.exports = {
   deleteCourt,
   replaceCourt,
   getCourtDetailsByCourtId,
+  getCourtsByDate,
 };

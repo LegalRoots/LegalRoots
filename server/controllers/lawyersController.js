@@ -281,3 +281,34 @@ exports.recommendLawyer = async (req, res) => {
     res.status(500).json({ error: "An error occurred while fetching lawyers" });
   }
 };
+
+exports.verifyLawyer = async (req, res) => {
+  try {
+    const { lawyer_id } = req.params;
+
+    if (!lawyer_id) {
+      return res.status(400).json({ message: "Lawyer ID is required." });
+    }
+
+    const lawyer = await Lawyer.findOneAndUpdate(
+      { _id: lawyer_id },
+      { isVerified: true },
+      { new: true, runValidators: true }
+    );
+
+    if (!lawyer) {
+      return res.status(404).json({ message: "Lawyer not found." });
+    }
+
+    res.status(200).json({
+      message: "Lawyer verification updated successfully.",
+      lawyer,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "An error occurred while updating lawyer verification.",
+      error: error.message,
+    });
+  }
+};

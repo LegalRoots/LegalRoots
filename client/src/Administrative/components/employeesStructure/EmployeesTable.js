@@ -24,6 +24,12 @@ const EmployeesTable = () => {
     let url = `${REACT_APP_API_BASE_URL}/admin/employees`;
     if (ctx.type === "Admin" && ctx.user.court_branch) {
       url = `${REACT_APP_API_BASE_URL}/admin/employees/court/id/${ctx.user.court_branch._id}`;
+    } else if (ctx.type === "Judge") {
+      if (ctx.user.court_name) {
+        url = `${REACT_APP_API_BASE_URL}/admin/employees/court/id/${ctx.user.court_name._id}`;
+      } else {
+        return;
+      }
     }
     console.log(ctx.type);
     console.log(ctx.user.court_branch);
@@ -74,12 +80,13 @@ const EmployeesTable = () => {
   return (
     <div className="employeesTable">
       <div className="employeesTable-actions">
-        {ctx?.user?.permissions?.employees?.manage && (
-          <Link to="/admin/emp/new">
-            <i className="fa-solid fa-circle-plus"></i>
-            <p>Add Employee</p>
-          </Link>
-        )}
+        {ctx.type === "Admin" &&
+          ctx?.user?.job?.permissions?.employees.manage && (
+            <Link to="/admin/emp/new">
+              <i className="fa-solid fa-circle-plus"></i>
+              <p>Add Employee</p>
+            </Link>
+          )}
       </div>
       <div className="employees-table-container">
         <div className="employees-table-wrapper" ref={tableRef}>
