@@ -125,15 +125,19 @@ const Post = ({ post, setPosts }) => {
   const isLiked = post.likes.some((like) => {
     return like === user._id;
   });
-
+  console.log(post);
   return (
     <div className="post-card">
       <div className="post-header">
         <div className="author-info">
           <img
             src={
-              `http://localhost:5000/uploads/images/${post.author.photo}` ||
-              "/images/default.png"
+              `
+              ${
+                post.authorModel === "Employee"
+                  ? `data:image/jpeg;base64,${post.author.photo}`
+                  : `http://localhost:5000/uploads/images/${post.author.photo}`
+              }` || "/images/default.png"
             }
             alt={`${post.author.first_name}'s avatar`}
             className="author-avatar"
