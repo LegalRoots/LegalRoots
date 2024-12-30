@@ -311,27 +311,31 @@ exports.getSpecializations = async (req, res) => {
 };
 exports.verifyLawyer = async (req, res) => {
   try {
-    const lawyer = await Lawyer.findById(req.params.id);
-    if (!lawyer) {
-      return res.status(404).json({
-        status: "fail",
-        message: "No lawyer found with that ID",
-      });
+    const { lawyer_id } = req.params;
+
+    if (!lawyer_id) {
+      return res.status(400).json({ message: "Lawyer ID is required." });
     }
 
-    lawyer.isVerified = true;
-    await lawyer.save();
+    const lawyer = await Lawyer.findOneAndUpdate(
+      { _id: lawyer_id },
+      { isVerified: true },
+      { new: true, runValidators: true }
+    );
+
+    if (!lawyer) {
+      return res.status(404).json({ message: "Lawyer not found." });
+    }
 
     res.status(200).json({
-      status: "success",
-      data: {
-        lawyer,
-      },
+      message: "Lawyer verification updated successfully.",
+      lawyer,
     });
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err.message,
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "An error occurred while updating lawyer verification.",
+      error: error.message,
     });
   }
 };

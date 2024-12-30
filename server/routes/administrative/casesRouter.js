@@ -9,6 +9,8 @@ const router = express.Router();
 router.post("/caseType", casesController.addCaseType);
 router.post("/case", casesController.addCase);
 //get cases
+
+router.get("/case/judge/:id?", casesBController.getCasesByJudgeId); //get caseTypes
 router.get("/caseType", casesController.getAllCaseTypes); //get caseTypes
 router.get("/caseType/:id", casesController.getCaseTypeById); //get caseType by id //write controller
 router.get("/case/type/:caseTypeId", casesController.getCasesByCaseTypeId);

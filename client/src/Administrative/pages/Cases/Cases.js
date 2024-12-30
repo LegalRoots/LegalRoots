@@ -15,35 +15,48 @@ const Cases = () => {
   const [perms, setPerms] = useState(null);
 
   useEffect(() => {
-    if (user && user.job?.permissions) {
+    if (type === "Admin" && user?.job?.permissions) {
       setPerms(user.job?.permissions);
     }
   }, [type, user]);
 
+  let routes;
+  if (type === "Admin" && perms) {
+    routes = (
+      <Routes>
+        {perms.cases.view && <Route path="/" Component={CasesItems} />}
+        {perms.cases.manage && <Route path="/new" Component={CaseNew} />}
+        {perms.cases.control && (
+          <Route path="/manage" Component={CasesManage} />
+        )}
+        {perms.cases.control && (
+          <Route path="/manage/:id" Component={CaseProfileWrapper} />
+        )}
+        {perms.caseTypes.manage && (
+          <Route path="/structure/new" Component={CasesStructureNew} />
+        )}
+        {perms.caseTypes.manage && (
+          <Route path="/structure/update" Component={CasesStructureUpdate} />
+        )}
+        {perms.caseTypes.view && (
+          <Route path="/structure" Component={CasesStructure} />
+        )}
+      </Routes>
+    );
+  } else {
+    routes = (
+      <Routes>
+        <Route path="/manage" Component={CasesManage} />
+        <Route path="/manage/:id" Component={CaseProfileWrapper} />
+        <Route path="/structure" Component={CasesStructure} />
+      </Routes>
+    );
+  }
+
   return (
     <div className="cases-container">
       <CasesLinks />
-      {perms && (
-        <Routes>
-          {perms.cases.view && <Route path="/" Component={CasesItems} />}
-          {perms.cases.manage && <Route path="/new" Component={CaseNew} />}
-          {perms.cases.control && (
-            <Route path="/manage" Component={CasesManage} />
-          )}
-          {perms.cases.control && (
-            <Route path="/manage/:id" Component={CaseProfileWrapper} />
-          )}
-          {perms.caseTypes.manage && (
-            <Route path="/structure/new" Component={CasesStructureNew} />
-          )}
-          {perms.caseTypes.manage && (
-            <Route path="/structure/update" Component={CasesStructureUpdate} />
-          )}
-          {perms.caseTypes.view && (
-            <Route path="/structure" Component={CasesStructure} />
-          )}
-        </Routes>
-      )}
+      {routes}
     </div>
   );
 };

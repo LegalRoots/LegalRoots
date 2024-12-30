@@ -34,8 +34,8 @@ const EditCourt = ({
   const [selectedEmployeesArray, setSelectedEmployeesArray] = useState([]);
   useEffect(() => {
     if (!isEmployeesDataLoading && employeesData) {
-      let tmp = employeesData.employees.map((employee) => {
-        return `${employee.full_name} - (${employee.employee_id})`;
+      let tmp = employeesData.map((employee) => {
+        return `${employee.data.full_name} - (${employee.data.employee_id})`;
       });
       setEmployeesNames(tmp);
       setEmployees(employeesData.employees);
@@ -44,10 +44,10 @@ const EditCourt = ({
 
   useEffect(() => {
     if (employeesData) {
-      let tmp = employeesData.employees
-        .filter((emp) => court.guests.includes(emp.ssid))
+      let tmp = employeesData
+        .filter((emp) => court.guests.includes(emp.data.ssid))
         .map((emp) => {
-          return `${emp.full_name} - (${emp.employee_id})`;
+          return `${emp.data.full_name} - (${emp.data.employee_id})`;
         });
       setSelectedEmployeesArray(tmp);
 
