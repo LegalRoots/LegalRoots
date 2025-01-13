@@ -142,6 +142,7 @@ exports.login = catchAsync(async (req, res, next) => {
     if (!admin || !admin.correctPassword(password, admin.password)) {
       return next(new AppError("Incorrect email or password", 401));
     }
+
     createSendToken(admin, 200, req, res, "Admin");
   } else if (type === "Judge") {
     const { ssid, password } = req.body;

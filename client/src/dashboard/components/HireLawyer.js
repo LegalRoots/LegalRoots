@@ -97,7 +97,7 @@ const HireALawyer = () => {
       const recommendedResponse = await axios.get(
         `http://localhost:5000/JusticeRoots/lawyers/recommended?specialization=${specialization}`
       );
-      console.log(recommendedResponse.data);
+
       setRecommendedLawyers(recommendedResponse.data);
     } catch (error) {
       console.error("Error fetching lawyers or recommendations:", error);

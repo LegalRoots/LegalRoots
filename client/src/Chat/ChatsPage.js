@@ -13,6 +13,10 @@ import {
   TextField,
   InputAdornment,
   Paper,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { Chat, Search } from "@mui/icons-material";
 import axios from "axios";
@@ -25,6 +29,7 @@ const ChatsPage = () => {
   const [lawyers, setLawyers] = useState([]);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [specializationFilter, setSpecializationFilter] = useState("");
   const [filteredLawyers, setFilteredLawyers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,10 +63,14 @@ const ChatsPage = () => {
   useEffect(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     setFilteredLawyers(
-      lawyers.filter((lawyer) =>
-        `${lawyer.first_name} ${lawyer.last_name}`
-          .toLowerCase()
-          .includes(lowerCaseQuery)
+      lawyers.filter(
+        (lawyer) =>
+          `${lawyer.first_name} ${lawyer.last_name}`
+            .toLowerCase()
+            .includes(lowerCaseQuery) &&
+          (specializationFilter
+            ? lawyer.specialization === specializationFilter
+            : true)
       )
     );
     const filteredUsers = users.filter((user) =>
@@ -70,7 +79,7 @@ const ChatsPage = () => {
         .includes(lowerCaseQuery)
     );
     setFilteredUsers(filteredUsers.filter((User) => User._id !== user._id));
-  }, [searchQuery, lawyers, users]);
+  }, [searchQuery, specializationFilter, lawyers, users]);
 
   const handleOpenChat = (id, type) => {
     axios
@@ -167,6 +176,22 @@ const ChatsPage = () => {
             ),
           }}
         />
+        <FormControl fullWidth sx={{ mt: 2 }}>
+          <Select
+            value={specializationFilter}
+            onChange={(e) => setSpecializationFilter(e.target.value)}
+            displayEmpty
+          >
+            <MenuItem value="">All Specializations</MenuItem>
+            {[...new Set(lawyers.map((lawyer) => lawyer.specialization))].map(
+              (specialization) => (
+                <MenuItem key={specialization} value={specialization}>
+                  {specialization}
+                </MenuItem>
+              )
+            )}
+          </Select>
+        </FormControl>
         <Divider sx={{ my: 2 }} />
         <Typography variant="subtitle1" sx={{ mb: 1 }}>
           Total Lawyers: {filteredLawyers.length}

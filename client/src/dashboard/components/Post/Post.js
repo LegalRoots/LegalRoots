@@ -78,7 +78,6 @@ const Post = ({ post, setPosts }) => {
       );
       if (response.ok) {
         const updatedPost = await response.json();
-
         setPosts((prevPosts) =>
           prevPosts.map((p) => (p._id === updatedPost._id ? updatedPost : p))
         );
@@ -105,6 +104,7 @@ const Post = ({ post, setPosts }) => {
       );
       if (response.ok) {
         const updatedPost = await response.json();
+
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
             post._id === updatedPost._id ? updatedPost : post
@@ -125,7 +125,7 @@ const Post = ({ post, setPosts }) => {
   const isLiked = post.likes.some((like) => {
     return like === user._id;
   });
-  console.log(post);
+
   return (
     <div className="post-card">
       <div className="post-header">
@@ -135,7 +135,9 @@ const Post = ({ post, setPosts }) => {
               `
               ${
                 post.authorModel === "Employee"
-                  ? `data:image/jpeg;base64,${post.author.photo}`
+                  ? `data:image/jpeg;base64,${post.author.employee_photo}`
+                  : post.authorModel === "Judge"
+                  ? `data:image/jpeg;base64,${post.author.judge_photo}`
                   : `http://localhost:5000/uploads/images/${post.author.photo}`
               }` || "/images/default.png"
             }
@@ -200,8 +202,22 @@ const Post = ({ post, setPosts }) => {
           <img
             className="comment-img"
             src={
-              `http://localhost:5000/uploads/images/${user.photo}` ||
-              "/images/default.png"
+              `
+              ${
+                type === "Admin"
+                  ? `data:image/jpeg;base64,${btoa(
+                      String.fromCharCode(
+                        ...new Uint8Array(user.employee_photo.data)
+                      )
+                    )}`
+                  : type === "Judge"
+                  ? `data:image/jpeg;base64,${btoa(
+                      String.fromCharCode(
+                        ...new Uint8Array(user.judge_photo.data)
+                      )
+                    )}`
+                  : `http://localhost:5000/uploads/images/${user.photo}`
+              }` || "/images/default.png"
             }
             alt=""
           />
@@ -223,8 +239,14 @@ const Post = ({ post, setPosts }) => {
               <div className="comment-head">
                 <img
                   src={
-                    `http://localhost:5000/uploads/images/${comment.author.photo}` ||
-                    "/images/default.png"
+                    `
+                      ${
+                        comment.authorModel === "Employee"
+                          ? `data:image/jpeg;base64,${comment.author.employee_photo}`
+                          : comment.authorModel === "Judge"
+                          ? `data:image/jpeg;base64,${comment.author.judge_photo}`
+                          : `http://localhost:5000/uploads/images/${comment.author.photo}`
+                      }` || "/images/default.png"
                   }
                   alt="avatar"
                   className="comment-avatar"
