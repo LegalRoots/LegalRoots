@@ -46,6 +46,15 @@ const MainFeed = () => {
 
     if (response.ok) {
       const newPost = await response.json();
+      if (type === "Admin") {
+        newPost.author.employee_photo = btoa(
+          String.fromCharCode(...new Uint8Array(user.employee_photo.data))
+        );
+      } else if (type === "Judge") {
+        newPost.author.judge_photo = btoa(
+          String.fromCharCode(...new Uint8Array(user.judge_photo.data))
+        );
+      }
       setPosts((prevPosts) => [newPost, ...prevPosts]);
       setNewPostContent("");
       setNewPostImage(null);
@@ -61,6 +70,7 @@ const MainFeed = () => {
           "http://localhost:5000/JusticeRoots/posts"
         );
         const data = await response.json();
+
         setPosts(data);
         setLoading(false);
       } catch (error) {
@@ -95,7 +105,28 @@ const MainFeed = () => {
             sx={{ mb: 3, boxShadow: 2, p: 2, borderRadius: 2 }}
           >
             <Box display="flex" alignItems="center" mb={2}>
-              <Avatar src={`/images/${user.photo}`} alt="User" sx={{ mr: 2 }} />
+              <Avatar
+                src={
+                  `
+              ${
+                type === "Admin"
+                  ? `data:image/jpeg;base64,${btoa(
+                      String.fromCharCode(
+                        ...new Uint8Array(user.employee_photo.data)
+                      )
+                    )}`
+                  : type === "Judge"
+                  ? `data:image/jpeg;base64,${btoa(
+                      String.fromCharCode(
+                        ...new Uint8Array(user.judge_photo.data)
+                      )
+                    )}`
+                  : `http://localhost:5000/uploads/images/${user.photo}`
+              }` || "/images/default.png"
+                }
+                alt="User"
+                sx={{ mr: 2 }}
+              />
               <TextField
                 variant="outlined"
                 fullWidth

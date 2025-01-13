@@ -27,7 +27,7 @@ const postSchema = new mongoose.Schema({
   ],
   likesModel: {
     type: String,
-    enum: ["User", "Lawyer", "Admin", "Judge"],
+    enum: ["User", "Lawyer", "Employee", "Judge"],
   },
   comments: [
     {
@@ -39,7 +39,7 @@ const postSchema = new mongoose.Schema({
       authorModel: {
         type: String,
         required: true,
-        enum: ["User", "Lawyer", "Admin", "Judge"],
+        enum: ["User", "Lawyer", "Employee", "Judge"],
       },
       content: {
         type: String,
@@ -57,7 +57,7 @@ const postSchema = new mongoose.Schema({
       ],
       likesModel: {
         type: String,
-        enum: ["User", "Lawyer", "Admin", "Judge"],
+        enum: ["User", "Lawyer", "Employee", "Judge"],
       },
     },
   ],

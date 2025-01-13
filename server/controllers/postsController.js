@@ -6,10 +6,24 @@ const multer = require("multer");
 exports.getAllPosts = catchAsync(async (req, res, next) => {
   try {
     const posts = await Post.find()
-      .populate("author", "first_name last_name photo")
-      .populate("likes", "first_name last_name likes photo")
-      .populate("comments.author", "first_name last_name likes photo")
-      .populate("comments.likes", "first_name last_name likes photo");
+      .populate(
+        "author",
+        "first_name last_name photo judge_photo employee_photo "
+      )
+      .populate(
+        "likes",
+        "first_name last_name likes photo judge_photo employee_photo"
+      )
+      .populate(
+        "comments.author",
+        "first_name last_name likes photo judge_photo employee_photo"
+      )
+      .populate(
+        "comments.likes",
+        "first_name last_name likes photo judge_photo employee_photo"
+      )
+      .lean()
+      .exec();
 
     res.status(200).json(posts);
   } catch (err) {
@@ -39,14 +53,36 @@ exports.likeComment = catchAsync(async (req, res, next) => {
 
   await post.save();
 
-  await post.populate([
-    { path: "author", select: "first_name last_name photo role" },
-    { path: "likes", select: "first_name last_name photo" },
-    { path: "comments.author", select: "first_name last_name photo" },
-    { path: "comments.likes", select: "first_name last_name photo" },
-  ]);
+  const updatedPost = await Post.findById(postID)
+    .populate([
+      {
+        path: "author",
+        select: "first_name last_name photo role employee_photo judge_photo",
+      },
+      {
+        path: "likes",
+        select: "first_name last_name photo employee_photo judge_photo",
+      },
+      {
+        path: "comments.author",
+        select: "first_name last_name photo employee_photo judge_photo",
+      },
+      {
+        path: "comments.likes",
+        select: "first_name last_name photo employee_photo judge_photo",
+      },
+    ])
+    .lean();
 
-  return res.status(200).json(post);
+  if (updatedPost.authorModel === "Employee") {
+    updatedPost.author.employee_photo =
+      updatedPost.author.employee_photo.toString("base64");
+  } else if (updatedPost.authorModel === "Judge") {
+    updatedPost.author.judge_photo =
+      updatedPost.author.judge_photo.toString("base64");
+  }
+
+  return res.status(200).json(updatedPost);
 });
 
 exports.likePost = catchAsync(async (req, res, next) => {
@@ -66,14 +102,28 @@ exports.likePost = catchAsync(async (req, res, next) => {
 
   await post.save();
 
-  await post.populate([
-    { path: "author", select: "first_name last_name photo role" },
-    { path: "likes", select: "first_name last_name photo" },
-    { path: "comments.author", select: "first_name last_name photo" },
-    { path: "comments.likes", select: "first_name last_name photo" },
-  ]);
+  const updatedPost = await Post.findById(postID)
+    .populate([
+      {
+        path: "author",
+        select: "first_name last_name photo role employee_photo judge_photo",
+      },
+      {
+        path: "likes",
+        select: "first_name last_name photo employee_photo judge_photo",
+      },
+      {
+        path: "comments.author",
+        select: "first_name last_name photo employee_photo judge_photo",
+      },
+      {
+        path: "comments.likes",
+        select: "first_name last_name photo employee_photo judge_photo",
+      },
+    ])
+    .lean();
 
-  return res.status(200).json(post);
+  return res.status(200).json(updatedPost);
 });
 
 exports.addPost = catchAsync(async (req, res, next) => {
@@ -99,38 +149,70 @@ exports.addPost = catchAsync(async (req, res, next) => {
 
     const savedPost = await newPost.save();
     await savedPost.populate([
-      { path: "author", select: "first_name last_name photo role" },
-      { path: "likes", select: "first_name last_name photo" },
-      { path: "comments.author", select: "first_name last_name photo" },
-      { path: "comments.likes", select: "first_name last_name photo" },
+      {
+        path: "author",
+        select: "first_name last_name photo role employee_photo judge_photo",
+      },
+      {
+        path: "likes",
+        select: "first_name last_name photo employee_photo judge_photo",
+      },
+      {
+        path: "comments.author",
+        select: "first_name last_name photo employee_photo judge_photo",
+      },
+      {
+        path: "comments.likes",
+        select: "first_name last_name photo employee_photo judge_photo",
+      },
     ]);
-
     res.status(201).json(savedPost);
   } catch (err) {
     console.log(err);
   }
 });
 exports.addComment = catchAsync(async (req, res, next) => {
-  const { postID } = req.params;
-  const { author, content } = req.body;
-  let Model = req.body.authorModel;
-  if (Model === "Admin") {
-    Model = "Employee";
+  try {
+    const { postID } = req.params;
+    const { author, content } = req.body;
+    let Model = req.body.authorModel;
+    if (Model === "Admin") {
+      Model = "Employee";
+    }
+
+    const post = await Post.findById(postID);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    post.comments.push({ author, authorModel: Model, content });
+    await post.save();
+
+    // Fetch updated post with `.lean()` for the response
+    const updatedPost = await Post.findById(postID)
+      .populate([
+        {
+          path: "author",
+          select: "first_name last_name photo role employee_photo judge_photo",
+        },
+        {
+          path: "likes",
+          select: "first_name last_name photo employee_photo judge_photo",
+        },
+        {
+          path: "comments.author",
+          select: "first_name last_name photo employee_photo judge_photo",
+        },
+        {
+          path: "comments.likes",
+          select: "first_name last_name photo employee_photo judge_photo",
+        },
+      ])
+      .lean();
+
+    res.status(201).json(updatedPost);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "An error occurred" });
   }
-
-  const post = await Post.findById(postID);
-  if (!post) {
-    return res.status(404).json({ message: "Post not found" });
-  }
-
-  post.comments.push({ author, authorModel: Model, content });
-  await post.save();
-  await post.populate([
-    { path: "author", select: "first_name last_name photo role" },
-    { path: "likes", select: "first_name last_name photo" },
-    { path: "comments.author", select: "first_name last_name photo" },
-    { path: "comments.likes", select: "first_name last_name photo" },
-  ]);
-
-  res.status(201).json(post);
 });

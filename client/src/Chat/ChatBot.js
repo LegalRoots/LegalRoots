@@ -31,7 +31,7 @@ loadMessages({
   en: {
     "dxChat-emptyListMessage": "Chat is Empty",
     "dxChat-emptyListPrompt": "AI Assistant is ready to answer your questions.",
-    "dxChat-textareaPlaceholder": "Ask AI Assistant...",
+    "dxChat-textareaPlaceholder": "Enter your message...",
   },
 });
 
