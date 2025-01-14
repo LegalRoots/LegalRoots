@@ -234,6 +234,14 @@ const getCourtById = async (req, res) => {
   try {
     const { id } = req.params;
 
+    if (!id) {
+      return res.status(400).json({ message: "invalid court id" });
+    }
+
+    if (id.length !== 24) {
+      return res.status(400).json({ message: "invalid court id" });
+    }
+
     const court = await Court.findById(id)
       .populate({
         path: "initiator",
@@ -309,6 +317,146 @@ const getCourtsByGuestId = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching courts by guest ID:", error);
+    return res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+const validateGuest = async (req, res) => {
+  const { id } = req.params;
+  const { ssid } = req.body;
+  if (!id) {
+    return res.status(400).json({ message: "meeting id is required" });
+  }
+  if (!ssid) {
+    return res.status(400).json({ message: "ssid is required" });
+  }
+
+  try {
+    const court = await Court.findOne({ meeting_id: id, hasStarted: true })
+      .populate({
+        path: "initiator",
+        select: "-judge_photo -pp_photo -id_photo",
+      })
+      .exec();
+
+    if (!court) {
+      return res.status(404).json({ message: "no court found" });
+    }
+
+    if (court.guests.includes(ssid) || court.admins.includes(ssid)) {
+      return res.status(200).json({
+        status: "success",
+        message: `user ${ssid} is authorized`,
+        court: court,
+      });
+    } else {
+      return res.status(401).json({
+        status: "failed",
+        message: `user ${ssid} is not authorized`,
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching courts:", error);
+    return res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+const validateAction = async (req, res) => {
+  const { id } = req.params;
+  const { ssid, perm } = req.body;
+  if (!id) {
+    return res.status(400).json({ message: "court id is required" });
+  }
+  if (!ssid || !perm) {
+    return res
+      .status(400)
+      .json({ message: "ssid and premission are required" });
+  }
+
+  try {
+    const court = await Court.findOne({ _id: id })
+      .populate({
+        path: "initiator",
+        select: "-judge_photo -pp_photo -id_photo",
+      })
+      .exec();
+
+    if (!court) {
+      return res.status(404).json({ message: "no court found" });
+    }
+
+    //here check
+    const item = court.permissions.find((p) => p.userId === ssid);
+    let isValid = false;
+    if (item.permissions.includes(perm)) {
+      isValid = true;
+    }
+
+    if (isValid) {
+      return res.status(200).json({
+        status: "success",
+        message: `user ${ssid} is authorized`,
+      });
+    } else {
+      return res.status(401).json({
+        status: "failed",
+        message: `user ${ssid} is not authorized`,
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching courts:", error);
+    return res.status(500).json({ message: "Internal Server Error", error });
+  }
+};
+
+const manageAction = async (req, res) => {
+  const { id } = req.params;
+  const { ssid, perm, type } = req.body;
+  if (!id) {
+    return res.status(400).json({ message: "court id is required" });
+  }
+  if (!ssid || !perm || !type) {
+    return res
+      .status(400)
+      .json({ message: "ssid, type and premission are required" });
+  }
+
+  try {
+    let court = await Court.findOne({ _id: id })
+      .populate({
+        path: "initiator",
+        select: "-judge_photo -pp_photo -id_photo",
+      })
+      .exec();
+
+    if (!court) {
+      return res.status(404).json({ message: "no court found" });
+    }
+
+    //here apply
+    for (let i = 0; i < court.permissions.length; i++) {
+      const item = court.permissions[i];
+      if (item.userId === ssid) {
+        if (type === "remove" && item.permissions.includes(perm)) {
+          item.permissions = item.permissions.filter((p) => p !== perm);
+        } else if (type === "add" && !item.permissions.includes(perm)) {
+          item.permissions.push(perm);
+        }
+      }
+    }
+
+    //now save to database
+    const updatedCourt = await Court.findOneAndReplace({ _id: id }, court, {
+      returnDocument: "after",
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: `user ${ssid} is authorized`,
+      court: updatedCourt,
+    });
+  } catch (error) {
+    console.error("Error fetching courts:", error);
     return res.status(500).json({ message: "Internal Server Error", error });
   }
 };
@@ -465,4 +613,7 @@ module.exports = {
   replaceCourt,
   getCourtDetailsByCourtId,
   getCourtsByDate,
+  validateGuest,
+  validateAction,
+  manageAction,
 };

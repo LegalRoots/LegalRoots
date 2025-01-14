@@ -5,6 +5,7 @@ const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 function Evidence({ evidence }) {
   const downloadFile = async (event) => {
     const id = event.target.id;
+    console.log(id);
     try {
       const response = await fetch(
         `${REACT_APP_API_BASE_URL}/admin/evidence/file/evidenceId/${id}`,
@@ -22,7 +23,7 @@ function Evidence({ evidence }) {
       const link = document.createElement("a"); // Create a link element
       link.href = url;
 
-      link.download = "downloaded-file.txt"; // Change extension based on your file type
+      link.download = evidence.file_path; // Change extension based on your file type
       link.click(); // Trigger download
 
       // Clean up
