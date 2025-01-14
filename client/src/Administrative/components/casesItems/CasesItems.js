@@ -233,7 +233,7 @@ const CasesItems = () => {
           <div className="casesItems-container-chart__titles">
             <p className="pointed-p">Closed cases</p>
             <p className="pointed-p">Ongoing cases</p>
-            <p className="pointed-p">not Assigned cases</p>
+            <p className="pointed-p">Non Assigned cases</p>
           </div>
         </div>
       </div>

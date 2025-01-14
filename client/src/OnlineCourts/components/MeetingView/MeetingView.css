@@ -14,17 +14,16 @@
 
 .meetingView-body {
   flex: 1;
-  background-color: blue;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   width: 100%;
   gap: 1rem;
+  overflow: hidden;
 }
 
 .meetingView-body > div {
-  background-color: orange;
   width: 100%;
 }
 
@@ -36,6 +35,8 @@
   align-items: flex-start;
   gap: 1rem;
   flex-wrap: wrap;
+  overflow-y: scroll;
+  max-height: 100%;
 }
 
 .meetingView-body-controls {
@@ -44,7 +45,6 @@
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  background-color: green;
 }
 
 .meetingView-body-controls button {
@@ -59,7 +59,7 @@
 }
 
 .meetingView-body-controls #uploadfile {
-  background-color: rgb(143, 11, 136);
+  background-color: var(--gold-darker);
   color: #fff;
   border-radius: 20px;
   width: 120px;

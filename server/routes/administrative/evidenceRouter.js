@@ -2,11 +2,16 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const bodyParser = require("body-parser");
 const evidenceController = require("../../controllers/administrativeControllers/evidenceController");
 
 const router = express.Router();
 
+// Use body-parser middleware to parse req.body
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 //manage the multer storage
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = "uploads/evidences";
@@ -18,12 +23,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     // Use original file name with a timestamp to avoid duplicates
-    const uniqueSuffix =
-      req.body.case_id +
-      "-" +
-      Date.now() +
-      "-" +
-      Math.round(Math.random() * 1e9);
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + "-" + file.originalname);
   },
 });

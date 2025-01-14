@@ -6,10 +6,16 @@ const router = express.Router();
 router.post("/court/create", courtsController.createCourt);
 //get courts
 router.get("/court/all", courtsController.getAllCourts);
-router.get("/court/courtId/:id", courtsController.getCourtById);
+router.get("/court/courtId/:id?", courtsController.getCourtById);
 router.get("/court/judgeId/:id", courtsController.getCourtsByJudgeId);
 router.get("/court/guestId/:id", courtsController.getCourtsByGuestId);
 router.get("/court/caseId/:caseId", courtsController.getCourtsByCaseId);
+
+//authorization
+router.post("/court/meeting/:id?", courtsController.validateGuest);
+router.post("/court/action/auth/:id?", courtsController.validateAction);
+router.put("/court/action/manage/:id?", courtsController.manageAction);
+
 //get full court details by id.
 router.get(
   "/court/details/:courtId?",
