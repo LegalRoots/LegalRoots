@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect } from "react";
 import io from "socket.io-client";
 import { Platform } from "react-native";
 import Cookies from "js-cookie";
-
+import { API_URL } from "@env";
 let storage;
 if (Platform.OS === "web") {
   storage = {
@@ -16,7 +16,7 @@ if (Platform.OS === "web") {
   storage = AsyncStorage;
 }
 
-const socket = io("http://localhost:5000");
+const socket = io(`${API_URL}`);
 
 export const AuthContext = createContext({
   isLoggedIn: false,
