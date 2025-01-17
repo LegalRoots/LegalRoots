@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 14,
-    color: "#fff",
+    color: "#000",
   },
 });
 

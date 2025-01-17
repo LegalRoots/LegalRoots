@@ -45,6 +45,7 @@ async function getAIResponse(messages) {
     temperature: 0.7,
   };
   const response = await chatService.chat.completions.create(params);
+  console.log(response);
   const data = { choices: response.choices };
   return data.choices[0].message?.content;
 }

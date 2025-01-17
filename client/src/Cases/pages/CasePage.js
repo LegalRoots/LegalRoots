@@ -533,9 +533,9 @@ const Case = () => {
             <AccordionDetails>
               {caseData.notes.length ? (
                 <List>
-                  {caseData.notes.map((note) => {
+                  {caseData.notes.map((note, index) => {
                     return (
-                      <ListItem key={note._id} divider>
+                      <ListItem key={index} divider>
                         <ListItemText
                           primary={note.note}
                           secondary={`Added by: ${
