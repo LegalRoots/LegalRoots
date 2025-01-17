@@ -1,8 +1,14 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import AdminDashboard from "../screens/Admin/AdminDashboard";
 import { AuthContext } from "../src/shared/context/auth";
 import Logout from "../screens/public/Logout";
+import Profile from "../screens/admin/Profile";
+import Courts from "../screens/admin/Courts";
+import Employees from "../screens/admin/Employees";
+import Judges from "../screens/admin/Judges";
+import Cases from "../screens/admin/Cases";
+import CaseTypes from "../screens/admin/CaseTypes";
+
 const Drawer = createDrawerNavigator();
 
 const AdminStack = () => (

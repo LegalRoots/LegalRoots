@@ -7,6 +7,7 @@ import Scheduler from "../screens/client/Scheduler";
 import ChatAI from "../screens/client/ChatAI";
 import ChatScreen from "../screens/client/ChatScreen";
 import LawyerDrawer from "./LawyerDrawyer";
+import AdminStack from "./AdminStack";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +53,9 @@ const MainStack = ({ userType }) => {
         }}
         component={ChatAI}
       />
+      {userType === "Admin" && (
+        <Stack.Screen name="User" component={AdminStack} />
+      )}
     </Stack.Navigator>
   );
 };
