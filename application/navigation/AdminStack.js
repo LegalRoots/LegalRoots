@@ -23,12 +23,12 @@ const AdminStack = () => (
       drawerStyle: { backgroundColor: "#222", color: "white" },
     }}
   >
-    <Drawer.Screen name="profile" component={Profile} />
+    {/* <Drawer.Screen name="profile" component={Profile} />
     <Drawer.Screen name="employees" component={Employees} />
     <Drawer.Screen name="courts" component={Courts} />
     <Drawer.Screen name="judges" component={Judges} />
     <Drawer.Screen name="cases" component={Cases} />
-    <Drawer.Screen name="caseTypes" component={CaseTypes} />
+    <Drawer.Screen name="caseTypes" component={CaseTypes} /> */}
 
     <Drawer.Screen name="Logout" component={Logout} />
   </Drawer.Navigator>
