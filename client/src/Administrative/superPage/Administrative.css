@@ -7,6 +7,31 @@
   padding: 1vh 0vh 1vh 1vh;
 }
 
+.admin-blank-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: calc(100% - 200px);
+  background-color: var(--white);
+  height: 98vh;
+  max-height: 98vh;
+  overflow-y: scroll;
+  padding: 0;
+  margin: 0;
+}
+.admin-blank-page img {
+  opacity: 0.3;
+}
+
+@media only screen and (max-width: 1200px) {
+  .admin-blank-page {
+    width: 100%;
+    height: 100vh;
+    max-height: unset;
+  }
+}
+
 @media only screen and (max-width: 1200px) {
   .Administrative-container {
     padding: 0;

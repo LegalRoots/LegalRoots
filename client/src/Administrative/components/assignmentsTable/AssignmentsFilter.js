@@ -1,17 +1,16 @@
-import "./EmployeeFilter.css";
 import Overlay from "../../../shared/components/aydi/overlay/Overlay";
 import { useCallback, useState, useEffect } from "react";
 import Input from "../../../shared/components/FormElements/aydi/Input";
 import Button from "../../../shared/components/Button2/Button";
 import Select from "../../../shared/components/FormElements/aydi/select/Select";
+import "./AssignmentsFilter.css";
 
-const EmployeeFilter = ({ filterEmployees }) => {
+const AssigmentsFilter = ({ filterAssignments }) => {
   const [idInputVal, setIdInputVal] = useState(false);
-  const [searchBy, setSearchBy] = useState("");
+  const [searchBy, setSearchBy] = useState("employee id");
 
   const inputHandler = useCallback((id, val, isValid) => {
     setIdInputVal(val);
-    console.log(val);
   }, []);
   const SelectHandler = (e) => {
     const { value } = e.currentTarget;
@@ -19,16 +18,16 @@ const EmployeeFilter = ({ filterEmployees }) => {
   };
 
   useEffect(() => {
-    filterEmployees(searchBy, idInputVal);
+    filterAssignments(searchBy, idInputVal);
   }, [searchBy, idInputVal]);
 
   return (
-    <div className="employees-filter">
+    <div className="assigns-filter">
       <div className="judges-container-filter__searchbar">
         <Select
           placeholder="search by"
           id="searchBy"
-          options={["employee id", "name"]}
+          options={["employee id", "case id"]}
           value={searchBy}
           onChange={SelectHandler}
         />
@@ -45,4 +44,4 @@ const EmployeeFilter = ({ filterEmployees }) => {
   );
 };
 
-export default EmployeeFilter;
+export default AssigmentsFilter;

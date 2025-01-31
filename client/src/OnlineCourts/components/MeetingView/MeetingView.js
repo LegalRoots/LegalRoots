@@ -213,7 +213,7 @@ const MeetingView = (props) => {
   return (
     <div className="meetingView-container">
       <header className="meetingView-header">
-        <h3>Title goes here</h3>
+        <h3>Online Court</h3>
       </header>
       {pageContent}
     </div>

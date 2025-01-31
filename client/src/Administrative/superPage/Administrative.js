@@ -16,6 +16,7 @@ import Users from "../pages/Users/Users";
 import { AuthContext } from "../../shared/context/auth";
 import { useContext, useEffect, useState } from "react";
 import MainFeed from "../../dashboard/components/MainFeed/MainFeed";
+import icon from "../../shared/assets/palgov-black.png";
 const Administrative = () => {
   const { user, type } = useContext(AuthContext);
 
@@ -31,6 +32,19 @@ const Administrative = () => {
   if (type === "Admin" && perms) {
     routes = (
       <Routes>
+        <Route
+          path="/"
+          element={
+            <div className="admin-blank-page">
+              <img
+                src={icon}
+                width="200px"
+                height="200px"
+                alt="pal-logo black"
+              />
+            </div>
+          }
+        />
         {perms.employees.view && <Route path="/emp/*" Component={Employees} />}
         {perms.jobs.view && <Route path="/job" Component={Jobs} />}
         {perms.judges.view && <Route path="/judges/*" Component={Judge} />}
@@ -60,7 +74,19 @@ const Administrative = () => {
   } else {
     routes = (
       <Routes>
-        <Route path="/emp/*" Component={Employees} />
+        <Route
+          path="/"
+          element={
+            <div className="admin-blank-page">
+              <img
+                src={icon}
+                width="200px"
+                height="200px"
+                alt="pal-logo black"
+              />
+            </div>
+          }
+        />
         <Route path="/onlinecourt" Component={Courts} />
         <Route path="/onlinecourt/join" Component={JoinOnlineCourt} />
         <Route path="/cases/*" Component={Cases} />

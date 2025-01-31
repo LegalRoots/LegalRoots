@@ -21,6 +21,9 @@ const JudgeProfile = ({
 }) => {
   return (
     <div className="judge-profile">
+      <div className="profile-edit-cont">
+        <i className="fa-solid fa-pen"></i>
+      </div>
       <div className="profile-header">
         {!judge_photo ? (
           <img
@@ -42,6 +45,12 @@ const JudgeProfile = ({
         <h2>{`${first_name} ${second_name} ${third_name} ${last_name}`}</h2>
       </div>
       <div className="profile-details">
+        <div className="detail-group">
+          <span className="label">Personal ID</span>
+          <span style={{ textDecoration: "underline", cursor: "pointer" }}>
+            view
+          </span>
+        </div>
         <div className="detail-group">
           <span className="label">SSID:</span>
           <span>{ssid}</span>

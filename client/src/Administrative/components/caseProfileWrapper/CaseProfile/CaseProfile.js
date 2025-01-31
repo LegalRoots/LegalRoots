@@ -7,6 +7,9 @@ import JudgesList from "./judgesList/JudgesList";
 import { AuthContext } from "../../../../shared/context/auth";
 
 import "./CaseProfile.css";
+import Button from "../../../../shared/components/Button2/Button";
+
+const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const CaseProfile = ({ pickedCase, evidencesList, judgesList }) => {
   const ctx = useContext(AuthContext);
@@ -22,6 +25,33 @@ const CaseProfile = ({ pickedCase, evidencesList, judgesList }) => {
       setProfilePagesState(3);
     } else {
       setProfilePagesState(4);
+    }
+  };
+
+  const formSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(document.getElementById("caseForm"));
+    console.log(formData.get("result"));
+    const FORM_DATA = { result: formData.get("result") };
+
+    try {
+      const response = await fetch(
+        `${REACT_APP_API_BASE_URL}/admin/case/close/${pickedCase._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(FORM_DATA),
+        }
+      );
+
+      const response_data = await response.json();
+      if (response.ok === true) {
+        console.log(response_data);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -72,10 +102,49 @@ const CaseProfile = ({ pickedCase, evidencesList, judgesList }) => {
           />
         ) : profilePagesState === 3 ? (
           judgesList && (
-            <JudgesList ctx={ctx} caseId={pickedCase._id} judges={judgesList} />
+            <JudgesList
+              ctx={ctx}
+              pickedCase={pickedCase}
+              caseId={pickedCase._id}
+              judges={judgesList}
+            />
           )
         ) : (
-          <div>close the case</div>
+          <form
+            className="case-profile-manage"
+            id="caseForm"
+            onSubmit={formSubmit}
+          >
+            {!pickedCase.isClosed ? (
+              <>
+                <div className="case-profile-manage__radio">
+                  <div>
+                    <input
+                      type="radio"
+                      name="result"
+                      id="resultT"
+                      value="accepted"
+                    />
+                    <label htmlFor="resultT">Case accepted</label>
+                  </div>
+                  <div>
+                    <input
+                      type="radio"
+                      name="result"
+                      id="resultF"
+                      value="denied"
+                    />
+                    <label htmlFor="resultF">Case Denied</label>
+                  </div>
+                </div>
+                <Button type="submit" color="black" size="2" id="caseClose">
+                  Close case
+                </Button>
+              </>
+            ) : (
+              <div>case is closed</div>
+            )}
+          </form>
         )}
       </div>
     </div>
