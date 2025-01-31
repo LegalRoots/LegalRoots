@@ -17,18 +17,22 @@ const Login = () => {
   const navigation = useNavigation();
   const [errorMessage, setErrorMessage] = useState("");
   const { login } = useContext(AuthContext);
+  console.log(process.env.API_URL);
 
   const onSubmit = async (values, actions) => {
     try {
       const { email, password, checkbox, type, ssid } = values;
 
-      const response = await fetch(`${API_URL}/JusticeRoots/users/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password, type, ssid }),
-      });
+      const response = await fetch(
+        `${process.env.API_URL}/JusticeRoots/users/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password, type, ssid }),
+        }
+      );
 
       if (!response.ok) {
         setErrorMessage("Invalid email or password. Please try again.");

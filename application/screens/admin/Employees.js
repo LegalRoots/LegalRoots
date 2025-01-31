@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -10,17 +10,23 @@ import {
   ScrollView,
 } from "react-native";
 import axios from "axios";
-
+import { API_URL } from "@env";
+import { AuthContext } from "../../src/shared/context/auth";
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
+  console.log(process.env.API_URL);
 
+  const { user, userType } = useContext(AuthContext);
   useEffect(() => {
     const fetchEmployees = async () => {
+      console.log(user);
+      let url = `${process.env.API_URL}/admin/employees`;
+      if (user && user.court_branch) {
+        url = `${process.env.API_URL}/admin/employees/court/id/${user.court_branch._id}`;
+      }
       try {
-        const response = await axios.get(
-          "http://192.168.1.5:5000/admin/employees"
-        );
+        const response = await axios.get(url);
         setEmployees(response.data);
       } catch (error) {
         console.error("Error fetching employees:", error);

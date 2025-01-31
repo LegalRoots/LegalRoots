@@ -12,6 +12,8 @@ const EmployeesTable = () => {
   const ctx = useContext(AuthContext);
 
   const [tableData, setTableData] = useState([]);
+  const [filteredTableData, setFilteredTableData] = useState([]);
+
   const [employees, setEmployees] = useState();
 
   const [showCard, setShowCard] = useState(false);
@@ -61,8 +63,40 @@ const EmployeesTable = () => {
         tmpArray.push(arrElement);
       }
       setTableData(tmpArray);
+      setFilteredTableData(tmpArray);
     }
   };
+
+  const filterEmployees = useCallback(
+    (searchBy, value) => {
+      if (!searchBy) {
+        searchBy = "employee id";
+      }
+      let tmpArray = [];
+
+      if (tableData) {
+        for (let index = 0; index < tableData.length; index++) {
+          const element = tableData[index];
+
+          if (
+            searchBy.trim() === "employee id" &&
+            !element.rowData.employee_id.trim().includes(value)
+          ) {
+            continue;
+          } else if (
+            searchBy.trim() === "name" &&
+            !element.rowData.full_name?.includes(value)
+          ) {
+            continue;
+          }
+
+          tmpArray.push(element);
+        }
+        setFilteredTableData(tmpArray);
+      }
+    },
+    [tableData]
+  );
 
   useEffect(() => {
     fetchEmployees();
@@ -87,13 +121,20 @@ const EmployeesTable = () => {
               <p>Add Employee</p>
             </Link>
           )}
+        {ctx.type === "Admin" &&
+          ctx?.user?.job?.permissions?.employees.manage && (
+            <Link to="/admin/emp/new">
+              <i className="fa-solid fa-user-minus"></i>
+              <p>Remove Employee</p>
+            </Link>
+          )}
       </div>
       <div className="employees-table-container">
         <div className="employees-table-wrapper" ref={tableRef}>
-          <EmployeeFilter />
+          <EmployeeFilter filterEmployees={filterEmployees} />
           <div className="employees-table">
             <Table
-              data={tableData}
+              data={filteredTableData}
               headers={["Employee ID", "name", "court", "job", "phone"]}
               headerAction="details"
             />

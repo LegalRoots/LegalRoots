@@ -74,6 +74,9 @@ router.post(
   casesBController.removeLawyerFromDefendantLawyers
 );
 
+//close the case
+router.patch("/case/close/:id?", casesController.closeCase);
+
 //filters -------------------------------------------------------
 router.post("/case/filter", casesFilterController.getFilteredCases);
 router.get("/case/filter/:id?", casesFilterController.getCasesByPartialId);

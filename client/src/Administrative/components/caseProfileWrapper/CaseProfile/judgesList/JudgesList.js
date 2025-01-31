@@ -8,7 +8,7 @@ import NewJudge from "./newJudge/NewJudge";
 
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-const JudgesList = ({ judges, caseId, ctx }) => {
+const JudgesList = ({ judges, caseId, ctx, pickedCase }) => {
   const [action, setAction] = useState("");
   const [btnText, setBtnText] = useState(" Remove judge");
   const [inputValue, setInputValue] = useState("");
@@ -87,7 +87,7 @@ const JudgesList = ({ judges, caseId, ctx }) => {
           addJudgeHandler={addHandler}
         />
       )}
-      {ctx.type === "Admin" && (
+      {ctx.type === "Admin" && pickedCase.isActive && (
         <div className="admin-judgeslist-buttons">
           <Button size="1" type="button" onClick={toggleRemove}>
             <i className="fa-solid fa-minus"></i>

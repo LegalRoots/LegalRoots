@@ -5,6 +5,8 @@
   background-color: white;
   border-radius: 10px;
   width: 100%;
+  padding: 0.8rem;
+  border: 2px #ddd solid;
 }
 
 .employees-filter h1 {

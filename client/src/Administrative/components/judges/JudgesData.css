@@ -40,6 +40,7 @@
 }
 .judges-details-selected {
   width: 100%;
+  height: 100%;
 }
 
 .judges-details-numbers {
@@ -93,11 +94,8 @@
   bottom: 15px;
 }
 
-.judges-details-numbers .judges-actions {
+.judges-actions {
   width: 270px;
-  height: calc(100% - 253px);
-  max-height: calc(100% - 253px);
-  min-height: calc(100% - 253px);
 
   border-radius: 5px;
   background-color: #ddd;
@@ -105,20 +103,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 1.5rem;
   padding: 1rem 0rem;
 }
 
-.judges-details-numbers .judges-actions > div {
+.judges-actions > div {
   width: 270px;
-  height: calc(100% - 253px);
-  max-height: calc(100% - 253px);
-  min-height: calc(100% - 253px);
 
   border-radius: 5px;
   background-color: #ddd;
-  padding: 3rem 0rem;
+  padding: 0rem 0rem;
   /* padding-left: 4rem; */
 
   display: flex;

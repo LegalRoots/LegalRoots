@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -10,37 +10,32 @@ import {
 import axios from "axios";
 import { API_URL } from "@env";
 import { StatusBar } from "expo-status-bar";
+import { AuthContext } from "../../src/shared/context/auth";
 
-const Profile = () => {
-  const [employee, setEmployee] = useState(null);
+const JudgeProfile = () => {
+  const [judge, setJudge] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { user, type } = useContext(AuthContext);
+
   console.log(process.env.API_URL);
 
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    const fetchEmployeeData = async () => {
-      const type = "Admin";
-      let url;
-      if (type === "Admin") {
-        //if has court defined if not just fetch all
-        url = `${process.env.API_URL}/admin/employees/ssid/123456789`;
-      } else {
-        url = `${process.env.API_URL}/admin/employees`;
-      }
+    const fetchJudgeData = async () => {
+      const url = `${process.env.API_URL}/admin/judges/${user.judge_id}`;
 
       try {
         const response = await axios.get(url);
-        setEmployee(response.data.employee.data);
-        setPhoto(response.data.employee.employee_photo);
+        setJudge(response.data.data);
+        setPhoto(response.data.judge_photo);
       } catch (error) {
-        console.error("Error fetching employee data:", error);
+        console.error("Error fetching judge data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEmployeeData();
+    fetchJudgeData();
   }, []);
 
   if (loading) {
@@ -51,24 +46,28 @@ const Profile = () => {
     );
   }
 
-  if (!employee) {
+  if (!judge) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Failed to load employee data.</Text>
+        <Text style={styles.errorText}>Failed to load judge data.</Text>
       </View>
     );
   }
 
   const {
-    full_name,
-    job,
+    first_name,
+    second_name,
+    third_name,
+    last_name,
     gender,
     birthdate,
     phone,
     email,
-    employee_photo,
-    court_branch,
-  } = employee;
+    address,
+    court_name,
+    experience,
+    qualifications,
+  } = judge;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -79,8 +78,10 @@ const Profile = () => {
           }}
           style={styles.profileImage}
         />
-        <Text style={styles.name}>{full_name}</Text>
-        <Text style={styles.job}>{job.title}</Text>
+        <Text style={styles.name}>
+          {first_name} {second_name} {third_name} {last_name}
+        </Text>
+        <Text style={styles.job}>{court_name.name}</Text>
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.label}>Gender:</Text>
@@ -95,12 +96,16 @@ const Profile = () => {
         <Text style={styles.label}>Email:</Text>
         <Text style={styles.value}>{email}</Text>
 
-        {court_branch && (
-          <>
-            <Text style={styles.label}>Court Branch:</Text>
-            <Text style={styles.value}>{court_branch?.name}</Text>
-          </>
-        )}
+        <Text style={styles.label}>Address:</Text>
+        <Text style={styles.value}>
+          {address.city}, {address.street}
+        </Text>
+
+        <Text style={styles.label}>Court Name:</Text>
+        <Text style={styles.value}>{court_name.name}</Text>
+
+        <Text style={styles.label}>Experience:</Text>
+        <Text style={styles.value}>{experience}</Text>
       </View>
       <StatusBar style="light" />
     </ScrollView>
@@ -161,10 +166,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#2c3e50",
     marginBottom: 5,
+    textAlign: "center",
   },
   job: {
     fontSize: 18,
     color: "#7f8c8d",
+    textAlign: "center",
   },
   detailsContainer: {
     display: "flex",
@@ -195,4 +202,5 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
 });
-export default Profile;
+
+export default JudgeProfile;

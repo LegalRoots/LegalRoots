@@ -43,3 +43,39 @@
   border-width: 0px 0px 2px 0px;
   transition: 300ms ease;
 }
+
+.case-profile-manage {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  gap: 1rem;
+  min-height: 400px;
+  padding-top: 2rem;
+}
+
+.case-profile-manage__radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  gap: 2rem;
+}
+
+.case-profile-manage__radio > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.case-profile-manage__radio input {
+  background-color: yellow;
+  width: fit-content;
+  margin-top: 10px;
+}
+
+#caseClose {
+  font-size: 14px;
+}

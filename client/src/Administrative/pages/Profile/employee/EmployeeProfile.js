@@ -16,6 +16,9 @@ const EmployeeProfile = ({
 }) => {
   return (
     <div className="judge-profile">
+      <div className="profile-edit-cont">
+        <i className="fa-solid fa-pen"></i>
+      </div>
       <div className="profile-header">
         {!image ? (
           <img className="judge-photo" src={logo} alt={`${full_name}`} />
@@ -29,6 +32,12 @@ const EmployeeProfile = ({
         <h2>{full_name}</h2>
       </div>
       <div className="profile-details">
+        <div className="detail-group">
+          <span className="label">Personal ID</span>
+          <span style={{ textDecoration: "underline", cursor: "pointer" }}>
+            view
+          </span>
+        </div>
         <div className="detail-group">
           <span className="label">SSID:</span>
           <span>{ssid}</span>
@@ -62,7 +71,7 @@ const EmployeeProfile = ({
           {court_branch ? <span>{court_branch?.name}</span> : <span>N/A</span>}
         </div>
         <div className="detail-group">
-          <span className="label">Valid:</span>
+          <span className="label">Account Valid:</span>
           <span>{isValid ? "Yes" : "No"}</span>
         </div>
       </div>

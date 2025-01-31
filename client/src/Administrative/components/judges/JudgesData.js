@@ -36,6 +36,7 @@ const JudgesData = () => {
   useEffect(() => {
     if (user?.job.permissions) {
       setPerms(user.job.permissions);
+      console.log(user.job.permissions);
     }
   }, [user]);
 
@@ -173,50 +174,32 @@ const JudgesData = () => {
   return (
     <div className="judges-container">
       <div className="judges-details">
-        <div>
-          <div className="judges-details-managers">
-            {managers.map((manager) => (
-              <Card
-                key={manager.id}
-                id={manager.id}
-                name={manager.name}
-                job={manager.email}
-              />
-            ))}
-          </div>
-          <div className="judges-details-selected">
-            <PersonalCard currentJudge={currentJudge} />
-          </div>
+        <div className="judges-details-selected">
+          <PersonalCard currentJudge={currentJudge} />
         </div>
-        <div className="judges-details-numbers">
-          <div className="judges-count">
-            <span>272</span>
-            <span>judges</span>
-            <a href="#tab">view all</a>
-          </div>
-          <div className="judges-actions">
-            <div>
-              {perms?.user?.permissions?.judges?.manage && (
-                <Link to="/admin/judges/new">
-                  <i className="fa-solid fa-circle-plus"></i>
-                  new judge
-                </Link>
-              )}
-              {perms?.user?.permissions?.judges?.manage && (
-                <Link to="/admin/judges#table">
-                  <i className="fa-solid fa-minus"></i>
-                  delete judge
-                </Link>
-              )}
-              <a href="#table">
-                <i className="fa-solid fa-globe"></i>
-                active judges
-              </a>
-              <a href="/admin/judges#filter">
-                <i className="fa-solid fa-magnifying-glass"></i>
-                search
-              </a>
-            </div>
+
+        <div className="judges-actions">
+          <div>
+            {perms?.judges?.manage && (
+              <Link to="/admin/judges/new">
+                <i className="fa-solid fa-circle-plus"></i>
+                new judge
+              </Link>
+            )}
+            {perms?.judges?.manage && (
+              <Link to="/admin/judges#table">
+                <i className="fa-solid fa-minus"></i>
+                delete judge
+              </Link>
+            )}
+            <Link to="/admin/courtbranch">
+              <i className="fa-solid fa-building-columns"></i>
+              courts
+            </Link>
+            <a href="/admin/judges#filter">
+              <i className="fa-solid fa-magnifying-glass"></i>
+              search
+            </a>
           </div>
         </div>
       </div>
