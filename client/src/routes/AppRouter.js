@@ -32,6 +32,7 @@ import ChatBot from "../Chat/ChatBot";
 import Chat from "../Chat/Chat";
 import NotVerified from "../Authentication/pages/NotVerified";
 import PayLawyer from "../dashboard/components/PayLawyer";
+import LawyerProfile from "../lawyer/components/ProfilePage";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
@@ -43,6 +44,7 @@ const router = createBrowserRouter(
           <Route path={"/user"} element={<Dashboard />}>
             <Route path={"/user/hire-lawyer"} element={<HireLawyer />} />
             <Route path={"/user/pay-lawyer"} element={<PayLawyer />} />
+
             <Route
               path={"/user/join-court"}
               element={
@@ -94,6 +96,10 @@ const router = createBrowserRouter(
             <Route path={"/lawyer/chats"} element={<LawyerChatsPage />} />
             <Route path={"/lawyer/my-cases"} element={<LawyerCases />} />
             <Route path={"/lawyer/cases/:id"} element={<LawyerCaseDetail />} />
+            <Route
+              path={"/lawyer/profile-settings"}
+              element={<LawyerProfile />}
+            />
           </Route>
         </Route>
 

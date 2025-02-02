@@ -60,6 +60,7 @@ const Case = () => {
   const [rating, setRating] = useState(0);
   const [courtData, setCourtData] = useState(null);
   const [courtAdmins, setCourtAdmins] = useState({});
+
   useEffect(() => {
     const fetchCase = async () => {
       try {

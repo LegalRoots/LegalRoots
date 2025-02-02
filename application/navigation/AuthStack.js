@@ -6,9 +6,18 @@ import Signup from "../screens/public/Signup";
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator>
     <Stack.Screen name="Login" component={Login} />
-    <Stack.Screen name="Signup" component={Signup} />
+    <Stack.Screen
+      options={{
+        title: "Signup",
+        headerStyle: { backgroundColor: "#ffbf00" },
+        headerTintColor: "#fff",
+        headerTitleStyle: { fontWeight: "bold" },
+      }}
+      name="Signup"
+      component={Signup}
+    />
   </Stack.Navigator>
 );
 
