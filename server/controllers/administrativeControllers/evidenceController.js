@@ -133,9 +133,7 @@ const getEvidenceFileById = async (req, res) => {
     if (!id) {
       return res.status(400).json({ message: "id is required" });
     }
-
     const evidence = await Evidence.findOne({ _id: id });
-
     if (!evidence) {
       return res
         .status(404)

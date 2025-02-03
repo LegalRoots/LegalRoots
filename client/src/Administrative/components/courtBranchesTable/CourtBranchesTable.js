@@ -59,6 +59,13 @@ const CourtBranchesTable = ({
             <i className="fa-solid fa-circle-plus"></i>
             <p>new court</p>
           </div>
+          <div
+            onClick={newHandler}
+            className="admin-assignments-table__newCourt"
+          >
+            <i className="fa-solid fa-circle-plus"></i>
+            <p>delete court</p>
+          </div>
         </div>
         <div className="admin-assignment-table-wrapper">
           <div className="employees-table">

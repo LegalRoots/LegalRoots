@@ -31,7 +31,6 @@ router.get("/case/judges/:caseId", casesController.getAllJudges);
 router.delete("/caseType/:id", casesController.deleteCaseType);
 
 router.put("/caseType/:id", casesController.updateCaseFields);
-module.exports = router;
 
 router.get(
   "/case/plaintiff/:plaintiff",
@@ -75,6 +74,10 @@ router.post(
   casesBController.removeLawyerFromDefendantLawyers
 );
 
+//close the case
+router.patch("/case/close/:id?", casesController.closeCase);
+
 //filters -------------------------------------------------------
 router.post("/case/filter", casesFilterController.getFilteredCases);
 router.get("/case/filter/:id?", casesFilterController.getCasesByPartialId);
+module.exports = router;

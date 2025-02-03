@@ -1,15 +1,17 @@
 import { useParams, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useFetch } from "../../../shared/hooks/useFetch";
 import Card from "../headerCard/Card";
 import Table from "../../../shared/components/Table/Table";
 import Button from "../../../shared/components/Button2/Button";
 import "./UsersTable.css";
+import UsersFilter from "../../pages/Users/UsersFilter";
 
 const TABLE_HEADERS = ["ssid", "name", "email", "city"];
 
 const UsersTable = ({ users, tableStateHandler, type, verifyHandler }) => {
   const [tableData, setTableData] = useState([]);
+  const [filteredTableData, setFilteredTableData] = useState([]);
 
   const formatData = (data) => {
     let tmpArray = [];
@@ -36,9 +38,8 @@ const UsersTable = ({ users, tableStateHandler, type, verifyHandler }) => {
 
       tmpArray.push(arrElement);
     }
-    console.log(tmpArray);
-
     setTableData(tmpArray);
+    setFilteredTableData(tmpArray);
   };
   useEffect(() => {
     if (users?.length > 0) {
@@ -54,10 +55,40 @@ const UsersTable = ({ users, tableStateHandler, type, verifyHandler }) => {
 
     tableStateHandler(choice);
   };
+  const filterUsers = useCallback(
+    (searchBy, value) => {
+      if (!searchBy) {
+        searchBy = "name";
+      }
+      let tmpArray = [];
+
+      if (tableData) {
+        for (let index = 0; index < tableData.length; index++) {
+          const element = tableData[index];
+
+          if (
+            searchBy.trim() === "ssid" &&
+            !element.rowData.ssid.trim().includes(value)
+          ) {
+            continue;
+          } else if (
+            searchBy.trim() === "name" &&
+            !element.rowData.name?.includes(value)
+          ) {
+            continue;
+          }
+
+          tmpArray.push(element);
+        }
+        setFilteredTableData(tmpArray);
+      }
+    },
+    [tableData]
+  );
 
   return (
     <div className="admin-assignments-table">
-      <Card header="Assigned Cases">
+      <Card header="Users">
         <div className="admin-assignment-table-wrapper">
           <div className="employees-table">
             <div className="admin-users-table-buttons">
@@ -68,8 +99,10 @@ const UsersTable = ({ users, tableStateHandler, type, verifyHandler }) => {
                 lawyers
               </Button>
             </div>
+            <UsersFilter filterUsers={filterUsers} />
+
             <Table
-              data={tableData}
+              data={filteredTableData}
               headers={TABLE_HEADERS}
               headerAction={type === 2 && "verify"}
             />

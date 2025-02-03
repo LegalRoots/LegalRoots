@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFetch } from "../../../../../shared/hooks/useFetch";
 import Button from "../../../../../shared/components/Button2/Button";
 
@@ -6,6 +6,9 @@ import "./CourtsList.css";
 import NewCourt from "./newCourt/NewCourt";
 import Alert from "../../../../../shared/components/aydi/alert/Alert";
 import EditCourt from "./editCourt/EditCourt";
+import Overlay from "../../../../../shared/components/aydi/overlay/Overlay";
+import Input from "../../../../../shared/components/FormElements/aydi/Input";
+import { VALIDATOR_MINLENGTH } from "../../../../../shared/util/validators";
 
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -14,6 +17,8 @@ const CourtItem = ({ court, judges, pickedCase, ctx }) => {
   const [initiator, setInitiator] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [showEditingOverlay, setShowEditingOverlay] = useState(false);
+  const [showResultOverlay, setShowResultOverlay] = useState(false);
+  const [result, setResult] = useState("");
 
   useEffect(() => {
     if (court) {
@@ -62,8 +67,58 @@ const CourtItem = ({ court, judges, pickedCase, ctx }) => {
     setShowEditingOverlay(true);
   };
 
+  const closeResultOverlayHandler = () => {
+    setShowResultOverlay(false);
+  };
+  const editResultHandler = (event) => {
+    setShowResultOverlay(true);
+  };
+
+  const inputHandler = useCallback((id, val, isValid) => {
+    setResult(val);
+    console.log(val);
+  }, []);
+
+  const submitResult = async () => {
+    console.log(result);
+    setShowResultOverlay(false);
+  };
+
   return (
     <div className="admin-caseprofile-courts-item">
+      {showResultOverlay && (
+        <Overlay
+          closeOverlayHandler={closeResultOverlayHandler}
+          id="courtResultOverlay"
+        >
+          <div className="case-profile-result">
+            <Input
+              // initialValue={formState.inputs["qualifications"].value}
+              // initialValid={formState.inputs["qualifications"].isValid}
+              label="Result"
+              id="result"
+              name="result"
+              onInput={inputHandler}
+              type="textarea"
+              placeholder="set the court result"
+              className="new-judge__input"
+              errorMsg="invalid value"
+              validators={VALIDATOR_MINLENGTH(8)}
+            />
+            <div>
+              <Button
+                color="black"
+                size="2"
+                id="subResult"
+                onClick={submitResult}
+                disabled={result.length < 8}
+              >
+                submit
+              </Button>
+            </div>
+          </div>
+        </Overlay>
+      )}
       {showEditingOverlay && pickedCase && (
         <EditCourt
           closeOverlayHandler={closeOverlayHandler}
@@ -101,14 +156,19 @@ const CourtItem = ({ court, judges, pickedCase, ctx }) => {
         {court.description}
       </p>
       <div className="admin-caseprofile-courts-item__buttons">
-        {!court.hasStarted && ctx.type === "Admin" && (
+        {!court.hasStarted && ctx.type === "Admin" && pickedCase.isActive && (
           <button onClick={cancelCourtHandler} id={court._id}>
             cancel
           </button>
         )}
-        {!court.hasStarted && ctx.type === "Admin" && (
+        {!court.hasStarted && ctx.type === "Admin" && pickedCase.isActive && (
           <button onClick={editCourtHandler} id={court._id}>
             edit
+          </button>
+        )}
+        {!court.hasStarted && ctx.type === "Admin" && pickedCase.isActive && (
+          <button onClick={editResultHandler} id={court._id}>
+            result
           </button>
         )}
       </div>
@@ -148,7 +208,7 @@ const CourtsList = ({ caseId, pickedCase, judges, ctx }) => {
       )}
 
       <div className="admin-caseprofile-courts-buttons">
-        {ctx.type === "Admin" && (
+        {ctx.type === "Admin" && pickedCase.isActive && (
           <Button size="1" type="button" onClick={showOverlayHandler}>
             <i className="fa-solid fa-plus"></i> new court
           </Button>

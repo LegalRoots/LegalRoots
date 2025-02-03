@@ -58,7 +58,6 @@ const CasesStructure = () => {
 
   return (
     <div className="casesStructure-container">
-      <CaseTypesBarChart />
       <div className="casesStructure-container-table">
         <Table headers={headers} data={types} headerAction={"view data"} />
         {showCaseTypePage && (

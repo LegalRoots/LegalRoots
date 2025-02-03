@@ -72,3 +72,14 @@
 .detail-group:last-child {
   border-bottom: none;
 }
+
+.profile-edit-cont {
+  width: fit-content;
+  align-self: flex-end;
+  cursor: pointer;
+  transition: 0.23s ease;
+}
+
+.profile-edit-cont:hover {
+  color: var(--gold-darker);
+}

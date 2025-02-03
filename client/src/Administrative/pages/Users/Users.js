@@ -3,6 +3,7 @@ import { useFetch } from "../../../shared/hooks/useFetch";
 import AssignmentsTable from "../../components/assignmentsTable/AssignmentsTable";
 import { useState, useEffect } from "react";
 import UsersTable from "../../components/usersTable/UsersTable";
+import UsersFilter from "./UsersFilter";
 
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -65,7 +66,6 @@ const Users = () => {
       console.error(error);
     }
   };
-
   return (
     <div className="admin-assignments-container">
       {showOverlay && (

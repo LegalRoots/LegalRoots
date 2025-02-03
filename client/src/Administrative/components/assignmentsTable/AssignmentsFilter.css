@@ -1,0 +1,11 @@
+.assigns-filter {
+  padding: 0rem !important;
+}
+
+.assigns-filter .judges-container-filter__searchbar {
+  padding: 0 !important;
+
+  margin: 0;
+  width: 100%;
+  max-width: unset;
+}

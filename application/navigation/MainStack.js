@@ -12,6 +12,8 @@ import LawyerProfileSettings from "../screens/lawyer/ProfileSettings";
 import UserProfileSettings from "../screens/client/ProfileSettings";
 import Notifications from "../screens/public/Notifications";
 import { AuthContext } from "../src/shared/context/auth";
+import AdminStack from "./AdminStack";
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const ProfileWrapper = ({ userType }) => {
@@ -95,15 +97,46 @@ const MainStack = ({ userType }) => {
         }}
         component={ChatScreen}
       />
+      {userType !== "Admin" && userType !== "Judge" && (
+        <>
+          <Stack.Screen
+            name="CasePage"
+            options={{
+              headerShown: true,
+              title: "Case Detail",
+            }}
+            component={CasePage}
+          />
+          <Stack.Screen
+            name="Scheduler"
+            options={{
+              headerShown: true,
+              title: "Scheduler",
+            }}
+            component={Scheduler}
+          />
+          <Stack.Screen
+            name="ChatScreen"
+            options={{
+              headerShown: true,
+              title: "Chat",
+            }}
+            component={ChatScreen}
+          />
 
-      <Stack.Screen
-        name="ChatWithAIBot"
-        options={{
-          headerShown: true,
-          title: "Chat with AI Bot",
-        }}
-        component={ChatAI}
-      />
+          <Stack.Screen
+            name="ChatWithAIBot"
+            options={{
+              headerShown: true,
+              title: "Chat with AI Bot",
+            }}
+            component={ChatAI}
+          />
+        </>
+      )}
+      {(userType === "Admin" || userType === "Judge") && (
+        <Stack.Screen name="User" component={AdminStack} />
+      )}
     </Stack.Navigator>
   );
 };

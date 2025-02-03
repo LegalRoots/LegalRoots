@@ -19,8 +19,10 @@ const PersonalCard = ({ currentJudge }) => {
           currentJudge.data.last_name,
         court: currentJudge.data.court_name.name,
         photo: currentJudge.judge_photo,
+        ssid: currentJudge.data.ssid,
       };
       setJudge(data);
+      console.log(data);
     }
   }, [currentJudge]);
   return (
@@ -38,7 +40,7 @@ const PersonalCard = ({ currentJudge }) => {
                 <p>{judge.court}</p>
               </div>
               <div>
-                <Link>view profile</Link>
+                <Link to={`/admin/profile/${judge.ssid}`}>view profile</Link>
               </div>
             </div>
           </div>

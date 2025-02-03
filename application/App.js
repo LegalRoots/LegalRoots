@@ -7,6 +7,7 @@ import { AuthProvider, AuthContext } from "./src/shared/context/auth";
 import { PaperProvider } from "react-native-paper";
 const AppContent = () => {
   const { user, type } = React.useContext(AuthContext);
+  console.log(process.env.API_URL);
 
   return (
     <NavigationContainer>

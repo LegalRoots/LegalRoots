@@ -1,0 +1,62 @@
+.videocall-participantsList-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  padding: 1.5rem 1rem;
+  gap: 1rem;
+}
+
+.videocall-participantsList-container header {
+  width: 100%;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.videocall-participantsList-container ul {
+  width: 100%;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
+
+  max-height: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.videocall-participantsList-container li {
+  width: 100%;
+  list-style: none;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.videocall-participantsList-container li > div:nth-child(1) {
+  flex: 1;
+}
+
+.videocall-participantsList-container li p {
+  font-size: 0.9rem;
+  padding: 0;
+  margin: 0;
+}
+
+.videocall-participantsList-container li > div:nth-child(2) {
+}
+
+.videocall-participantsList-container li > div:nth-child(2) i {
+  transition: 0.3s ease;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.videocall-participantsList-container li > div:nth-child(2) i:hover {
+  color: var(--gold-darker);
+  cursor: pointer;
+  font-weight: 800;
+}

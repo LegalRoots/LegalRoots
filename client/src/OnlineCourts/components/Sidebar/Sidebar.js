@@ -1,13 +1,25 @@
-import { useRef } from "react";
+import { useRef, useState, useContext } from "react";
 import "./Sidebar.css";
-
-const Sidebar = () => {
+import FilesList from "../files/FilesList";
+import { validateAction } from "../../services/auth";
+import { AuthContext } from "../../../shared/context/auth";
+import { useLocation } from "react-router-dom";
+import UploadFile from "../files/UploadFile";
+import PresenterView from "../PresenterView/PresenterView";
+import Overlay from "../../../shared/components/aydi/overlay/Overlay";
+import {
+  useMeeting,
+  useParticipant,
+  usePubSub,
+} from "@videosdk.live/react-sdk";
+const Sidebar = ({ controlParticipants, openShareOverlayHandler }) => {
+  const ctx = useContext(AuthContext);
+  const location = useLocation();
   const activeRef = useRef();
   const optionsRef = useRef([]);
 
-  const manageActiveHandler = (event) => {
+  const animate = (index) => {
     const positions = [0, 56, 112, 168, 224];
-    const index = parseInt(event.currentTarget.id.slice(-1)) - 1;
     if (activeRef.current) {
       activeRef.current.style = `top: ${positions[index]}px`;
 
@@ -28,18 +40,80 @@ const Sidebar = () => {
     console.log(index);
   };
 
+  const manageActiveHandler = async (event) => {
+    const { role, court } = location.state;
+
+    const index = parseInt(event.currentTarget.id.slice(-1)) - 1;
+    if (index === 4) {
+      controlParticipants(false);
+      //check if authorized
+      const isAuth = await validateAction(
+        court._id,
+        role,
+        "files",
+        ctx.user.ssid
+      );
+      if (isAuth) {
+        animate(index);
+
+        openFilesOverlayHandler();
+      }
+    } else if (index === 3) {
+      controlParticipants(false);
+      const isAuth = await validateAction(
+        court._id,
+        role,
+        "upload",
+        ctx.user.ssid
+      );
+      if (isAuth) {
+        animate(index);
+
+        openUploadOverlayHandler();
+      }
+    } else if (index === 0) {
+      controlParticipants(true);
+      animate(index);
+    } else if (index === 2) {
+      controlParticipants(false);
+      animate(index);
+    } else if (index === 1) {
+      animate(index);
+      openShareOverlayHandler();
+    }
+  };
+  const [showFilesOverlay, setShowFilesOverlay] = useState(false);
+  const [showUploadOverlay, setShowUploadOverlay] = useState(false);
+
+  const closeFilesOverlayHandler = () => {
+    setShowFilesOverlay(false);
+    animate(2);
+  };
+  const openFilesOverlayHandler = () => {
+    setShowFilesOverlay(true);
+  };
+  const closeUploadOverlayHandler = () => {
+    setShowUploadOverlay(false);
+    animate(2);
+  };
+  const openUploadOverlayHandler = () => {
+    setShowUploadOverlay(true);
+  };
+
   return (
     <div className="onlinecourt-sidebar">
+      <UploadFile
+        showUploadOverlay={showUploadOverlay}
+        closeUploadOverlayHandler={closeUploadOverlayHandler}
+      />
+      <FilesList
+        closeFilesOverlayHandler={closeFilesOverlayHandler}
+        showFilesOverlay={showFilesOverlay}
+      />
       <div className="onlinecourt-sidebar-upper">
         <div className="onlinecourt-sidebar-upper-container">
           <div>
             <i className="fa-solid fa-scale-balanced"></i>
-          </div>
-          <div>
-            <i className="fa-solid fa-bell"></i>
-          </div>
-          <div>
-            <i className="fa-solid fa-gear"></i>
           </div>
         </div>
       </div>
@@ -70,7 +144,7 @@ const Sidebar = () => {
           id="option4"
           ref={(el) => (optionsRef.current[3] = el)}
         >
-          <i className="fa-solid fa-arrow-up-right-from-square"></i>
+          <i className="fa-solid fa-cloud-arrow-up"></i>
         </div>
         <div
           onClick={manageActiveHandler}

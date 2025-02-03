@@ -7,12 +7,28 @@ const Sidebar = () => {
   const { logout, user, type } = useContext(AuthContext);
 
   const [perms, setPerms] = useState(null);
+  const [sideBarState, setSideBarState] = useState(1);
+  const [SW, setSW] = useState(window.innerWidth);
 
   useEffect(() => {
     if (type === "Admin" && user?.job.permissions) {
       setPerms(user.job.permissions);
     }
   }, [user]);
+
+  const handleResize = () => {
+    const width = window.innerWidth;
+    console.log(width);
+
+    if (width >= 1200) {
+      setSideBarState(1);
+    }
+    setSW(width);
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+  }, []);
 
   let links;
   if (type === "Admin" && perms) {
@@ -79,10 +95,6 @@ const Sidebar = () => {
         <Link to="/admin/users">
           <p>Users</p>
         </Link>
-        <Link to="/admin/emp">
-          <p>Employees</p>
-        </Link>
-
         <Link to="/admin/onlinecourt/join">
           <p>Join a Court</p>
         </Link>
@@ -98,18 +110,41 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="sidebar-container">
-      <div className="sidebar-logo">
-        <img src={logo} alt="website logo" />
-        <p>Administrative Commision</p>
-      </div>
-      {links}
-      <div className="sidebar-links__logout">
-        <Link to="/">
-          <p onClick={logout}>Logout</p>
-        </Link>
-      </div>
-    </div>
+    <>
+      {sideBarState === 1 ? (
+        <div className="sidebar-container">
+          {SW < 1200 && (
+            <div
+              id="closeSB"
+              onClick={() => {
+                setSideBarState(2);
+              }}
+            >
+              <i className="fa-solid fa-x"></i>
+            </div>
+          )}
+          <div className="sidebar-logo">
+            <img src={logo} alt="website logo" />
+            <p>Administrative Commision</p>
+          </div>
+          {links}
+          <div className="sidebar-links__logout">
+            <Link to="/">
+              <p onClick={logout}>Logout</p>
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div
+          id="openSB"
+          onClick={() => {
+            setSideBarState(1);
+          }}
+        >
+          <i className="fa-solid fa-bars"></i>
+        </div>
+      )}
+    </>
   );
 };
 

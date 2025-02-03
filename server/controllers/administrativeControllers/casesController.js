@@ -407,6 +407,33 @@ const updateCaseFields = async (req, res) => {
   }
 };
 
+const closeCase = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ message: "case id is required" });
+    }
+
+    const pickedCase = await Case.findByIdAndUpdate(
+      id,
+      { isClosed: true, isActive: false },
+      { new: true, runValidators: true }
+    );
+
+    if (!pickedCase) {
+      return res
+        .status(404)
+        .json({ message: "no case matches the provided id" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "case closed successfully", case: pickedCase });
+  } catch (error) {
+    return res.status(500).json({ message: "error occured", error });
+  }
+};
+
 exports.addCaseType = addCaseType;
 exports.addCase = addCase;
 exports.getCasesByCaseTypeId = getCasesByCaseTypeId;
@@ -420,3 +447,4 @@ exports.getAllJudges = getAllJudges;
 exports.addJudgeByJudgeId = addJudgeByJudgeId;
 exports.deleteCaseType = deleteCaseType;
 exports.updateCaseFields = updateCaseFields;
+exports.closeCase = closeCase;
