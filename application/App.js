@@ -2,6 +2,7 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import AuthStack from "./navigation/AuthStack";
 import MainStack from "./navigation/MainStack";
+import { BottomTabs } from "./navigation/MainStack";
 import { AuthProvider, AuthContext } from "./src/shared/context/auth";
 import { PaperProvider } from "react-native-paper";
 const AppContent = () => {
@@ -10,7 +11,7 @@ const AppContent = () => {
 
   return (
     <NavigationContainer>
-      {user ? <MainStack userType={type} /> : <AuthStack />}
+      {user ? <BottomTabs userType={type} /> : <AuthStack />}
     </NavigationContainer>
   );
 };

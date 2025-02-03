@@ -5,8 +5,10 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  KeyboardAvoidingView,
   ScrollView,
   SafeAreaView,
+  Button as RNButton,
 } from "react-native";
 import { Card, Divider, Chip } from "react-native-paper";
 import { Rating } from "react-native-ratings";
@@ -25,9 +27,9 @@ import { TextInput, IconButton, Button, List } from "react-native-paper";
 import * as DocumentPicker from "expo-document-picker";
 
 const CaseCard = () => {
+  const { user, type } = useContext(AuthContext);
   const navigation = useNavigation();
   const route = useRoute();
-  const { user, type } = useContext(AuthContext);
   const { caseId } = route.params;
   const [caseData, setCaseData] = useState(null);
   const [newDocument, setNewDocument] = useState(null);
@@ -48,7 +50,9 @@ const CaseCard = () => {
   const handleAccordionToggle = () => {
     setDocumentExpanded(!documentExpanded);
   };
-  const handlePress = () => setExpanded(!expanded);
+  const handlePress = () => {
+    setExpanded(!expanded);
+  };
   useEffect(() => {
     const fetchCase = async () => {
       try {
@@ -238,14 +242,6 @@ const CaseCard = () => {
     }
   };
 
-  const handleOpenAddNoteModal = () => {
-    setAddNoteModalOpen(true);
-  };
-
-  const handleCloseAddNoteModal = () => {
-    setAddNoteModalOpen(false);
-  };
-
   if (!caseData) return <Text>Loading...</Text>;
   const getFriendlyName = (path) => {
     const fileName = path.split("/").pop();
@@ -314,6 +310,18 @@ const CaseCard = () => {
   };
   return (
     <View style={styles.container}>
+      <View style={styles.cheader}>
+        <Button
+          style={{
+            position: "absolute",
+            left: 16,
+          }}
+          onPress={() => navigation.goBack()}
+        >
+          Back
+        </Button>
+        <Text style={styles.title}>Case Detail</Text>
+      </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Card style={styles.card}>
           <Card.Content>
@@ -482,7 +490,7 @@ const CaseCard = () => {
                 style={styles.btn}
                 title="Add Note"
                 mode="contained"
-                onPress={handleOpenAddNoteModal}
+                onPress={() => setAddNoteModalOpen(true)}
               >
                 Add Note
               </Button>
@@ -581,19 +589,6 @@ const CaseCard = () => {
                 participants
               </Text>
             </Card.Content>
-            {!court.hasFinished && (
-              <Card.Actions>
-                <Button
-                  mode="contained"
-                  onPress={() => {
-                    navigate("/user/join-court");
-                  }}
-                  style={styles.button}
-                >
-                  Join Court
-                </Button>
-              </Card.Actions>
-            )}
           </Card>
         ))}
       </ScrollView>
@@ -766,6 +761,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ffbf00",
     width: "50%",
+  },
+  cheader: {
+    height: 80,
+    width: "100%",
+    backgroundColor: "#f8f8f8",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 3,
+    flexDirection: "row",
   },
   buttonText: { color: "#ffbf00" },
   judgeCard: { flexDirection: "row", marginBottom: 16 },

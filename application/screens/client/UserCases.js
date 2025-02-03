@@ -133,6 +133,15 @@ const CaseCard = () => {
               <Text style={styles.detailsText}>
                 <Text style={styles.bold}>Lawyers:</Text>
               </Text>
+              <View style={styles.avatarRow}>
+                {lawyer.map((lawyer) => {
+                  return (
+                    <Text key={lawyer._id}>
+                      {lawyer.first_name} {lawyer.last_name}
+                    </Text>
+                  );
+                })}
+              </View>
             </View>
             <TouchableOpacity
               onPress={() =>
